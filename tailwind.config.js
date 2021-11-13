@@ -6,7 +6,11 @@ module.exports = {
     extend: {
       colors: {
         gray: colors.trueGray
-      }
+      },
+      fontFamily: {
+        display: ['Poppins', 'sans-serif'],
+        body: ['Poppins', 'sans-serif'],
+      },
     },
   },
   variants: {
