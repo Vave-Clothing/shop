@@ -1,4 +1,4 @@
-import { GlobalStyles } from 'twin.macro'
+import tw, { GlobalStyles } from 'twin.macro'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import NavBar from '@/components/NavBar'
@@ -19,13 +19,13 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
       {
         router.pathname !== '/' &&
-        <>
+        <div css={tw`overflow-y-scroll h-screen`}>
           <NavBar openMenu={setMenu} />
           <SideMenu open={menu} close={setMenu} />
           <PageContent>
             <Component {...pageProps} />
           </PageContent>
-        </>
+        </div>
       }
     </>
   )
