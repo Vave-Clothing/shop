@@ -6,6 +6,14 @@ import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineUserCircle, HiOutl
 import Link from 'next/link'
 import SideMenu from '@/components/SideMenu'
 import { useState } from 'react'
+import moment from 'moment-timezone'
+
+const footerLinks = [
+  { title: 'Link1', href: '/' },
+  { title: 'Link2', href: '/' },
+  { title: 'Link3', href: '/' },
+  { title: 'Link4', href: '/' },
+]
 
 const Home: NextPage = () => {
   const [menu, setMenu] = useState(false)
@@ -15,7 +23,7 @@ const Home: NextPage = () => {
       <SideMenu open={menu} close={setMenu} />
       <div css={tw`min-h-screen w-full grid`}>
         <div css={tw`grid-area[1/1/2/2] h-screen overflow-hidden`}>
-          <Image src={MainImage} layout="fill" objectFit="cover" objectPosition="50% 50%" alt="Main Image" />
+          <Image src={MainImage} layout="fill" objectFit="cover" objectPosition="50% 50%" alt="Main Image" priority={true} />
         </div>
         <div css={tw`grid-area[1/1/2/2] z-index[1]`}>
           <div css={[
@@ -29,6 +37,7 @@ const Home: NextPage = () => {
                   <Link href="/login">
                     <a>
                       <HiOutlineUserCircle />
+                      <span css={tw`sr-only`}>Login</span>
                     </a>
                   </Link>
                 </span>
@@ -36,12 +45,14 @@ const Home: NextPage = () => {
                   <Link href="/cart">
                     <a>
                       <HiOutlineShoppingCart />
+                      <span css={tw`sr-only`}>Einkaufswagen</span>
                     </a>
                   </Link>
                 </span>
                 <span css={tw`flex items-center`}>
                   <button onClick={() => setMenu(true)}>
                     <HiOutlineMenuAlt2 />
+                    <span css={tw`sr-only`}>Menü öffnen</span>
                   </button>
                 </span>
               </div>
@@ -65,8 +76,16 @@ const Home: NextPage = () => {
               tw`relative left-1/2 transform -translate-x-1/2`,
               tw`max-w-[110rem] w-full text-gray-400 px-2 py-1 flex justify-between items-center`
             ]}>
-              <span>&copy; 2021 Brand</span>
-              <span>aaaaaaaaaaaaaaaah</span>
+              <span>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Brand</span>
+              <div css={tw`flex items-center gap-2`}>
+                {
+                  footerLinks.map((link, i) => (
+                    <Link href={link.href} key={i}>
+                      {link.title}
+                    </Link>
+                  ))
+                }
+              </div>
             </div>
           </div>
         </div>

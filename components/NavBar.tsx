@@ -24,6 +24,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
               <Link href="/login">
                 <a>
                   <HiOutlineUserCircle />
+                  <span css={tw`sr-only`}>Login</span>
                 </a>
               </Link>
             </span>
@@ -31,12 +32,14 @@ const NavBar = ({ openMenu }: navBarProps) => {
               <Link href="/cart">
                 <a>
                   <HiOutlineShoppingCart />
+                  <span css={tw`sr-only`}>Einkaufswagen</span>
                 </a>
               </Link>
             </span>
             <span css={tw`flex items-center`}>
               <button onClick={() => openMenu(true)}>
                 <HiOutlineMenuAlt2 />
+                <span css={tw`sr-only`}>Menü öffnen</span>
               </button>
             </span>
           </div>
