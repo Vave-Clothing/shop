@@ -9,7 +9,7 @@ interface navBarProps {
 
 const NavBar = ({ openMenu }: navBarProps) => {
   return (
-    <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200`}>
+    <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200 sticky top-0 z-40`}>
       <div css={tw`max-w-[96rem] w-full text-black`}>
         <div css={tw`flex justify-between text-2xl items-center px-6 py-3`}>
           <div>

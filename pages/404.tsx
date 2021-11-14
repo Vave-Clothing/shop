@@ -6,7 +6,7 @@ export default function Custom404() {
       <span css={tw`pr-4 border-r border-gray-300`}>
         404
       </span>
-      <span css={tw`pl-4`}>
+      <span css={tw`pl-4 whitespace-nowrap`}>
         Page Not Found
       </span>
     </div>

@@ -6,7 +6,7 @@ export default function Custom500() {
       <span css={tw`pr-4 border-r border-gray-300`}>
         500
       </span>
-      <span css={tw`pl-4`}>
+      <span css={tw`pl-4 whitespace-nowrap`}>
         Internal Server Error
       </span>
     </div>
