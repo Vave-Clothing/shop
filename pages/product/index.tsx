@@ -52,7 +52,7 @@ const Product: NextPage = () => {
                     tw`transition duration-500`,
                     imgRondell === i ? tw`opacity-100` : tw`opacity-0`
                 ]}>
-                  <Image src={img.src} layout="fill" objectFit="cover" objectPosition="50% 50%" />
+                  <Image src={img.src} layout="fill" objectFit="cover" objectPosition="50% 50%" alt={'Prodcut Image No.' + i} />
                 </div>
               ))
             }

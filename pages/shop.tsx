@@ -57,7 +57,7 @@ const RadioButton = ({ title, value }: radioButtonProps) => {
 const Shop: NextPage = () => {
   const [products, setProducts] = useState(mockProducts)
   const [category, setCategory] = useState('all')
-  const categoryPanel = useRef(null)
+  const categoryPanel = useRef<HTMLDivElement>(null)
   const [categoryPanelTop, setCategoryPanelTop] = useState(0)
 
   const sortProducts = (sort: string) => {
@@ -69,11 +69,11 @@ const Shop: NextPage = () => {
 
   const getCategoryPanelTopPosition = () => {
     const rect = categoryPanel.current?.getBoundingClientRect()
-    return rect.top
+    return rect?.top
   }
 
   useEffect(() => {
-    setCategoryPanelTop(getCategoryPanelTopPosition())
+    setCategoryPanelTop(Number(getCategoryPanelTopPosition()))
   }, [])
 
   return (
