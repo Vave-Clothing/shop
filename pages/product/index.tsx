@@ -1,25 +1,33 @@
 import type { NextPage } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
-import { v4 as randUUID } from 'uuid'
 import { useState, useEffect } from 'react'
-import { HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineShoppingCart } from 'react-icons/hi'
+import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineShoppingCart } from 'react-icons/hi'
+import { Transition } from '@headlessui/react'
+import { cx, css } from '@emotion/css'
 
 import IMG1 from '@/assets/pexels-bryants-juarez-10154526.jpg'
 import IMG2 from '@/assets/pexels-bryants-juarez-10154573.jpg'
 import IMG3 from '@/assets/pexels-bryants-juarez-10154575.jpg'
 
 const mockImages = [
-  { uuid: randUUID(), src: IMG1 },
-  { uuid: randUUID(), src: IMG2 },
-  { uuid: randUUID(), src: IMG3 },
+  { src: IMG1 },
+  { src: IMG2 },
+  { src: IMG3 },
 ]
 
-const mockSizes = [ 'xs', 's', 'm', 'l', 'xl' ]
+const mockSizes = [
+  { size: 'xs', chest: '34-38', waist: '30-32' },
+  { size: 's', chest: '28-40', waist: '32-33' },
+  { size: 'm', chest: '42-44', waist: '33-34' },
+  { size: 'l', chest: '46-48', waist: '36-38' },
+  { size: 'xl', chest: '48-50', waist: '40-42' }
+]
 
 const Product: NextPage = () => {
   const [imgRondell, setImgRondell] = useState(0)
   const [sizeSelector, setSizeSelector] = useState(0)
+  const [fitGuide, setFitGuide] = useState(false)
 
   const changeImg = (direction: boolean) => {
     if(direction === true) {
@@ -103,18 +111,67 @@ const Product: NextPage = () => {
             <h2 css={tw`text-xl font-medium`}>EUR 10,00</h2>
           </div>
           <div css={tw`mt-4`}>
-            <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm`}>
-              {
-                mockSizes.map((s, i) => (
-                  <span css={[
-                    tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
-                    sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`
-                  ]} key={i} onClick={() => setSizeSelector(i)}>
-                    {s}
-                  </span>
-                ))
-              }
+            <div css={tw`flex items-center gap-2 flex-wrap`}>
+              <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm`}>
+                {
+                  mockSizes.map((s, i) => (
+                    <span css={[
+                      tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
+                      sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`
+                    ]} key={i} onClick={() => setSizeSelector(i)}>
+                      {s.size}
+                    </span>
+                  ))
+                }
+              </div>
+              <button css={tw`flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1`} onClick={() => setFitGuide(!fitGuide)}>
+                <span css={[tw`transition duration-300 transform`, fitGuide ? tw`rotate-180` : tw`rotate-0`]}>
+                  <HiOutlineArrowDown />
+                </span>
+                <span>Fit-Guide</span>
+              </button>
             </div>
+            <Transition
+              show={fitGuide}
+              {...{
+                enter: cx(css(tw`transition-opacity duration-300`)),
+                enterFrom: cx(css(tw`opacity-0`)),
+                enterTo: cx(css(tw`opacity-100`)),
+              }}
+            >
+              <div css={tw`border border-gray-100 rounded-lg mt-1 px-2 py-1`}>
+                <span css={tw`mb-1 block`}>Fit-Guide</span>
+                <table css={tw`w-full border-collapse text-sm`}>
+                  <tr css={tw`border-b border-gray-100`}>
+                    <th css={tw`text-xs font-normal text-left`}>in cm</th>
+                    {
+                      mockSizes.map((s, i) => (
+                        <th key={i} css={tw`font-normal uppercase text-center`}>
+                          {s.size}
+                        </th>
+                      ))
+                    }
+                  </tr>
+                  <tr css={tw`border-b border-gray-100`}>
+                    <td css={tw`font-normal uppercase`}>Chest</td>
+                    {
+                      mockSizes.map((s, i) => (
+                        <td key={i}>{s.chest}</td>
+                      ))
+                    }
+                  </tr>
+                  <tr>
+                    <td css={tw`font-normal uppercase`}>Waist</td>
+                    {
+                      mockSizes.map((s, i) => (
+                        <td key={i}>{s.waist}</td>
+                      ))
+                    }
+                  </tr>
+                </table>
+                <span css={tw`block mt-2 text-sm font-light`}>Model trägt Größe M</span>
+              </div>
+            </Transition>
             <button css={tw`border border-gray-300 bg-gray-50 py-1 px-4 rounded-lg mt-3 flex items-center gap-2 text-lg`}>
               <HiOutlineShoppingCart />
               <span>Add to Cart</span>
