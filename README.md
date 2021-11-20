@@ -1,5 +1,7 @@
 # Vave Shop
 
+[![CI](https://github.com/Vave-Clothing/shop/actions/workflows/integration.yml/badge.svg?event=push)](https://github.com/Vave-Clothing/shop/actions/workflows/integration.yml)
+
 This is the shop from [Vave Clothing](https://vave-clothing.de/), made with NextJS, Typescript and twin.macro.
 
 ## Getting started
