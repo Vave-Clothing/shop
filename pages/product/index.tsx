@@ -45,7 +45,7 @@ const Product: NextPage = () => {
     }
   }
 
-  const changeImgSpecific = (number: number) => {
+  const changeImgSpecific = (number: boolean) => {
     if(number < 0 && number > mockImages.length - 1) return
     setImgRondell(number)
   }
