@@ -31,7 +31,9 @@ const Home: NextPage = () => {
             tw`max-w-[110rem] xl:max-h-[50rem] h-full w-full text-black xl:p-6`
           ]}>
             <div css={tw`flex justify-between text-2xl items-center bg-white xl:bg-transparent px-6 py-3 xl:p-0`}>
-              <div><span>LOGO</span></div>
+              <div>
+                <span>Vave</span>
+              </div>
               <div css={tw`flex gap-4 items-center`}>
                 <span>
                   <Link href="/login">
@@ -76,7 +78,7 @@ const Home: NextPage = () => {
               tw`relative left-1/2 transform -translate-x-1/2`,
               tw`max-w-[110rem] w-full text-gray-400 px-2 py-1 flex justify-between items-center`
             ]}>
-              <span>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Brand</span>
+              <span>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Vave Clothing</span>
               <div css={tw`flex items-center gap-2`}>
                 {
                   footerLinks.map((link, i) => (

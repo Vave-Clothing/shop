@@ -15,7 +15,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
           <div>
             <span>
               <Link href="/">
-                LOGO
+                Vave
               </Link>
             </span>
           </div>

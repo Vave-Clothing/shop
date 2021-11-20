@@ -1,5 +1,5 @@
 {
-  "name": "sustainable-ecommerce",
+  "name": "vave-shop",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -78,7 +78,7 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
                   </li>
                 ))
               }
-              <li>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Brand</li>
+              <li>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Vave Clothing</li>
             </ul>
           </div>
         </div>
