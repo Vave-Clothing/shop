@@ -15,17 +15,22 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    if: ${{ !contains(github.event.head_commit.message, 'wip:') }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@master
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v2.4.1
         with:
           node-version: 14
-      - uses: borales/actions-yarn@v2.3.0
+      - name: Install dependencies
+        uses: borales/actions-yarn@v2.3.0
         with:
           cmd: install
-      - uses: borales/actions-yarn@v2.3.0
+      - name: Build App for testing
+        uses: borales/actions-yarn@v2.3.0
         with:
           cmd: build
-      - uses: borales/actions-yarn@v2.3.0
+      - name: Lint app
+        uses: borales/actions-yarn@v2.3.0
         with:
           cmd: lint
