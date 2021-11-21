@@ -22,15 +22,10 @@ jobs:
         uses: actions/setup-node@v2.4.1
         with:
           node-version: 14
+          cache: "yarn"
       - name: Install dependencies
-        uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: install
+        run: yarn
       - name: Build App for testing
-        uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: build
+        run: yarn build
       - name: Lint app
-        uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: lint
+        run: yarn lint
