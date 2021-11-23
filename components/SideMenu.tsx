@@ -13,6 +13,7 @@ const menuItems = [
 ]
 
 const footerMenuItems = [
+  { title: 'AGBs', href: '/terms-of-service' },
   { title: 'Datenschutz', href: '/privacy' },
 ]
 

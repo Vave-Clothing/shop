@@ -13,6 +13,7 @@
     "@emotion/server": "^11.4.0",
     "@emotion/styled": "^11.3.0",
     "@headlessui/react": "^1.4.2",
+    "@sanity/block-content-to-react": "^3.0.0",
     "gsap": "^3.8.0",
     "moment-timezone": "^0.5.34",
     "next": "12.0.3",
@@ -24,6 +25,8 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.3.0",
+    "@sanity/client": "^2.21.10",
+    "@sanity/image-url": "^1.0.1",
     "@types/node": "16.11.7",
     "@types/react": "17.0.34",
     "@types/uuid": "^8.3.1",
