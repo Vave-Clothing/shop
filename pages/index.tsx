@@ -1,4 +1,4 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
 import MainImage from '@/assets/larry-george-ii-7hazmb7YznI-unsplash.jpg'
@@ -7,6 +7,7 @@ import Link from 'next/link'
 import SideMenu from '@/components/SideMenu'
 import { useState } from 'react'
 import moment from 'moment-timezone'
+import client, { urlFor } from '@/lib/sanityClient'
 
 const footerLinks = [
   { title: 'Link1', href: '/' },
@@ -15,20 +16,23 @@ const footerLinks = [
   { title: 'Link4', href: '/' },
 ]
 
-const Home: NextPage = () => {
+const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [menu, setMenu] = useState(false)
+
+  const imgSrc = urlFor(page.mainImage).width(1920).height(1080).url()
 
   return (
     <>
       <SideMenu open={menu} close={setMenu} />
       <div css={tw`min-h-screen w-full grid`}>
         <div css={tw`grid-area[1/1/2/2] h-screen overflow-hidden`}>
-          <Image src={MainImage} layout="fill" objectFit="cover" objectPosition="50% 50%" alt="Main Image" priority={true} />
+          <Image src={imgSrc} layout="fill" objectFit="cover" objectPosition="50% 50%" alt={page.mainImage.caption} priority={true} />
         </div>
         <div css={tw`grid-area[1/1/2/2] z-index[1]`}>
           <div css={[
             tw`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`,
-            tw`max-w-[110rem] xl:max-h-[50rem] h-full w-full text-black xl:p-6`
+            tw`max-w-[110rem] xl:max-h-[50rem] h-full w-full text-black xl:p-6`,
+            page.mainImageFgColor === 'black' ? tw`xl:text-black` : tw`xl:text-white`
           ]}>
             <div css={tw`flex justify-between text-2xl items-center bg-white xl:bg-transparent px-6 py-3 xl:p-0`}>
               <div>
@@ -97,3 +101,18 @@ const Home: NextPage = () => {
 }
 
 export default Home
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const data = await client.fetch(`
+    *[_id == "homePage"]{
+      mainImage,
+      mainImageFgColor
+    }
+  `)
+
+  return {
+    props: {
+      page: data[0]
+    }
+  }
+}
