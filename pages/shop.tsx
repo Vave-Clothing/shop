@@ -1,10 +1,11 @@
-import type { NextPage } from 'next'
+import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import tw, { theme } from 'twin.macro'
 import Image from 'next/image'
 import { HiOutlineStar } from 'react-icons/hi'
 import Link from 'next/link'
 import { Fragment, useState, useRef, useEffect } from 'react'
 import { RadioGroup } from '@headlessui/react'
+import client, { urlFor } from '@/lib/sanityClient'
 
 import IMG1 from '@/assets/pexels-bryants-juarez-10154526.jpg'
 import IMG2 from '@/assets/pexels-bryants-juarez-10154573.jpg'
@@ -54,43 +55,45 @@ const RadioButton = ({ title, value }: radioButtonProps) => {
   )
 }
 
-const Shop: NextPage = () => {
-  const [products, setProducts] = useState(mockProducts)
-  const [category, setCategory] = useState('all')
-  const categoryPanel = useRef<HTMLDivElement>(null)
-  const [categoryPanelTop, setCategoryPanelTop] = useState(0)
+const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const [products, setProducts] = useState(shopProducts)
+  const [collection, setCollection] = useState('all')
+  const collectionsPanel = useRef<HTMLDivElement>(null)
+  const [collectionsPanelTop, setCollectionsPanelTop] = useState(0)
 
   const sortProducts = (sort: string) => {
-    setCategory(sort)
-    const filtered = mockProducts.filter(p => p.category === sort)
-    if(sort === 'all') return setProducts(mockProducts)
+    setCollection(sort)
+    const filtered = shopProducts.filter((p:any) => p.collectionId === sort)
+    if(sort === 'all') return setProducts(shopProducts)
     setProducts(filtered)
   }
 
   const getCategoryPanelTopPosition = () => {
-    const rect = categoryPanel.current?.getBoundingClientRect()
+    const rect = collectionsPanel.current?.getBoundingClientRect()
     return rect?.top
   }
 
   useEffect(() => {
-    setCategoryPanelTop(Number(getCategoryPanelTopPosition()))
+    setCollectionsPanelTop(Number(getCategoryPanelTopPosition()))
   }, [])
 
   return (
     <div css={tw`grid md:grid-template-columns[1fr 3fr] gap-4`}>
       <div css={tw`mb-4 md:m-0`}>
-        <div css={tw`md:sticky`} ref={categoryPanel} style={{ top: categoryPanelTop }}>
+        <div css={tw`md:sticky`} ref={collectionsPanel} style={{ top: collectionsPanelTop }}>
           <h1 css={tw`text-2xl font-semibold mb-6`}>Produkte</h1>
           <div>
-            <RadioGroup value={category} onChange={sortProducts}>
+            <RadioGroup value={collection} onChange={sortProducts}>
               <RadioGroup.Label as={Fragment}>
-                <span css={tw`block mb-1`}>Kategorien</span>
+                <span css={tw`block mb-1`}>Collections</span>
               </RadioGroup.Label>
               <div css={tw`ml-1`}>
                 <RadioButton value="all" title="Alle" />
-                <RadioButton value="hoodies" title="Hoodies" />
-                <RadioButton value="hoodies2" title="Hoodies 2" />
-                <RadioButton value="hoodies3" title="Hoodies 3" />
+                {
+                  shopCollections.map((c:any) => (
+                    <RadioButton value={c._id} title={c.name} key={c._id} />
+                  ))
+                }
               </div>
             </RadioGroup>
           </div>
@@ -98,7 +101,7 @@ const Shop: NextPage = () => {
       </div>
       <div css={tw`grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4`}>
         {
-          products.map((product, i) => (
+          products.map((product: any, i: number) => (
             <div key={i} css={tw`border border-gray-200 rounded-lg p-4 relative`} className="group">
               <div css={tw`flex justify-center items-center`}>
                 <div css={tw`w-80 h-80 overflow-hidden group-hover:scale-105 transition duration-200 rounded relative`}>
@@ -147,3 +150,50 @@ const Shop: NextPage = () => {
 }
 
 export default Shop
+
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const products = await client.fetch(`
+    *[_type == "product"]{
+      _id,
+      blurb,
+      category,
+      collection,
+      images,
+      slug,
+      tags,
+      title,
+      variants
+    }
+  `)
+
+  const formattedProducts = products.map((p:any) => {
+    const main = p.variants.find((v:any) => v.isDefault === true)
+    const img = urlFor(p.images[0]).width(640).height(640).url()
+
+    return {
+      title: p.title,
+      img: img,
+      price: main.price * 100,
+      stars: 5,
+      fBCount: 5,
+      href: '/product',
+      inStock: true,
+      category: p.category,
+      collectionId: p.collection._ref
+    }
+  })
+
+  const collections = await client.fetch(`
+    *[_type == "collection"]{
+      _id,
+      name
+    }
+  `)
+
+  return {
+    props: {
+      shopProducts: formattedProducts,
+      shopCollections: collections
+    }
+  }
+}
