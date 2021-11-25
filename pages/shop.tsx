@@ -7,28 +7,6 @@ import { Fragment, useState, useRef, useEffect } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import client, { urlFor } from '@/lib/sanityClient'
 
-import IMG1 from '@/assets/pexels-bryants-juarez-10154526.jpg'
-import IMG2 from '@/assets/pexels-bryants-juarez-10154573.jpg'
-import IMG3 from '@/assets/pexels-bryants-juarez-10154575.jpg'
-
-const mockProducts = [
-  { title: 'Product a', img: IMG1, price: 1000, stars: 3, fBCount: 100, href: '/product', inStock: true, category: 'hoodies' },
-  { title: 'Product b', img: IMG2, price: 1234, stars: 4, fBCount: 50, href: '/product', inStock: true, category: 'hoodies2' },
-  { title: 'Product c', img: IMG3, price: 799, stars: 2, fBCount: 75, href: '/product', inStock: false, category: 'hoodies3' },
-  { title: 'Product d', img: IMG1, price: 1000, stars: 3, fBCount: 234, href: '/product', inStock: true, category: 'hoodies' },
-  { title: 'Product e', img: IMG2, price: 1234, stars: 4, fBCount: 654, href: '/product', inStock: true, category: 'hoodies2' },
-  { title: 'Product f', img: IMG3, price: 799, stars: 2, fBCount: 123, href: '/product', inStock: true, category: 'hoodies3' },
-  { title: 'Product g', img: IMG1, price: 1000, stars: 3, fBCount: 634, href: '/product', inStock: false, category: 'hoodies' },
-  { title: 'Product h', img: IMG2, price: 1234, stars: 4, fBCount: 194, href: '/product', inStock: true, category: 'hoodies2' },
-  { title: 'Product i', img: IMG3, price: 799, stars: 2, fBCount: 55, href: '/product', inStock: true, category: 'hoodies3' },
-  { title: 'Product j', img: IMG1, price: 1000, stars: 3, fBCount: 24, href: '/product', inStock: true, category: 'hoodies' },
-  { title: 'Product k', img: IMG2, price: 1234, stars: 4, fBCount: 43, href: '/product', inStock: true, category: 'hoodies2' },
-  { title: 'Product l', img: IMG3, price: 799, stars: 2, fBCount: 754, href: '/product', inStock: true, category: 'hoodies3' },
-  { title: 'Product m', img: IMG1, price: 1000, stars: 3, fBCount: 243, href: '/product', inStock: false, category: 'hoodies' },
-  { title: 'Product n', img: IMG2, price: 1234, stars: 4, fBCount: 43, href: '/product', inStock: true, category: 'hoodies2' },
-  { title: 'Product o', img: IMG3, price: 799, stars: 2, fBCount: 243, href: '/product', inStock: true, category: 'hoodies3' },
-]
-
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
   maximumFractionDigits: 2
@@ -170,13 +148,15 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     const main = p.variants.find((v:any) => v.isDefault === true)
     const img = urlFor(p.images[0]).width(640).height(640).url()
 
+    // TODO: Stock message for under 5
+
     return {
       title: p.title,
       img: img,
       price: main.price * 100,
       stars: 5,
       fBCount: 5,
-      href: '/product',
+      href: '/product/' + p.slug.current,
       inStock: true,
       category: p.category,
       collectionId: p.collection._ref
