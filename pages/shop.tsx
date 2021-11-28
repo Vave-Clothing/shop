@@ -17,6 +17,14 @@ interface radioButtonProps {
   value: string
 }
 
+interface imgHotspotFunction {
+  _type: string,
+  height: number,
+  width: number,
+  x: number,
+  y: number
+}
+
 const RadioButton = ({ title, value }: radioButtonProps) => {
   return (
     <RadioGroup.Option value={value} as={Fragment}>
@@ -51,6 +59,10 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
     return rect?.top
   }
 
+  const imgHotspot = (hotsp: imgHotspotFunction) => {
+    return hotsp.x * 100 + '% ' + hotsp.y * 100 + '%'
+  }
+
   useEffect(() => {
     setCollectionsPanelTop(Number(getCategoryPanelTopPosition()))
   }, [])
@@ -83,7 +95,7 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
             <div key={i} css={tw`border border-gray-200 rounded-lg p-4 relative`} className="group">
               <div css={tw`flex justify-center items-center`}>
                 <div css={tw`w-80 h-80 overflow-hidden group-hover:scale-105 transition duration-200 rounded relative`}>
-                  <Image src={product.img} layout="fill" objectFit="cover" objectPosition="50% 50%" alt={product.title} />
+                  <Image src={product.img} layout="fill" objectFit="cover" objectPosition={imgHotspot(product.imgHotspot)} alt={product.title} placeholder="blur" blurDataURL={product.imgLQIP} />
                 </div>
               </div>
               <div css={tw`mt-4 flex flex-col gap-2`}>
@@ -140,7 +152,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       slug,
       tags,
       title,
-      variants
+      variants,
+      'imagesLQIP': images[].asset->metadata.lqip
     }
   `)
 
@@ -159,7 +172,9 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       href: '/product/' + p.slug.current,
       inStock: true,
       category: p.category,
-      collectionId: p.collection._ref
+      collectionId: p.collection._ref,
+      imgHotspot: p.images[0].hotspot,
+      imgLQIP: p.imagesLQIP[0]
     }
   })
 

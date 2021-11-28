@@ -82,7 +82,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                     tw`transition duration-500`,
                     imgRondell === i ? tw`opacity-100` : tw`opacity-0`
                 ]}>
-                  <Image src={urlFor(img).width(1342).height(1151).url()} layout="fill" objectFit="cover" objectPosition="50% 50%" alt={'Prodcut Image No.' + i} />
+                  <Image src={urlFor(img).width(1342).height(1151).url()} layout="fill" objectFit="cover" objectPosition={img.hotspot.x * 100 + '% ' + img.hotspot.y * 100 + '%'} alt={'Prodcut Image No.' + i} placeholder="blur" blurDataURL={product.imagesLQIP[i]} />
                 </div>
               ))
             }
@@ -217,7 +217,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         size,
         stock,
         stripePrice
-      }
+      },
+      'imagesLQIP': images[].asset->metadata.lqip
     }
   `)
 

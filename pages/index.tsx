@@ -1,13 +1,15 @@
 import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
-import MainImage from '@/assets/larry-george-ii-7hazmb7YznI-unsplash.jpg'
 import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineUserCircle, HiOutlineMenuAlt2 } from 'react-icons/hi'
 import Link from 'next/link'
 import SideMenu from '@/components/SideMenu'
-import { useState } from 'react'
+import { useState, useLayoutEffect, useRef } from 'react'
 import moment from 'moment-timezone'
 import client, { urlFor } from '@/lib/sanityClient'
+import Logo from '@/assets/vave-logo-head-fit.svg'
+import LogoInverted from '@/assets/vave-logo-head-fit-inverted.svg'
+import { gsap } from 'gsap'
 
 const footerLinks = [
   { title: 'Link1', href: '/' },
@@ -18,15 +20,27 @@ const footerLinks = [
 
 const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [menu, setMenu] = useState(false)
+  const svg = useRef(null)
+  const q = gsap.utils.selector(svg)
 
   const imgSrc = urlFor(page.mainImage).width(1920).height(1080).url()
+  
+  const objectPositionMainImage = () => {
+    return page.mainImage.hotspot.x * 100 + '% ' + page.mainImage.hotspot.y * 100 + '%'
+  }
+
+  useLayoutEffect(() => {
+    const tl = gsap.timeline({ defaults: { opacity: 0 } })
+    tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
+    tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
+  }, [])
 
   return (
     <>
       <SideMenu open={menu} close={setMenu} />
       <div css={tw`min-h-screen w-full grid`}>
         <div css={tw`grid-area[1/1/2/2] h-screen overflow-hidden`}>
-          <Image src={imgSrc} layout="fill" objectFit="cover" objectPosition="50% 50%" alt={page.mainImage.caption} priority={true} />
+          <Image src={imgSrc} layout="fill" objectFit="cover" objectPosition={objectPositionMainImage()} alt={page.mainImage.caption} priority={true} />
         </div>
         <div css={tw`grid-area[1/1/2/2] z-index[1]`}>
           <div css={[
@@ -36,7 +50,19 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
           ]}>
             <div css={tw`flex justify-between text-2xl items-center bg-white xl:bg-transparent px-6 py-3 xl:p-0`}>
               <div>
-                <span>Vave</span>
+                <span ref={svg}>
+                  <span css={tw`hidden xl:block`}>
+                    {
+                      page.mainImageFgColor === 'black' ?
+                      <Logo id="logo_head" />
+                      :
+                      <LogoInverted id="logo_head" />
+                    }
+                  </span>
+                  <span css={tw`block xl:hidden`}>
+                    <Logo id="logo_head" />
+                  </span>
+                </span>
               </div>
               <div css={tw`flex gap-4 items-center`}>
                 <span>
