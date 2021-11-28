@@ -1,7 +1,7 @@
 import tw from 'twin.macro'
 import { HiOutlineMenuAlt2, HiOutlineShoppingCart, HiOutlineUserCircle } from 'react-icons/hi'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useLayoutEffect, useRef } from 'react'
+import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from 'react'
 import Logo from '@/assets/vave-logo-head-fit.svg'
 import { gsap } from 'gsap'
 
@@ -10,13 +10,17 @@ interface navBarProps {
 }
 
 const NavBar = ({ openMenu }: navBarProps) => {
+  const [animationPlayed, setAnimationPlayed] = useState(false)
   const svg = useRef(null)
   const q = gsap.utils.selector(svg)
 
   useLayoutEffect(() => {
-    const tl = gsap.timeline({ defaults: { opacity: 0 } })
-    tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
-    tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
+    if(animationPlayed === false) {
+      const tl = gsap.timeline({ defaults: { opacity: 0 } })
+      tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
+      tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
+      setAnimationPlayed(true)
+    }
   }, [q])
 
   return (
