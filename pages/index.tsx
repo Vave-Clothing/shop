@@ -33,7 +33,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
     const tl = gsap.timeline({ defaults: { opacity: 0 } })
     tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
     tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
-  }, [])
+  }, [q])
 
   return (
     <>

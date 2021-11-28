@@ -55,7 +55,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   useEffect(() => {
     const defaultVariant = product.variants.findIndex((v:any) => v.isDefault === true)
     setSizeSelector(defaultVariant)
-  }, [])
+  }, [product.variants])
 
   return (
     <div css={tw`grid md:grid-template-columns[3fr 2fr] gap-4`}>
