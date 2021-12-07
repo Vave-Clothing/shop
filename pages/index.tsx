@@ -36,7 +36,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
     tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
     tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
     setAnimationPlayed(true)
-  }, [q])
+  }, [q, animationPlayed])
 
   return (
     <>

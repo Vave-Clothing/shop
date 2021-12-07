@@ -21,7 +21,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
       tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
       setAnimationPlayed(true)
     }
-  }, [q])
+  }, [q, animationPlayed])
 
   return (
     <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200 sticky top-0 z-40`}>
