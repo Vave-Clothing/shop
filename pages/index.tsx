@@ -22,6 +22,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
   const [menu, setMenu] = useState(false)
   const svg = useRef(null)
   const q = gsap.utils.selector(svg)
+  const [animationPlayed, setAnimationPlayed] = useState(false)
 
   const imgSrc = urlFor(page.mainImage).width(1920).height(1080).url()
   
@@ -30,9 +31,11 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
   }
 
   useLayoutEffect(() => {
+    if(animationPlayed === true) return
     const tl = gsap.timeline({ defaults: { opacity: 0 } })
     tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
     tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
+    setAnimationPlayed(true)
   }, [q])
 
   return (
