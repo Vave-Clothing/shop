@@ -1,9 +1,10 @@
 import tw from 'twin.macro'
 import { HiOutlineMenuAlt2, HiOutlineShoppingCart, HiOutlineUserCircle } from 'react-icons/hi'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState, useEffect } from 'react'
 import Logo from '@/assets/vave-logo-head-fit.svg'
 import { gsap } from 'gsap'
+import { useShoppingCart } from 'use-shopping-cart'
 
 interface navBarProps {
   openMenu: Dispatch<SetStateAction<boolean>>
@@ -13,6 +14,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
   const [animationPlayed, setAnimationPlayed] = useState(false)
   const svg = useRef(null)
   const q = gsap.utils.selector(svg)
+  const { cartCount } = useShoppingCart()
 
   useLayoutEffect(() => {
     if(animationPlayed === false) {
@@ -46,9 +48,12 @@ const NavBar = ({ openMenu }: navBarProps) => {
               </Link>
             </span>
             <span>
-              <Link href="/cart">
-                <a>
+              <Link href="/cart" passHref>
+                <a css={tw`relative`} href="/cart">
                   <HiOutlineShoppingCart />
+                  <span css={tw`h-4 min-width[1rem] px-1 bg-black rounded-full text-white text-xs block absolute top[2.25rem] right[-2rem] font-medium text-center`}>
+                    { cartCount || 0 }
+                  </span>
                   <span css={tw`sr-only`}>Einkaufswagen</span>
                 </a>
               </Link>

@@ -7,6 +7,7 @@ import { Transition } from '@headlessui/react'
 import { cx, css } from '@emotion/css'
 import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
+import { useShoppingCart } from 'use-shopping-cart'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -17,6 +18,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   const [imgRondell, setImgRondell] = useState(0)
   const [sizeSelector, setSizeSelector] = useState(0)
   const [fitGuide, setFitGuide] = useState(false)
+  const { addItem } = useShoppingCart()
 
   const changeImg = (direction: boolean) => {
     if(direction === true) {
@@ -45,11 +47,8 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }
 
   const addToCart = () => {
-    const alertBox = {
-      currentVariant: sizeSelector,
-      currentPriceId: product.variants[sizeSelector].stripePrice
-    }
-    alert(JSON.stringify(alertBox, null, 2))
+    const price = product.variants[sizeSelector].price * 100
+    addItem({id: product.variants[sizeSelector].stripePrice, price, currency: 'EUR', image: urlFor(product.images[0]).width(1920).height(1080).url(), name: product.title, size: product.variants[sizeSelector].size})
   }
 
   useEffect(() => {
