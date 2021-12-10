@@ -12,10 +12,8 @@ import LogoInverted from '@/assets/vave-logo-head-fit-inverted.svg'
 import { gsap } from 'gsap'
 
 const footerLinks = [
-  { title: 'Link1', href: '/' },
-  { title: 'Link2', href: '/' },
-  { title: 'Link3', href: '/' },
-  { title: 'Link4', href: '/' },
+  { title: 'AGBs', href: '/terms-of-service' },
+  { title: 'Datenschutz', href: '/privacy' },
 ]
 
 const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
@@ -53,19 +51,21 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
           ]}>
             <div css={tw`flex justify-between text-2xl items-center bg-white xl:bg-transparent px-6 py-3 xl:p-0`}>
               <div>
-                <span ref={svg}>
-                  <span css={tw`hidden xl:block`}>
-                    {
-                      page.mainImageFgColor === 'black' ?
+                <Link href="/shop" passHref>
+                  <a ref={svg} href="/shop">
+                    <span css={tw`hidden xl:block`}>
+                      {
+                        page.mainImageFgColor === 'black' ?
+                        <Logo id="logo_head" />
+                        :
+                        <LogoInverted id="logo_head" />
+                      }
+                    </span>
+                    <span css={tw`block xl:hidden`}>
                       <Logo id="logo_head" />
-                      :
-                      <LogoInverted id="logo_head" />
-                    }
-                  </span>
-                  <span css={tw`block xl:hidden`}>
-                    <Logo id="logo_head" />
-                  </span>
-                </span>
+                    </span>
+                  </a>
+                </Link>
               </div>
               <div css={tw`flex gap-4 items-center`}>
                 <span>

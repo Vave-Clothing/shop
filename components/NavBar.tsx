@@ -5,12 +5,14 @@ import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState, useEffect 
 import Logo from '@/assets/vave-logo-head-fit.svg'
 import { gsap } from 'gsap'
 import { useShoppingCart } from 'use-shopping-cart'
+import { useRouter } from 'next/router'
 
 interface navBarProps {
   openMenu: Dispatch<SetStateAction<boolean>>
 }
 
 const NavBar = ({ openMenu }: navBarProps) => {
+  const router = useRouter();
   const [animationPlayed, setAnimationPlayed] = useState(false)
   const svg = useRef(null)
   const q = gsap.utils.selector(svg)
@@ -31,8 +33,8 @@ const NavBar = ({ openMenu }: navBarProps) => {
         <div css={tw`flex justify-between text-2xl items-center px-6 py-3`}>
           <div>
             <span>
-              <Link href="/" passHref>
-                <a href="/" ref={svg}>
+              <Link href={router.pathname !== '/shop' ? '/shop' : '/'} passHref>
+                <a href={router.pathname !== '/shop' ? '/shop' : '/'} ref={svg}>
                   <Logo id="logo_head" />
                 </a>
               </Link>
