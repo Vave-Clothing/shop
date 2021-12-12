@@ -2,8 +2,9 @@ import type { NextPage } from 'next'
 import { HiOutlineArrowNarrowRight, HiOutlineMinus, HiOutlinePlus, HiOutlineX } from 'react-icons/hi'
 import tw from 'twin.macro'
 import { useShoppingCart } from 'use-shopping-cart'
-import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
 import Link from 'next/link'
+import Image from 'next/image'
+import toast from 'react-hot-toast'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -11,15 +12,34 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 })
 
 const Cart: NextPage = () => {
-  const { cartDetails, clearCart, incrementItem, decrementItem, removeItem, totalPrice } = useShoppingCart()
+  const { cartDetails, clearCart, incrementItem, decrementItem, removeItem, totalPrice, cartCount } = useShoppingCart()
 
   const cart = Object.keys(cartDetails).map((key) => {
-    const { id, quantity, image, name, price, size, value } = cartDetails[key]
-    return { priceId: id, quantity, image, name, price, size, value }
+    const { id, quantity, image, imageLQIP, name, price, size, value, stock, url } = cartDetails[key]
+    return { priceId: id, quantity, image, imageLQIP, name, price, size, value, stock, url }
   })
 
-  console.log(cart);
-  
+  const removeCartItem = (id: string) => {
+    toast.promise(
+      removeItem(id),
+      {
+        loading: 'Produkt wird entfernt...',
+        success: 'Produkt entfernt',
+        error: 'Da hat etwas nicht geklappt'
+      }
+    )
+  }
+
+  const emptyCart = () => {
+    toast.promise(
+      clearCart(),
+      {
+        loading: 'Produkte werden entfernt...',
+        success: 'Alles geleert',
+        error: 'Da hat etwas nicht geklappt'
+      }
+    )
+  }
 
   return (
     <div>
@@ -30,9 +50,18 @@ const Cart: NextPage = () => {
         {
           cart.map((i:any) => (
             <div css={tw`border-b border-gray-200 py-3 px-4 flex justify-between items-center`} key={i.priceId}>
-              <div css={tw`flex flex-col`}>
-                <span css={tw`text-xl font-medium leading-tight`}>{i.name}</span>
-                <span css={tw`leading-tight`}>Größe: { capitalizeFirstLetter(i.size) }</span>
+              <div css={tw`flex items-center gap-2`}>
+                <div css={tw`relative w-12 h-12 rounded overflow-hidden`}>
+                  <Image src={i.image} layout="fill" objectFit="cover" alt={i.name} placeholder="blur" blurDataURL={i.imageLQIP} />
+                </div>
+                <div>
+                  <Link href={i.url} passHref>
+                    <a href={i.url} css={tw`flex flex-col`}>
+                      <span css={tw`text-xl font-medium leading-tight`}>{i.name}</span>
+                      <span css={tw`leading-tight`}>Größe: { i.size.toUpperCase() }</span>
+                    </a>
+                  </Link>
+                </div>
               </div>
               <div css={tw`flex items-center gap-4`}>
                 <div css={tw`flex`}>
@@ -45,7 +74,8 @@ const Cart: NextPage = () => {
                   </button>
                   <span css={tw`w-8 h-8 flex items-center justify-center`}>{ i.quantity }</span>
                   <button
-                    css={tw`w-8 h-8 hover:bg-green-200 hover:text-green-500 rounded flex items-center justify-center transition duration-200`}
+                    css={tw`w-8 h-8 hover:bg-green-200 hover:text-green-500 rounded flex items-center justify-center transition duration-200 disabled:cursor-not-allowed disabled:hover:bg-green-50`}
+                    disabled={ i.quantity >= i.stock }
                     onClick={() => incrementItem(i.priceId)}
                   >
                     <HiOutlinePlus />
@@ -58,7 +88,7 @@ const Cart: NextPage = () => {
                   </span>
                   <button
                     css={tw`w-8 h-8 hover:text-red-500 rounded flex items-center justify-center transition duration-200`}
-                    onClick={() => removeItem(i.priceId)}
+                    onClick={() => removeCartItem(i.priceId)}
                   >
                     <HiOutlineX />
                   </button>
@@ -81,7 +111,10 @@ const Cart: NextPage = () => {
             </span>
           </div>
         }
-        <div css={tw`flex items-end justify-center mt-4 flex-col`}>
+        <div css={tw`flex justify-end`}>
+          <button css={tw`text-red-300 disabled:text-red-100`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
+        </div>
+        <div css={tw`flex items-end justify-center mt-3 flex-col`}>
           <span>
             <span css={tw`mr-4`}>Zwischensumme</span>
             <span css={tw`text-xl font-medium`}>

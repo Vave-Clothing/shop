@@ -9,6 +9,8 @@ import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
 import { useShoppingCart } from 'use-shopping-cart'
 import Stripe from 'stripe'
+import toast from 'react-hot-toast'
+import { useRouter } from 'next/router'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -16,6 +18,9 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 })
 
 const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const router = useRouter()
+  const { size } = router.query
+
   const [imgRondell, setImgRondell] = useState(0)
   const [sizeSelector, setSizeSelector] = useState(0)
   const [fitGuide, setFitGuide] = useState(false)
@@ -49,10 +54,34 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
 
   const addToCart = () => {
     const price = product.variants[sizeSelector].price
-    addItem({id: product.variants[sizeSelector].stripePrice, price, currency: 'EUR', image: urlFor(product.images[0]).width(1920).height(1080).url(), name: product.title, size: product.variants[sizeSelector].size})
+    
+    const item = {
+      id: product.variants[sizeSelector].stripePrice,
+      price,
+      currency: 'EUR',
+      image: urlFor(product.images[0]).width(1920).height(1080).url(),
+      imageLQIP: product.imagesLQIP[0],
+      name: product.title,
+      size: product.variants[sizeSelector].size,
+      stock: product.variants[sizeSelector].stock,
+      url: `/product/${product.slug}?size=${sizeSelector}`
+    }
+
+    toast.promise(
+      addItem(item),
+      {
+        loading: `${product.title} ${product.variants[sizeSelector].size.toUpperCase()} wird hinzugefügt...`,
+        success: `${product.title} ${product.variants[sizeSelector].size.toUpperCase()} hinzugefügt`,
+        error: 'Da ist etwas schief gelaufen'
+      }
+    )
   }
 
   useEffect(() => {
+    if(size && Number(size) < product.variants.length) {
+      setSizeSelector(Number(size))
+      return
+    }
     const defaultVariant = product.variants.findIndex((v:any) => v.isDefault === true)
     setSizeSelector(defaultVariant)
   }, [product.variants])
@@ -147,8 +176,11 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                     <span
                       css={[
                         tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
-                        sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`,
-                        v.stock < 1 ? tw`bg-red-100 cursor-not-allowed` : tw``
+                        
+                        v.stock < 1 ?
+                        sizeSelector === i ? tw`bg-red-200` : tw`bg-red-100 cursor-not-allowed hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-red-200)`
+                        :
+                        sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`
                       ]}
                       key={v._key}
                       onClick={() => {
@@ -247,7 +279,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
         stock,
         stripePrice
       },
-      'imagesLQIP': images[].asset->metadata.lqip
+      'imagesLQIP': images[].asset->metadata.lqip,
+      slug
     }
   `)
 
@@ -290,7 +323,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     tags: data[0].tags,
     title: data[0].title,
     variants: resolvedStripePrices,
-    imagesLQIP: data[0].imagesLQIP
+    imagesLQIP: data[0].imagesLQIP,
+    slug: data[0].slug.current
   }
 
   return {

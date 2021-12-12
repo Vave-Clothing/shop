@@ -1,4 +1,4 @@
-import tw, { GlobalStyles } from 'twin.macro'
+import tw, { GlobalStyles, theme } from 'twin.macro'
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 import NavBar from '@/components/NavBar'
@@ -7,6 +7,7 @@ import SideMenu from '@/components/SideMenu'
 import { useState, useEffect } from 'react'
 import getStripe from '@/lib/getStripeJs'
 import { CartProvider } from 'use-shopping-cart'
+import { Toaster } from 'react-hot-toast'
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -26,6 +27,31 @@ function MyApp({ Component, pageProps }: AppProps) {
         allowedCountries={['DE', 'CH', 'AT']}
       >
         <GlobalStyles />
+        <Toaster
+          reverseOrder={true}
+          toastOptions={{
+            success: {
+              iconTheme: {
+                primary: theme`colors.green.500`,
+                secondary: '#fff',
+              },
+            },
+
+            error: {
+              iconTheme: {
+                primary: theme`colors.red.500`,
+                secondary: '#fff',
+              },
+            },
+
+            loading: {
+              iconTheme: {
+                primary: theme`colors.gray.500`,
+                secondary: theme`colors.gray.200`,
+              },
+            }
+          }}
+        />
         {
           router.pathname === '/' &&
           <Component {...pageProps} />

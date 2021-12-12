@@ -31,11 +31,11 @@ const RadioButton = ({ title, value }: radioButtonProps) => {
     <RadioGroup.Option value={value} as={Fragment}>
       {({checked}) => (
         <div css={tw`flex items-center gap-1 cursor-pointer`}>
-            <span css={[
+            {/* <span css={[
               tw`w-4 h-4 block rounded-full ring ring-white ring-offset-1 ring-offset-black ring-inset transition duration-200`,
               checked ? tw`bg-black` : tw`bg-white`
-            ]}></span>
-          <span>{title}</span>
+            ]}></span> */}
+          <span css={[checked ? tw`font-semibold` : tw`font-normal`]}>{title}</span>
         </div>
       )}
     </RadioGroup.Option>
