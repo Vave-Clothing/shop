@@ -53,8 +53,8 @@ const Cart: NextPage = () => {
                 </div>
                 <div css={tw`flex items-center justify-center`}>
                   <span css={tw`flex flex-col items-center justify-center text-sm`}>
-                    <span>x { priceFormatter.format(i.price / 100) } EUR</span>
-                    <span css={tw`text-xs`}>{ priceFormatter.format(i.value / 100) } EUR</span>
+                    <span>x EUR { priceFormatter.format(i.price / 100) }</span>
+                    <span css={tw`text-xs`}>EUR { priceFormatter.format(i.value / 100) }</span>
                   </span>
                   <button
                     css={tw`w-8 h-8 hover:text-red-500 rounded flex items-center justify-center transition duration-200`}
@@ -85,19 +85,19 @@ const Cart: NextPage = () => {
           <span>
             <span css={tw`mr-4`}>Zwischensumme</span>
             <span css={tw`text-xl font-medium`}>
-              { priceFormatter.format(totalPrice / 100) } EUR
+              EUR { priceFormatter.format(totalPrice / 100) }
             </span>
           </span>
           <span>
             <span css={tw`mr-4`}>Lieferung</span>
             <span css={tw`text-xl font-medium`}>
-              { priceFormatter.format(0) } EUR
+              EUR { priceFormatter.format(0) }
             </span>
           </span>
           <span>
             <span css={tw`mr-4 text-lg`}>Gesamt (inkl. MwSt)</span>
             <span css={tw`text-2xl font-semibold`}>
-              { priceFormatter.format(totalPrice / 100) } EUR
+              EUR { priceFormatter.format(totalPrice / 100) }
             </span>
           </span>
         </div>

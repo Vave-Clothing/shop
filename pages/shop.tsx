@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Fragment, useState, useRef, useEffect } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import client, { urlFor } from '@/lib/sanityClient'
+import Stripe from 'stripe'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -114,14 +115,22 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
                   </span>
                 </div>
                 <div css={tw`flex flex-col`}>
-                  <span css={tw`text-sm font-light`}>Preis</span>
+                  <span css={tw`text-sm font-light`}>
+                    Preis
+                    {
+                      !product.inStock &&
+                      <span css={tw`ml-1 inline-flex gap-1 items-center justify-center text-xs`}><span>–</span><span css={tw`text-red-400`}>Manche Größen sind ausverkauft</span></span>
+                    }
+                  </span>
                   <span css={tw`font-medium text-lg flex items-center gap-1.5`}>
-                    <span css={[product.inStock ? '' : tw`text-gray-500 line-through text-sm`]}>
+                    <span>
                       EUR { priceFormatter.format(product.price / 100) }
                     </span>
                     {
-                      !product.inStock &&
-                      <span css={tw`text-red-500`}>OUT OF STOCK</span>
+                      product.price !== product.defaultPrice &&
+                      <span css={tw`text-sm font-light line-through text-red-400`}>
+                        EUR { priceFormatter.format(product.defaultPrice / 100) }
+                      </span>
                     }
                   </span>
                 </div>
@@ -142,6 +151,10 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
 export default Shop
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const stripe = new Stripe(process.env.STRIPE_SK!, {
+    apiVersion: '2020-08-27',
+  })
+
   const products = await client.fetch(`
     *[_type == "product"]{
       _id,
@@ -157,26 +170,35 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   `)
 
-  const formattedProducts = products.map((p:any) => {
+  const formattedProducts = await Promise.all(products.map(async (p:any) => {
     const main = p.variants.find((v:any) => v.isDefault === true)
     const img = urlFor(p.images[0]).width(640).height(640).url()
 
-    // TODO: Stock message for under 5
+    const stock = p.variants.map((v:any) => {
+      return v.stock
+    })
+    const emtpyStock = () => {
+      if (stock.find((s:number) => s < 1) !== undefined) return false
+      return true
+    }
+
+    const cPrice = await (await stripe.prices.retrieve(main.stripePrice)).unit_amount
 
     return {
       title: p.title,
       img: img,
-      price: main.price * 100,
+      price: cPrice,
+      defaultPrice: main.price * 100,
       stars: 5,
       fBCount: 5,
       href: '/product/' + p.slug.current,
-      inStock: true,
+      inStock: emtpyStock(),
       category: p.category,
       collectionId: p.collection._ref,
       imgHotspot: p.images[0].hotspot,
       imgLQIP: p.imagesLQIP[0]
     }
-  })
+  }))
 
   const collections = await client.fetch(`
     *[_type == "collection"]{

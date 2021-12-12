@@ -2,12 +2,13 @@ import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from '
 import tw from 'twin.macro'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineShoppingCart } from 'react-icons/hi'
+import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
 import { Transition } from '@headlessui/react'
 import { cx, css } from '@emotion/css'
 import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
 import { useShoppingCart } from 'use-shopping-cart'
+import Stripe from 'stripe'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -47,7 +48,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }
 
   const addToCart = () => {
-    const price = product.variants[sizeSelector].price * 100
+    const price = product.variants[sizeSelector].price
     addItem({id: product.variants[sizeSelector].stripePrice, price, currency: 'EUR', image: urlFor(product.images[0]).width(1920).height(1080).url(), name: product.title, size: product.variants[sizeSelector].size})
   }
 
@@ -114,18 +115,47 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
             </span>
           </div>
           <div css={tw`mt-4`}>
-            <span css={tw`text-red-500 line-through text-sm font-light`}>EUR { priceFormatter.format(product.variants[sizeSelector].price) }</span>
-            <h2 css={tw`text-xl font-medium`}>EUR { priceFormatter.format(product.variants[sizeSelector].price) }</h2>
+            {
+              product.variants[sizeSelector].isDifferent &&
+              <span css={tw`text-red-500 line-through text-sm font-light block`}>EUR { priceFormatter.format(product.variants[sizeSelector].price / 100) }</span>
+            }
+            <h2 css={tw`text-xl font-medium`}>EUR { priceFormatter.format(product.variants[sizeSelector].resPrice / 100) }</h2>
+            {(() => {
+              const val = product.variants[sizeSelector].stock
+
+              switch (true) {
+                case ( val > 5 ):
+                  return (
+                    <span css={tw`flex leading-tight items-center text-green-500 gap-1 text-sm`}><HiOutlineCheck /> Lieferbar</span>
+                  )
+                case ( val <= 5 && val > 0 ):
+                  return (
+                    <span css={tw`flex leading-tight items-center text-yellow-500 gap-1 text-sm`}><HiOutlineCube /> Noch { val } auf Lager</span>
+                  )
+                case ( val < 1 ):
+                  return (
+                    <span css={tw`flex leading-tight items-center text-red-500 gap-1 text-sm`}><HiOutlineX /> Nicht Lieferbar</span>
+                  )
+              }
+            })()}
           </div>
           <div css={tw`mt-4`}>
             <div css={tw`flex items-center gap-2 flex-wrap`}>
               <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm`}>
                 {
                   product.variants.map((v:any, i:number) => (
-                    <span css={[
-                      tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
-                      sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`
-                    ]} key={v._key} onClick={() => setSizeSelector(i)}>
+                    <span
+                      css={[
+                        tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
+                        sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`,
+                        v.stock < 1 ? tw`bg-red-100 cursor-not-allowed` : tw``
+                      ]}
+                      key={v._key}
+                      onClick={() => {
+                        if(v.stock < 1) return
+                        setSizeSelector(i)
+                      }}
+                    >
                       {v.size}
                     </span>
                   ))
@@ -221,9 +251,51 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     }
   `)
 
+  const resolvedStripePrices = await Promise.all(data[0].variants.map(async (v:any) => {
+    const stripe = new Stripe(process.env.STRIPE_SK!, {
+      apiVersion: '2020-08-27',
+    })
+
+    const { _key, isDefault, isModel, mesurements, price, size, stock, stripePrice } = v
+
+    const defaultPrice = price * 100
+    const resPrice = await (await stripe.prices.retrieve(stripePrice)).unit_amount
+
+    const isDifferent = () => {
+      if(defaultPrice !== resPrice) return true
+      return false
+    }
+
+    return {
+      _key,
+      isDefault,
+      isModel,
+      mesurements,
+      price: defaultPrice,
+      size,
+      stock,
+      stripePrice,
+      resPrice,
+      isDifferent: isDifferent()
+    }
+  }))
+
+  const formattedData = {
+    _id: data[0]._id,
+    blurb: data[0].blurb,
+    body: data[0].body,
+    category: data[0].category,
+    collection: data[0].collection,
+    images: data[0].images,
+    tags: data[0].tags,
+    title: data[0].title,
+    variants: resolvedStripePrices,
+    imagesLQIP: data[0].imagesLQIP
+  }
+
   return {
     props: {
-      product: data[0]
+      product: formattedData
     }
   }
 }
