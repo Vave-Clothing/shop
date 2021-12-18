@@ -53,7 +53,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }
 
   const addToCart = () => {
-    const price = product.variants[sizeSelector].price
+    const price = product.variants[sizeSelector].resPrice
     
     const item = {
       id: product.variants[sizeSelector].stripePrice,
