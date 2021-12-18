@@ -112,7 +112,7 @@ const Cart: NextPage = () => {
                     </span>
                     <button
                       css={tw`w-8 h-8 hover:text-red-500 rounded flex items-center justify-center transition duration-200`}
-                      onClick={() => removeItem(id)}
+                      onClick={() => removeItem(i.priceId)}
                     >
                       <HiOutlineX />
                     </button>

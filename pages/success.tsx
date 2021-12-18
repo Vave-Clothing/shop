@@ -25,7 +25,7 @@ const Success: NextPage = () => {
       clearCart()
       shootFireworks()
     }
-  }, [data])
+  }, [data, clearCart])
 
   return (
     <div css={tw`flex items-center flex-col gap-3`}>

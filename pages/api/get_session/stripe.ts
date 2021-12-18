@@ -11,7 +11,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === 'GET') {
-    const id: string = req.query.id
+    const id: string = req.query.id.toString()
 
     try {
       if(!startsWith(id, 'cs_')) {
