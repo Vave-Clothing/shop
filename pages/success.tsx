@@ -3,7 +3,7 @@ import tw, { theme } from 'twin.macro'
 import useSWR from 'swr'
 import fetcher from '@/lib/fetcher'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { HiOutlineCheck, HiOutlineX, HiOutlineArrowNarrowRight } from 'react-icons/hi'
 import { useShoppingCart } from 'use-shopping-cart'
 import Link from 'next/link'
@@ -17,15 +17,17 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 const Success: NextPage = () => {
   const { query: { sid } } = useRouter()
   const { clearCart } = useShoppingCart()
+  const [statusComplete, setStatusComplete] = useState(false)
 
   const { data, error } = useSWR('/api/get_session/stripe?id=' + sid, fetcher)
 
   useEffect(() => {
-    if(data?.status === 'complete') {
+    if(data?.status === 'complete' && statusComplete === false) {
       clearCart()
       shootFireworks()
+      setStatusComplete(true)
     }
-  }, [data, clearCart])
+  }, [data, clearCart, statusComplete])
 
   return (
     <div css={tw`flex items-center flex-col gap-3`}>

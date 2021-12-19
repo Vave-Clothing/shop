@@ -2,7 +2,7 @@ import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from '
 import tw from 'twin.macro'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
+import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCreditCard, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
 import { Transition } from '@headlessui/react'
 import { cx, css } from '@emotion/css'
 import client, { urlFor } from '@/lib/sanityClient'
@@ -11,6 +11,8 @@ import { useShoppingCart } from 'use-shopping-cart'
 import Stripe from 'stripe'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
+import axios from 'axios'
+import Button from '@/components/Button'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -25,6 +27,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   const [sizeSelector, setSizeSelector] = useState(0)
   const [fitGuide, setFitGuide] = useState(false)
   const { addItem } = useShoppingCart()
+  const [loadingSession, setLoadingSession] = useState(false)
 
   const changeImg = (direction: boolean) => {
     if(direction === true) {
@@ -75,6 +78,13 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
         error: 'Da ist etwas schief gelaufen'
       }
     )
+  }
+
+  const buyNow = async () => {
+    setLoadingSession(true)
+    const data = await axios.post('/api/checkout_sessions/stripe', { cart: [ { id: product.variants[sizeSelector].stripePrice, quantity: 1 } ], cancelUrl: `/product/${product.slug}?size=${sizeSelector}` }).then(res => res.data)
+    setLoadingSession(false)
+    window.location = data.url
   }
 
   useEffect(() => {
@@ -243,10 +253,20 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                 <span css={tw`block mt-2 text-sm font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
               </div>
             </Transition>
-            <button css={tw`border border-gray-300 bg-gray-50 py-1 px-4 rounded-lg mt-3 flex items-center gap-2 text-lg`} onClick={() => addToCart()}>
-              <HiOutlineShoppingCart />
-              <span>Add to Cart</span>
-            </button>
+            <div css={tw`flex gap-2 flex-wrap`}>
+              <Button onClick={() => addToCart()} type='primary' shimmering={true}>
+                <>
+                  <HiOutlineShoppingCart />
+                  <span>Add to Cart</span>
+                </>
+              </Button>
+              <Button type='secondary' onClick={() => buyNow()} loading={loadingSession} adCss={tw`w-[10.4rem]`}>
+                <>
+                  <HiOutlineCreditCard />
+                  <span>Jetzt kaufen</span>
+                </>
+              </Button>
+            </div>
           </div>
         </div>
       </div>

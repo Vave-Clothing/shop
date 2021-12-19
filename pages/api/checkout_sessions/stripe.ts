@@ -21,11 +21,12 @@ export default async function handler(
         payment_method_types: [ 'card', 'sepa_debit', 'giropay', 'sofort', 'klarna' ],
         line_items: cartItems,
         success_url: `${req.headers.origin}/success?sid={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.origin}/cart`,
+        cancel_url: req.body.cancelUrl ? req.headers.origin + req.body.cancelUrl : `${req.headers.origin}/cart`,
         shipping_address_collection: {
           allowed_countries: [ 'DE', 'CH', 'AT' ],
         },
-        locale: 'de'
+        locale: 'de',
+        submit_type: 'pay',
       }
       const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create(params)
 
