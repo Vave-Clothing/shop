@@ -18,7 +18,7 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading 
       css={[
         tw`px-4 py-1 rounded-lg mt-3 flex items-center justify-center gap-1 text-lg transition duration-200 font-medium shadow relative overflow-hidden h-9 whitespace-nowrap`,
         type === "primary" ? tw`bg-indigo-500 hover:bg-indigo-400 text-white disabled:(bg-indigo-400 cursor-not-allowed)` :
-        type === "secondary" ? tw`border border-indigo-500 hover:(bg-indigo-400 text-white border-indigo-400) disabled:(border-indigo-400 cursor-not-allowed)` :
+        type === "secondary" ? tw`border border-indigo-500 text-current bg-transparent hover:(bg-indigo-400 text-white border-indigo-400) disabled:(border-indigo-400 bg-transparent text-current cursor-not-allowed)` :
         tw`border border-gray-200 hover:(border-gray-300) disabled:(border-gray-100 text-gray-500 cursor-not-allowed)`,
         adCss ? adCss : tw``
       ]}
