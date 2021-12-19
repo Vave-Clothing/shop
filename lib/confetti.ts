@@ -39,4 +39,25 @@ const shootFireworks = () => {
   }, 350)
 }
 
-export { shootFireworks, shootFireworks as default }
+const shootConfettiCorner = () => {
+  const corners = [
+    { origin: { x: 0, y: 0 }, angle: -45 },
+    { origin: { x: 0, y: 1 }, angle: 45 },
+    { origin: { x: 1, y: 0 }, angle: -135 },
+    { origin: { x: 1, y: 1 }, angle: 135 },
+  ]
+
+  const randCorner = () => {
+    const rand = Math.floor(Math.random() * 4)
+    return corners[rand]
+  }
+  
+  confetti(
+    Object.assign({}, randCorner(), {
+      spread: 90,
+      zIndex: 0
+    })
+  )
+}
+
+export { shootFireworks, shootConfettiCorner as default, shootConfettiCorner }
