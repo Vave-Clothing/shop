@@ -5,7 +5,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gray: colors.neutral
+        gray: colors.neutral,
+        primary: colors.indigo,
       },
       fontFamily: {
         display: ['Poppins', 'sans-serif'],
@@ -22,6 +23,9 @@ module.exports = {
       },
       animation: {
         shimmer: 'shimmer 4s linear infinite 2s'
+      },
+      ringWidth: {
+        '3': '3px',
       },
     },
     borderWidth: {

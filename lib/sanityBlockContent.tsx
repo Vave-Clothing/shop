@@ -56,7 +56,7 @@ const serializers = (props: any) => {
 
 const linkSerializer = (props: any) => {
   return (
-    <a href={props.mark.href} rel="noopener noreferrer" target="_blank" css={tw`transition border-b-2 border-dotted border-gray-200 hover:border-gray-300`}>
+    <a href={props.mark.href} rel="noopener noreferrer" target="_blank" css={tw`transition border-b-2 border-dotted border-primary-400 hover:border-primary-300`}>
       {props.children}
     </a>
   )

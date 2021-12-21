@@ -125,7 +125,7 @@ const Cart: NextPage = () => {
             cart.length < 1 &&
             <div css={tw`border-b border-gray-200 py-3 px-4 flex items-center gap-4`}>
               <span css={tw`text-xl font-medium`}>Keine Gegenstände im Einkaufswagen</span>
-              <span css={tw`text-indigo-500 hover:text-indigo-400 transition duration-200`}>
+              <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200`}>
                 <Link href="/shop" passHref>
                   <a href="/shop" css={tw`flex items-center gap-1`}>
                     <span>Einkaufen</span>
@@ -167,7 +167,7 @@ const Cart: NextPage = () => {
               </div>
             </div>
             <div css={tw`flex mt-4`}>
-              <button css={tw`text-indigo-400 disabled:(text-indigo-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
+              <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
             </div>
           </div>
         </div>

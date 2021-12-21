@@ -97,175 +97,177 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }, [product.variants, size])
 
   return (
-    <div css={tw`grid md:grid-template-columns[3fr 2fr] gap-4`}>
-      <div css={tw`grid`} className="group">
-        <div css={tw`flex flex-col items-center grid-area[1/1/2/2]`}>
-          <div css={tw`md:height[48rem] height[24rem] w-full relative rounded-xl overflow-hidden`}>
-            <div css={tw`absolute top-1/2 left-0 right-0 transform -translate-y-1/2 md:flex items-center justify-between opacity-0 group-hover:opacity-100 transition duration-200 z-index[+1] px-2 hidden`}>
-              <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(false)}>
-                <HiOutlineArrowLeft />
-              </div>
-              <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(true)}>
-                <HiOutlineArrowRight />
-              </div>
-            </div>
-            <div css={tw`absolute top-0 left-0 bottom-0 right-0 z-index[+1] grid grid-cols-2 md:gap-16 gap-8 md:hidden`}>
-              <div css={tw`cursor-pointer`} onClick={() => changeImg(false)}></div>
-              <div css={tw`cursor-pointer`} onClick={() => changeImg(true)}></div>
-            </div>
-            {
-              product.images.map((img:any, i:number) => (
-                <div
-                  key={i}
-                  css={[
-                    tw`transition duration-500`,
-                    imgRondell === i ? tw`opacity-100` : tw`opacity-0`
-                ]}>
-                  <Image src={urlFor(img).width(1342).height(1151).url()} layout="fill" objectFit="cover" objectPosition={img.hotspot.x * 100 + '% ' + img.hotspot.y * 100 + '%'} alt={'Prodcut Image No.' + i} placeholder="blur" blurDataURL={product.imagesLQIP[i]} />
+    <div>
+      <div css={tw`grid md:grid-template-columns[3fr 2fr] gap-4`}>
+        <div css={tw`grid`} className="group">
+          <div css={tw`flex flex-col items-center grid-area[1/1/2/2]`}>
+            <div css={tw`md:height[48rem] height[24rem] w-full relative rounded-xl overflow-hidden`}>
+              <div css={tw`absolute top-1/2 left-0 right-0 transform -translate-y-1/2 md:flex items-center justify-between opacity-0 group-hover:opacity-100 transition duration-200 z-index[+1] px-2 hidden`}>
+                <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(false)}>
+                  <HiOutlineArrowLeft />
                 </div>
-              ))
-            }
-          </div>
-        </div>
-        <div css={tw`grid-area[1/1/2/2] relative`}>
-          <div css={tw`absolute bottom-1 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1.5 opacity-75 hover:opacity-100 transition duration-300 z-index[+1]`}>
-            {
-              product.images.map((_:any, i:number) => (
-                <div css={[
-                  tw`w-4 h-4 ring-4 ring-white ring-inset rounded-full transition duration-300 cursor-pointer`,
-                  i === imgRondell ? tw`bg-black` : tw`bg-white`
-                ]} onClick={() => changeImgSpecific(i)} key={i}></div>
-              ))
-            }
-          </div>
-        </div>
-      </div>
-      <div css={tw`relative`}>
-        <div css={tw`md:(absolute top-1/2 left[12.5%] transform -translate-y-1/2)`}>
-          <div>
-            <span css={tw`text-sm font-light`}>
-              { capitalizeFirstLetter(product.category) } &ndash; { product.collection.name }
-            </span>
-            <h1 css={tw`text-3xl font-semibold`}>
-              { product.title }
-            </h1>
-            <span>
-              { product.blurb }
-            </span>
-          </div>
-          <div css={tw`mt-4`}>
-            {
-              product.variants[sizeSelector].isDifferent &&
-              <span css={tw`text-red-500 line-through text-sm font-light block`}>EUR { priceFormatter.format(product.variants[sizeSelector].price / 100) }</span>
-            }
-            <h2 css={tw`text-xl font-medium`}>EUR { priceFormatter.format(product.variants[sizeSelector].resPrice / 100) }</h2>
-            {(() => {
-              const val = product.variants[sizeSelector].stock
-
-              switch (true) {
-                case ( val > 5 ):
-                  return (
-                    <span css={tw`flex leading-tight items-center text-green-500 gap-1 text-sm`}><HiOutlineCheck /> Lieferbar</span>
-                  )
-                case ( val <= 5 && val > 0 ):
-                  return (
-                    <span css={tw`flex leading-tight items-center text-yellow-500 gap-1 text-sm`}><HiOutlineCube /> Noch { val } auf Lager</span>
-                  )
-                case ( val < 1 ):
-                  return (
-                    <span css={tw`flex leading-tight items-center text-red-500 gap-1 text-sm`}><HiOutlineX /> Nicht Lieferbar</span>
-                  )
+                <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(true)}>
+                  <HiOutlineArrowRight />
+                </div>
+              </div>
+              <div css={tw`absolute top-0 left-0 bottom-0 right-0 z-index[+1] grid grid-cols-2 md:gap-16 gap-8 md:hidden`}>
+                <div css={tw`cursor-pointer`} onClick={() => changeImg(false)}></div>
+                <div css={tw`cursor-pointer`} onClick={() => changeImg(true)}></div>
+              </div>
+              {
+                product.images.map((img:any, i:number) => (
+                  <div
+                    key={i}
+                    css={[
+                      tw`transition duration-500`,
+                      imgRondell === i ? tw`opacity-100` : tw`opacity-0`
+                  ]}>
+                    <Image src={urlFor(img).width(1342).height(1151).url()} layout="fill" objectFit="cover" objectPosition={img.hotspot.x * 100 + '% ' + img.hotspot.y * 100 + '%'} alt={'Prodcut Image No.' + i} placeholder="blur" blurDataURL={product.imagesLQIP[i]} />
+                  </div>
+                ))
               }
-            })()}
-          </div>
-          <div css={tw`mt-4`}>
-            <div css={tw`flex items-center gap-2 flex-wrap`}>
-              <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm`}>
-                {
-                  product.variants.map((v:any, i:number) => (
-                    <span
-                      css={[
-                        tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
-                        
-                        v.stock < 1 ?
-                        sizeSelector === i ? tw`bg-red-200` : tw`bg-red-100 cursor-not-allowed hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-red-200)`
-                        :
-                        sizeSelector === i ? tw`bg-gray-200` : tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-200)`
-                      ]}
-                      key={v._key}
-                      onClick={() => {
-                        if(v.stock < 1) return
-                        setSizeSelector(i)
-                      }}
-                    >
-                      {v.size}
-                    </span>
-                  ))
-                }
-              </div>
-              <button css={tw`flex items-center gap-1 border border-gray-200 rounded-lg px-3 py-1`} onClick={() => setFitGuide(!fitGuide)}>
-                <span css={[tw`transition duration-300 transform`, fitGuide ? tw`rotate-180` : tw`rotate-0`]}>
-                  <HiOutlineArrowDown />
-                </span>
-                <span>Fit-Guide</span>
-              </button>
             </div>
-            <Transition
-              show={fitGuide}
-              {...{
-                enter: cx(css(tw`transition-opacity duration-300`)),
-                enterFrom: cx(css(tw`opacity-0`)),
-                enterTo: cx(css(tw`opacity-100`)),
-              }}
-            >
-              <div css={tw`border border-gray-100 rounded-lg mt-1 px-2 py-1`}>
-                <span css={tw`mb-1 block`}>Fit-Guide</span>
-                <table css={tw`w-full border-collapse text-sm`}>
-                  <tbody>
-                    <tr css={tw`border-b border-gray-100`}>
-                      <th css={tw`text-xs font-normal text-left`}>in cm</th>
-                      {
-                        product.variants.map((v:any, i:number) => (
-                          <th key={v._key} css={tw`font-normal uppercase text-center`}>
-                            {v.size}
-                          </th>
-                        ))
-                      }
-                    </tr>
-                    <tr css={tw`border-b border-gray-100`}>
-                      <td css={tw`font-normal uppercase`}>Chest</td>
-                      {
-                        product.variants.map((v:any, i:number) => (
-                          <td key={v._key}>{v.mesurements.chest}</td>
-                        ))
-                      }
-                    </tr>
-                    <tr>
-                      <td css={tw`font-normal uppercase`}>Waist</td>
-                      {
-                        product.variants.map((v:any, i:number) => (
-                          <td key={v._key}>{v.mesurements.waist}</td>
-                        ))
-                      }
-                    </tr>
-                  </tbody>
-                </table>
-                <span css={tw`block mt-2 text-sm font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
+          </div>
+          <div css={tw`grid-area[1/1/2/2] relative`}>
+            <div css={tw`absolute bottom-1 left-1/2 transform -translate-x-1/2 flex items-center justify-center gap-1.5 opacity-75 hover:opacity-100 transition duration-300 z-index[+1]`}>
+              {
+                product.images.map((_:any, i:number) => (
+                  <div css={[
+                    tw`w-4 h-4 ring-4 ring-white ring-inset rounded-full transition duration-300 cursor-pointer`,
+                    i === imgRondell ? tw`bg-black` : tw`bg-white`
+                  ]} onClick={() => changeImgSpecific(i)} key={i}></div>
+                ))
+              }
+            </div>
+          </div>
+        </div>
+        <div css={tw`relative`}>
+          <div css={tw`md:(absolute top-1/2 left[12.5%] transform -translate-y-1/2)`}>
+            <div>
+              <span css={tw`text-sm font-light`}>
+                { capitalizeFirstLetter(product.category) } &ndash; { product.collection.name }
+              </span>
+              <h1 css={tw`text-3xl font-semibold`}>
+                { product.title }
+              </h1>
+              <span>
+                { product.blurb }
+              </span>
+            </div>
+            <div css={tw`mt-4`}>
+              {
+                product.variants[sizeSelector].isDifferent &&
+                <span css={tw`text-red-500 line-through text-sm font-light block`}>EUR { priceFormatter.format(product.variants[sizeSelector].price / 100) }</span>
+              }
+              <h2 css={tw`text-xl font-medium`}>EUR { priceFormatter.format(product.variants[sizeSelector].resPrice / 100) }</h2>
+              {(() => {
+                const val = product.variants[sizeSelector].stock
+                switch (true) {
+                  case ( val > 5 ):
+                    return (
+                      <span css={tw`flex leading-tight items-center text-green-500 gap-1 text-sm`}><HiOutlineCheck /> Lieferbar</span>
+                    )
+                  case ( val <= 5 && val > 0 ):
+                    return (
+                      <span css={tw`flex leading-tight items-center text-yellow-500 gap-1 text-sm`}><HiOutlineCube /> Noch { val } auf Lager</span>
+                    )
+                  case ( val < 1 ):
+                    return (
+                      <span css={tw`flex leading-tight items-center text-red-500 gap-1 text-sm`}><HiOutlineX /> Nicht Lieferbar</span>
+                    )
+                }
+              })()}
+            </div>
+            <div css={tw`mt-4`}>
+              <div css={tw`flex items-center gap-2 flex-wrap`}>
+                <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm shadow-sm mt-3 h-9`}>
+                  {
+                    product.variants.map((v:any, i:number) => (
+                      <button
+                        css={[
+                          tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
+                          tw`focus:outline-none focus-visible:(ring-2 ring-gray-400)`,
+                          tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-300)`,
+                          tw`disabled:(bg-red-100 cursor-not-allowed hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-red-300))`,
+                          sizeSelector === i ? tw`bg-gray-200 disabled:bg-red-200` : tw``,
+                        ]}
+                        key={v._key}
+                        onClick={() => {
+                          setSizeSelector(i)
+                        }}
+                        disabled={v.stock < 1}
+                      >
+                        {v.size}
+                      </button>
+                    ))
+                  }
+                </div>
+                <Button onClick={() => setFitGuide(!fitGuide)} size='small'>
+                  <>
+                    <span css={[tw`transition duration-300 transform`, fitGuide ? tw`rotate-180` : tw`rotate-0`]}>
+                      <HiOutlineArrowDown />
+                    </span>
+                    <span>Fit-Guide</span>
+                  </>
+                </Button>
               </div>
-            </Transition>
-            <div css={tw`flex gap-2 flex-wrap`}>
-              <Button onClick={() => addToCart()} type='primary' shimmering={true}>
-                <>
-                  <HiOutlineShoppingCart />
-                  <span>Add to Cart</span>
-                </>
-              </Button>
-              <Button type='secondary' onClick={() => buyNow()} loading={loadingSession} adCss={tw`w-[10.4rem]`}>
-                <>
-                  <HiOutlineCreditCard />
-                  <span>Jetzt kaufen</span>
-                </>
-              </Button>
+              <Transition
+                show={fitGuide}
+                {...{
+                  enter: cx(css(tw`transition-opacity duration-300`)),
+                  enterFrom: cx(css(tw`opacity-0`)),
+                  enterTo: cx(css(tw`opacity-100`)),
+                }}
+              >
+                <div css={tw`border border-gray-200 rounded-lg mt-1 px-2 py-1 shadow-sm`}>
+                  <span css={tw`mb-1 block`}>Fit-Guide</span>
+                  <table css={tw`w-full border-collapse text-sm`}>
+                    <tbody>
+                      <tr css={tw`border-b border-gray-100`}>
+                        <th css={tw`text-xs font-normal text-left`}>in cm</th>
+                        {
+                          product.variants.map((v:any, i:number) => (
+                            <th key={v._key} css={tw`font-normal uppercase text-center`}>
+                              {v.size}
+                            </th>
+                          ))
+                        }
+                      </tr>
+                      <tr css={tw`border-b border-gray-100`}>
+                        <td css={tw`font-normal uppercase`}>Chest</td>
+                        {
+                          product.variants.map((v:any, i:number) => (
+                            <td key={v._key}>{v.mesurements.chest}</td>
+                          ))
+                        }
+                      </tr>
+                      <tr>
+                        <td css={tw`font-normal uppercase`}>Waist</td>
+                        {
+                          product.variants.map((v:any, i:number) => (
+                            <td key={v._key}>{v.mesurements.waist}</td>
+                          ))
+                        }
+                      </tr>
+                    </tbody>
+                  </table>
+                  <span css={tw`block mt-2 text-sm font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
+                </div>
+              </Transition>
+              <div css={tw`flex gap-2 flex-wrap`}>
+                <Button onClick={() => addToCart()} type='primary' shimmering={true}>
+                  <>
+                    <HiOutlineShoppingCart />
+                    <span>Add to Cart</span>
+                  </>
+                </Button>
+                <Button type='secondary' onClick={() => buyNow()} loading={loadingSession} adCss={tw`w-[10.4rem]`}>
+                  <>
+                    <HiOutlineCreditCard />
+                    <span>Jetzt kaufen</span>
+                  </>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
