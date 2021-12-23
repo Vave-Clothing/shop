@@ -1,10 +1,8 @@
 import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCreditCard, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
-import { Transition } from '@headlessui/react'
-import { cx, css } from '@emotion/css'
 import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
 import { useShoppingCart } from 'use-shopping-cart'
@@ -13,6 +11,8 @@ import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import Button from '@/components/Button'
+import serializers from '@/lib/sanityBlockContent'
+import BlockContent from '@sanity/block-content-to-react'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -25,9 +25,9 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
 
   const [imgRondell, setImgRondell] = useState(0)
   const [sizeSelector, setSizeSelector] = useState(0)
-  const [fitGuide, setFitGuide] = useState(false)
   const { addItem } = useShoppingCart()
   const [loadingSession, setLoadingSession] = useState(false)
+  const detailsEl = useRef<HTMLHeadingElement>(null)
 
   const changeImg = (direction: boolean) => {
     if(direction === true) {
@@ -85,6 +85,31 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
     const data = await axios.post('/api/checkout_sessions/stripe', { cart: [ { id: product.variants[sizeSelector].stripePrice, quantity: 1 } ], cancelUrl: `/product/${product.slug}?size=${sizeSelector}` }).then(res => res.data)
     setLoadingSession(false)
     window.location = data.url
+  }
+
+  const getDetailsElTopPosition = () => {
+    const rect = detailsEl.current?.getBoundingClientRect()
+    return rect?.top
+  }
+
+  const scrollToDetails = () => {
+    const top = Number(getDetailsElTopPosition())
+    const app = document.getElementById('app')
+    const navBar = document.getElementById('navBar')
+
+    if(app?.scrollTop !== 0) return
+    if(document.body.offsetWidth < 1280) {
+      window.scrollTo({
+        left: 0,
+        top: top - Number(navBar?.offsetHeight) - 10,
+        behavior: 'smooth'
+      })
+    }
+    app.scrollTo({
+      left: 0,
+      top: top - Number(navBar?.offsetHeight) - 10,
+      behavior: 'smooth'
+    })
   }
 
   useEffect(() => {
@@ -202,58 +227,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                     ))
                   }
                 </div>
-                <Button onClick={() => setFitGuide(!fitGuide)} size='small'>
-                  <>
-                    <span css={[tw`transition duration-300 transform`, fitGuide ? tw`rotate-180` : tw`rotate-0`]}>
-                      <HiOutlineArrowDown />
-                    </span>
-                    <span>Fit-Guide</span>
-                  </>
-                </Button>
               </div>
-              <Transition
-                show={fitGuide}
-                {...{
-                  enter: cx(css(tw`transition-opacity duration-300`)),
-                  enterFrom: cx(css(tw`opacity-0`)),
-                  enterTo: cx(css(tw`opacity-100`)),
-                }}
-              >
-                <div css={tw`border border-gray-200 rounded-lg mt-1 px-2 py-1 shadow-sm`}>
-                  <span css={tw`mb-1 block`}>Fit-Guide</span>
-                  <table css={tw`w-full border-collapse text-sm`}>
-                    <tbody>
-                      <tr css={tw`border-b border-gray-100`}>
-                        <th css={tw`text-xs font-normal text-left`}>in cm</th>
-                        {
-                          product.variants.map((v:any, i:number) => (
-                            <th key={v._key} css={tw`font-normal uppercase text-center`}>
-                              {v.size}
-                            </th>
-                          ))
-                        }
-                      </tr>
-                      <tr css={tw`border-b border-gray-100`}>
-                        <td css={tw`font-normal uppercase`}>Chest</td>
-                        {
-                          product.variants.map((v:any, i:number) => (
-                            <td key={v._key}>{v.mesurements.chest}</td>
-                          ))
-                        }
-                      </tr>
-                      <tr>
-                        <td css={tw`font-normal uppercase`}>Waist</td>
-                        {
-                          product.variants.map((v:any, i:number) => (
-                            <td key={v._key}>{v.mesurements.waist}</td>
-                          ))
-                        }
-                      </tr>
-                    </tbody>
-                  </table>
-                  <span css={tw`block mt-2 text-sm font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
-                </div>
-              </Transition>
               <div css={tw`flex gap-2 flex-wrap`}>
                 <Button onClick={() => addToCart()} type='primary' shimmering={true}>
                   <>
@@ -271,6 +245,57 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
             </div>
           </div>
         </div>
+      </div>
+      <div css={tw`mt-8`}>
+        <div css={tw`items-center justify-center md:flex hidden`}>
+          <button css={[
+            tw`p-2 text-xl border border-gray-200 rounded-full shadow transition duration-200 ring-gray-400 hover:(border-gray-300) active:(border-gray-500)`,
+            tw`focus:outline-none focus-visible:ring-3`
+          ]} onClick={() => scrollToDetails()}>
+            <HiOutlineArrowDown />
+          </button>
+        </div>
+        <h1 css={tw`text-4xl font-semibold mt-6 mb-4`} ref={detailsEl}>
+          Produktdetails
+        </h1>
+        <BlockContent
+          blocks={product.body}
+          serializers={{...serializers}}
+        />
+        <h2 css={tw`text-3xl font-semibold mt-6 mb-4`}>
+          Größentabelle
+        </h2>
+        <table css={tw`w-full border-collapse md:max-w-2xl max-w-xl text-sm md:text-base`}>
+          <tbody>
+            <tr css={tw`border-b border-gray-200`}>
+              <th css={tw`md:text-sm text-xs font-normal text-left`}>in cm</th>
+              {
+                product.variants.map((v:any) => (
+                  <th key={v._key} css={tw`font-normal uppercase text-center`}>
+                    {v.size}
+                  </th>
+                ))
+              }
+            </tr>
+            <tr css={tw`border-b border-gray-200`}>
+              <td css={tw`font-normal uppercase`}>Chest</td>
+              {
+                product.variants.map((v:any) => (
+                  <td key={v._key} css={tw`text-center`}>{v.mesurements.chest}</td>
+                ))
+              }
+            </tr>
+            <tr>
+              <td css={tw`font-normal uppercase`}>Waist</td>
+              {
+                product.variants.map((v:any, i:number) => (
+                  <td key={v._key} css={tw`text-center`}>{v.mesurements.waist}</td>
+                ))
+              }
+            </tr>
+          </tbody>
+        </table>
+        <span css={tw`block mt-2 text-sm md:text-base font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
       </div>
     </div>
   )

@@ -58,7 +58,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         }
         {
           router.pathname !== '/' &&
-          <div css={tw`overflow-y-scroll h-screen`}>
+          <div css={tw`xl:(overflow-y-scroll h-screen)`} id="app">
             <NavBar openMenu={setMenu} />
             <SideMenu open={menu} close={setMenu} />
             <PageContent>
