@@ -6,8 +6,21 @@ import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
 import { useRef, useState, useEffect } from 'react'
-import axios from 'axios'
+import axios, { AxiosError } from 'axios'
 import Button from '@/components/Button'
+import { PayPalScriptProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js'
+import { useMutation } from 'react-query'
+import { useRouter } from 'next/router'
+
+interface OnApproveData {
+  billingToken?: string | null
+  facilitatorAccessToken: string
+  orderID: string
+  payerID?: string | null
+  paymentID?: string | null
+  subscriptionID?: string | null
+  authCode?: string | null
+}
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -15,6 +28,8 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 })
 
 const Cart: NextPage = () => {
+  const router = useRouter()
+
   const rightPanel = useRef<HTMLDivElement>(null)
   const [rightPanelTop, setRightPanelTop] = useState(0)
   const [allowSticky, setAllowSticky] = useState(false)
@@ -47,6 +62,31 @@ const Cart: NextPage = () => {
     const data = await axios.post('/api/checkout_sessions/stripe', { cart: cartDetails }).then(res => res.data)
     setLoadingSession(false)
     window.location = data.url
+  }
+
+  const createMutation = useMutation<{ data: any }, AxiosError, any, Response>(
+    (): any => axios.post('/api/checkout_sessions/paypal/create', { cart: cartDetails }),
+  )
+
+  const captureMutation = useMutation<string, AxiosError, any, Response>(
+    (data): any => axios.put('/api/checkout_sessions/paypal/capture', data),
+  )
+
+  const createPayPalOrder = async (): Promise<string> => {
+    setLoadingSession(true)
+    const response = await createMutation.mutateAsync({})
+    return response.data.orderID
+  }
+
+  const onApprove = async (data: OnApproveData): Promise<void> => {
+    setLoadingSession(false)
+    await captureMutation.mutateAsync({ orderID: data.orderID })
+    router.push('/success?pid=' + data.orderID + '&platform=paypal')
+    return
+  }
+
+  const onCancel = () => {
+    setLoadingSession(false)
   }
 
   useEffect(() => {
@@ -165,6 +205,29 @@ const Cart: NextPage = () => {
                   </>
                 </Button>
               </div>
+              <PayPalScriptProvider
+                options={{
+                  "client-id": process.env.NEXT_PUBLIC_PAYPAL_CID,
+                  currency: 'EUR'
+                }}
+              >
+                <div css={tw`w-full mt-2`}>
+                  <PayPalButtons
+                    style={{
+                      color: 'black',
+                      shape: 'rect',
+                      label: 'pay',
+                      height: 36,
+                      layout: 'vertical'
+                    }}
+                    fundingSource={FUNDING.PAYPAL}
+                    createOrder={createPayPalOrder}
+                    onApprove={onApprove}
+                    onCancel={onCancel}
+                    disabled={cart.length < 1 || loadingSession}
+                  />
+                </div>
+              </PayPalScriptProvider>
             </div>
             <div css={tw`flex mt-4`}>
               <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>

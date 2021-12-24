@@ -8,6 +8,9 @@ import { useState, useEffect } from 'react'
 import getStripe from '@/lib/getStripeJs'
 import { CartProvider } from 'use-shopping-cart'
 import { Toaster } from 'react-hot-toast'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
+const queryClient = new QueryClient()
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -19,54 +22,56 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <>
-      <CartProvider
-        mode="payment"
-        cartMode="client-only"
-        stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
-        currency="EUR"
-        allowedCountries={['DE', 'CH', 'AT']}
-      >
-        <GlobalStyles />
-        <Toaster
-          reverseOrder={true}
-          toastOptions={{
-            success: {
-              iconTheme: {
-                primary: theme`colors.green.500`,
-                secondary: '#fff',
+      <QueryClientProvider client={queryClient}>
+        <CartProvider
+          mode="payment"
+          cartMode="client-only"
+          stripe={process.env.NEXT_PUBLIC_STRIPE_PUBLIC_KEY}
+          currency="EUR"
+          allowedCountries={['DE', 'CH', 'AT']}
+        >
+          <GlobalStyles />
+          <Toaster
+            reverseOrder={true}
+            toastOptions={{
+              success: {
+                iconTheme: {
+                  primary: theme`colors.green.500`,
+                  secondary: '#fff',
+                },
               },
-            },
 
-            error: {
-              iconTheme: {
-                primary: theme`colors.red.500`,
-                secondary: '#fff',
+              error: {
+                iconTheme: {
+                  primary: theme`colors.red.500`,
+                  secondary: '#fff',
+                },
               },
-            },
 
-            loading: {
-              iconTheme: {
-                primary: theme`colors.gray.500`,
-                secondary: theme`colors.gray.200`,
-              },
-            }
-          }}
-        />
-        {
-          router.pathname === '/' &&
-          <Component {...pageProps} />
-        }
-        {
-          router.pathname !== '/' &&
-          <div css={tw`xl:(overflow-y-scroll h-screen)`} id="app">
-            <NavBar openMenu={setMenu} />
-            <SideMenu open={menu} close={setMenu} />
-            <PageContent>
-              <Component {...pageProps} />
-            </PageContent>
-          </div>
-        }
-      </CartProvider>
+              loading: {
+                iconTheme: {
+                  primary: theme`colors.gray.500`,
+                  secondary: theme`colors.gray.200`,
+                },
+              }
+            }}
+          />
+          {
+            router.pathname === '/' &&
+            <Component {...pageProps} />
+          }
+          {
+            router.pathname !== '/' &&
+            <div css={tw`xl:(overflow-y-scroll h-screen)`} id="app">
+              <NavBar openMenu={setMenu} />
+              <SideMenu open={menu} close={setMenu} />
+              <PageContent>
+                <Component {...pageProps} />
+              </PageContent>
+            </div>
+          }
+        </CartProvider>
+      </QueryClientProvider>
     </>
   )
 }

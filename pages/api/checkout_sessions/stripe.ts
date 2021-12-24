@@ -20,7 +20,7 @@ export default async function handler(
         mode: 'payment',
         payment_method_types: [ 'card', 'sepa_debit', 'giropay', 'sofort', 'klarna' ],
         line_items: cartItems,
-        success_url: `${req.headers.origin}/success?sid={CHECKOUT_SESSION_ID}`,
+        success_url: `${req.headers.origin}/success?pid={CHECKOUT_SESSION_ID}&platform=stripe`,
         cancel_url: req.body.cancelUrl ? req.headers.origin + req.body.cancelUrl : `${req.headers.origin}/cart`,
         shipping_address_collection: {
           allowed_countries: [ 'DE', 'CH', 'AT' ],

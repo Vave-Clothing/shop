@@ -3,7 +3,7 @@
 const securityHeaders = [
   {
     key: 'Content-Security-Policy',
-    value: "script-src 'unsafe-inline' 'self' 'unsafe-eval' https://js.stripe.com/"
+    value: "script-src 'unsafe-inline' 'self' 'unsafe-eval' https://js.stripe.com/ https://www.paypal.com/"
   }
 ]
 
