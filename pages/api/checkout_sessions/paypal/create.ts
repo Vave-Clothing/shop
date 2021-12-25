@@ -82,6 +82,14 @@ export default async function handle(
     pid: response.result.id,
     purchased_items: dbItems,
     total_price: totalPrice,
+    email: 'john.doe@example.com',
+    shipping_address: {
+      name: 'John Doe',
+      line1: 'Platz der Republik 1',
+      zip: 11011,
+      city: 'Berlin',
+      country: 'germany',
+    },
     status: 'pending',
     date: new Date()
   })

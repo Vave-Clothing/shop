@@ -5,6 +5,8 @@ interface Order {
   pid: string,
   purchased_items: purchasedItems[]
   total_price: number
+  email: string
+  shipping_address: shippingAddress
   status?: "pending" | "processing" | "paid" | "refunded"
   date: Date
 }
@@ -13,6 +15,15 @@ interface purchasedItems {
   id: string
   quantity: number
   price: string
+}
+
+interface shippingAddress {
+  name: string
+  line1: string
+  line2?: string
+  zip: number
+  city: string
+  country: "germany" | "austria" | "switzerland"
 }
 
 const orderSchema = new mongoose.Schema<Order>({
@@ -44,6 +55,37 @@ const orderSchema = new mongoose.Schema<Order>({
   total_price: {
     type: Number,
     required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  shipping_address: {
+    name: {
+      type: String,
+      required: true,
+    },
+    line1: {
+      type: String,
+      required: true,
+    },
+    line2: {
+      type: String,
+      default: '',
+    },
+    zip: {
+      type: Number,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+      enum: [ 'germany', 'austria', 'switzerland' ],
+    },
   },
   status: {
     type: String,
