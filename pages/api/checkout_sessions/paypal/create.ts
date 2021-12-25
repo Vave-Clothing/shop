@@ -22,8 +22,10 @@ export default async function handle(
 
   const cartItems = await Promise.all(Object.keys(req.body.cart).map(async (key) => {
     const { id, quantity } = req.body.cart[key]
-    const resPrice = await (await stripe.prices.retrieve(id)).unit_amount
-    return { id, quantity, price: resPrice! / 100 }
+    const resPrice = await stripe.prices.retrieve(id)
+    const resAmount = resPrice.unit_amount
+    const resProduct = await stripe.products.retrieve(resPrice.product.toString())
+    return { id, quantity, price: resAmount! / 100, name: resProduct.name }
   }))
 
   const priceArr = cartItems.map((p) => {
@@ -31,6 +33,11 @@ export default async function handle(
   })
 
   const totalPrice = priceArr.reduce((previousValue, currentValue) => previousValue + currentValue, 0)
+
+  const payPalItems = cartItems.map(i => {
+    const { quantity, price, name } = i
+    return { name: name, unit_amount: { currency_code: 'EUR', value: price.toString() }, quantity: quantity.toString(), category: 'PHYSICAL_GOODS' }
+  })
 
   const PaypalClient = client()
   const request = new paypal.orders.OrdersCreateRequest()
@@ -42,7 +49,17 @@ export default async function handle(
         amount: {
           currency_code: 'EUR',
           value: totalPrice.toString(),
+          breakdown: {
+            item_total: { currency_code: 'EUR', value: totalPrice.toString() },
+            shipping: { currency_code: 'EUR', value: '0' },
+            handling: { currency_code: 'EUR', value: '0' },
+            tax_total: { currency_code: 'EUR', value: '0' },
+            insurance: { currency_code: 'EUR', value: '0' },
+            shipping_discount: { currency_code: 'EUR', value: '0' },
+            discount: { currency_code: 'EUR', value: '0' }
+          }
         },
+        items: payPalItems
       },
     ],
     application_context: {
@@ -52,10 +69,15 @@ export default async function handle(
   const response = await PaypalClient.execute(request)
   if (response.statusCode !== 201) return res.status(500).end('Internal Server Error')
 
+  const dbItems = cartItems.map(i => {
+    const { id, quantity, price } = i
+    return { id, quantity, price }
+  })
+
   const order = new Order({
     platform: 'paypal',
     pid: response.result.id,
-    purchased_items: cartItems,
+    purchased_items: dbItems,
     total_price: totalPrice,
     status: 'pending',
     date: new Date()
