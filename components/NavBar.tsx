@@ -53,7 +53,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
               <Link href="/cart" passHref>
                 <a css={tw`grid grid-cols-2 grid-rows-2 w-6 h-6`} href="/cart">
                   <HiOutlineShoppingCart style={{ gridArea: '1 / 1 / 3 / 3' }} />
-                  <span css={tw`h-4 min-width[1rem] px-1 bg-black rounded-full text-white text-xs block font-medium text-center grid-area[2/2/3/3]`}>
+                  <span css={tw`h-4 min-width[1rem] w-max px-1 bg-black rounded-full text-white text-xs block font-medium text-center grid-area[2/2/3/3]`}>
                     { cartCount || 0 }
                   </span>
                   <span css={tw`sr-only`}>Einkaufswagen</span>
