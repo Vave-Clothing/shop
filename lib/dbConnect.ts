@@ -11,11 +11,21 @@ if (!MONGODB_URI) {
 }
 
 
-let cached = global.mongoose
+let cached: any
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null }
+if(process.env.NODE_ENV === 'development') {
+  // @ts-ignore
+  cached = global.mongoose
+
+  if (!cached) {
+    // @ts-ignore
+    cached = global.mongoose = { conn: null, promise: null }
+  }
+} else {
+  cached = { conn: null, promise: null }
 }
+
+
 
 async function dbConnect () {
   if (cached.conn) {

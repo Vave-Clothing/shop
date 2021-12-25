@@ -43,6 +43,7 @@ export default async function handle(
   const request = new paypal.orders.OrdersCreateRequest()
   request.headers['Prefer'] = 'return=representation'
   request.requestBody({
+    // @ts-ignore
     intent: 'CAPTURE',
     purchase_units: [
       {
@@ -59,9 +60,11 @@ export default async function handle(
             discount: { currency_code: 'EUR', value: '0' }
           }
         },
+        // @ts-ignore
         items: payPalItems
       },
     ],
+    // @ts-ignore
     application_context: {
       locale: 'de-DE',
     },

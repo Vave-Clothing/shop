@@ -18,6 +18,7 @@ export default async function handle(
   const { orderID } = req.body
   const PaypalClient = client()
   const request = new paypal.orders.OrdersCaptureRequest(orderID)
+  // @ts-ignore
   request.requestBody({})
   const response = await PaypalClient.execute(request)
   if(!response) return res.status(500).end('Internal Server Error')
