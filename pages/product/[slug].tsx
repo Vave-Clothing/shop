@@ -164,9 +164,14 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
 
   const [imgRondell, setImgRondell] = useState(0)
   const [sizeSelector, setSizeSelector] = useState(0)
-  const { addItem } = useShoppingCart()
+  const { addItem, cartDetails } = useShoppingCart()
   const detailsEl = useRef<HTMLHeadingElement>(null)
   const [buyNowDialog, setBuyNowDialog] = useState(false)
+
+  const cart = Object.keys(cartDetails).map((key) => {
+    const { id, quantity } = cartDetails[key]
+    return { id, quantity }
+  })
 
   const changeImg = (direction: boolean) => {
     if(direction === true) {
@@ -195,6 +200,10 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }
 
   const addToCart = () => {
+    const cartFind = cart.find(i => i.id === product.variants[sizeSelector].stripePrice)
+
+    if(cartFind?.quantity >= product.variants[sizeSelector].stock) return toast.error('Die maximale Anzahl von diesem Produkt ist erreicht')
+
     const price = product.variants[sizeSelector].resPrice
     
     const item = {
