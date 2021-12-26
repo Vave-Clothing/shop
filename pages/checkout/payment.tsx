@@ -85,7 +85,7 @@ const Payment: NextPage = () => {
           <div>
             {
               cart.map((i:any) => (
-                <div css={tw`flex items-center justify-between border-b border-b-gray-200 py-1 px-3`}>
+                <div css={tw`flex items-center justify-between border-b border-b-gray-200 py-1 px-3`} key={i.priceId}>
                   <div css={tw`flex flex-col justify-center`}>
                     <span>{ i.quantity }x { i.name }</span>
                     <span css={tw`text-xs`}>Größe: { i.size.toUpperCase() }</span>

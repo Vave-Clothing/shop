@@ -3,7 +3,7 @@ import type { NextPage, GetStaticProps, InferGetStaticPropsType } from "next"
 import tw from 'twin.macro'
 import { useRouter } from "next/router"
 import { RadioGroup } from "@headlessui/react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { HiOutlineCheck, HiOutlineArrowNarrowLeft, HiOutlineArrowNarrowRight } from "react-icons/hi"
 import Stripe from 'stripe'
 import formatPrice from "@/lib/priceFormatter"
@@ -36,19 +36,19 @@ const Shipping: NextPage = ({ shippingPlansStripe }: InferGetStaticPropsType<typ
     return plan.price
   }
 
-  const getShippingPlan = (v:string) => {
+  const getShippingPlan = useCallback((v:string) => {
     const plan = shippingPlansStripe.find((p:shippingPlan) => p.value === v)
     return plan
-  }
+  }, [shippingPlansStripe])
 
   const selectPlan = (v:string) => {
     setShippingPlan(v)
     localStorage.setItem('shippingPlan', `${v}:${getShippingPlan(v).id}:${getShippingPlan(v).title}:${getShippingPlan(v).price}`)
   }
 
-  const setStorageDefault = () => {
+  const setStorageDefault = useCallback(() => {
     localStorage.setItem('shippingPlan', `${shippingPlan}:${getShippingPlan(shippingPlan).id}:${getShippingPlan(shippingPlan).title}:${getShippingPlan(shippingPlan).price}`)
-  }
+  }, [shippingPlan, getShippingPlan])
 
   useEffect(() => {
     const storage = localStorage.getItem('shippingPlan')
@@ -60,7 +60,7 @@ const Shipping: NextPage = ({ shippingPlansStripe }: InferGetStaticPropsType<typ
     if(!findPlan) return setStorageDefault()
 
     setShippingPlan(valueInStorage)
-  }, [])
+  }, [shippingPlansStripe, setStorageDefault])
 
   return (
     <div css={tw`my-4`}>
