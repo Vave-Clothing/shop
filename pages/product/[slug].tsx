@@ -1,7 +1,7 @@
 import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
-import { useState, useEffect, useRef, Fragment } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCreditCard, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
 import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
@@ -9,154 +9,10 @@ import { useShoppingCart } from 'use-shopping-cart'
 import Stripe from 'stripe'
 import toast from 'react-hot-toast'
 import { useRouter } from 'next/router'
-import axios, { AxiosError } from 'axios'
 import Button from '@/components/Button'
 import serializers from '@/lib/sanityBlockContent'
 import BlockContent from '@sanity/block-content-to-react'
-import { Dialog, Transition } from '@headlessui/react'
-import { PayPalScriptProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js'
-import { useMutation } from 'react-query'
-import { css, cx } from '@emotion/css'
-
-const priceFormatter = new Intl.NumberFormat('de-DE', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-})
-
-interface OnApproveData {
-  billingToken?: string | null
-  facilitatorAccessToken: string
-  orderID: string
-  payerID?: string | null
-  paymentID?: string | null
-  subscriptionID?: string | null
-  authCode?: string | null
-}
-
-interface buyNowOverlayProps {
-  product: product
-  open: boolean
-  close: Function
-  title: string
-  cancelUrl: string
-}
-
-interface product {
-  id: string
-  quantity: number
-}
-
-const BuyNowOverlay = ({ product, open, close, title, cancelUrl }: buyNowOverlayProps) => {
-  const router = useRouter()
-  const [loadingSession, setLoadingSession] = useState(false)
-  
-  const createMutation = useMutation<{ data: any }, AxiosError, any, Response>(
-    (): any => axios.post('/api/checkout_sessions/paypal/create', { cart: [ product ] }),
-  )
-
-  const captureMutation = useMutation<string, AxiosError, any, Response>(
-    (data): any => axios.put('/api/checkout_sessions/paypal/capture', data),
-  )
-
-  const createPayPalOrder = async (): Promise<string> => {
-    setLoadingSession(true)
-    const response = await createMutation.mutateAsync({})
-    return response.data.orderID
-  }
-
-  const onApprove = async (data: OnApproveData): Promise<void> => {
-    setLoadingSession(false)
-    await captureMutation.mutateAsync({ orderID: data.orderID })
-    router.push('/success?pid=' + data.orderID + '&platform=paypal')
-    return
-  }
-
-  const onCancel = () => {
-    setLoadingSession(false)
-  }
-
-  const buyNowStripe = async () => {
-    setLoadingSession(true)
-    const data = await axios.post('/api/checkout_sessions/stripe', { cart: [ product ], cancelUrl: cancelUrl }).then(res => res.data)
-    setLoadingSession(false)
-    window.location = data.url
-  }
-
-  return (
-    <Transition show={open} as={Fragment}>
-      <Dialog onClose={() => close()} css={tw`fixed z-50 inset-0 overflow-y-auto`}>
-        <Transition.Child
-          as={Fragment}
-          {...{
-            enter: cx(css(tw`ease-out duration-300`)),
-            enterFrom: cx(css(tw`opacity-0`)),
-            enterTo: cx(css(tw`opacity-100`)),
-            leave: cx(css(tw`ease-in duration-200`)),
-            leaveFrom: cx(css(tw`opacity-100`)),
-            leaveTo: cx(css(tw`opacity-0`)),
-          }}
-        >
-          <Dialog.Overlay css={tw`fixed inset-0 bg-black bg-opacity-30`} />
-        </Transition.Child>
-
-        <Transition.Child
-          as={Fragment}
-          {...{
-            enter: cx(css(tw`ease-out duration-300`)),
-            enterFrom: cx(css(tw`opacity-0 scale-95`)),
-            enterTo: cx(css(tw`opacity-100 scale-100`)),
-            leave: cx(css(tw`ease-in duration-200`)),
-            leaveFrom: cx(css(tw`opacity-100 scale-100`)),
-            leaveTo: cx(css(tw`opacity-0 scale-95`)),
-          }}
-        >
-          <div css={[
-            tw`inline-block w-full max-w-md p-6 my-4 mx-1 overflow-hidden text-left transition-all bg-white shadow-xl rounded-2xl`,
-            tw`absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`
-          ]}>
-            <Dialog.Title css={tw`font-medium text-xl`}>
-              { title }
-            </Dialog.Title>
-            <Dialog.Description>
-              { title + ' jetzt kaufen ???' }
-            </Dialog.Description>
-            <div css={tw`mt-4`}>
-              <Button type='primary' onClick={() => buyNowStripe()} shimmering={true} adCss={tw`w-full`} loading={loadingSession}>
-                <>
-                  <HiOutlineCreditCard />
-                  <span>Kaufen</span>
-                </>
-              </Button>
-              <PayPalScriptProvider
-                options={{
-                  "client-id": process.env.NEXT_PUBLIC_PAYPAL_CID,
-                  currency: 'EUR'
-                }}
-              >
-                <div css={tw`w-full mt-2`}>
-                  <PayPalButtons
-                    style={{
-                      color: 'black',
-                      shape: 'rect',
-                      label: 'pay',
-                      height: 36,
-                      layout: 'vertical'
-                    }}
-                    fundingSource={FUNDING.PAYPAL}
-                    createOrder={createPayPalOrder}
-                    onApprove={onApprove}
-                    onCancel={onCancel}
-                    disabled={loadingSession}
-                  />
-                </div>
-              </PayPalScriptProvider>
-            </div>
-          </div>
-        </Transition.Child>
-      </Dialog>
-    </Transition>
-  )
-}
+import { formatPrice } from '@/lib/priceFormatter'
 
 const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const router = useRouter()
@@ -166,7 +22,6 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   const [sizeSelector, setSizeSelector] = useState(0)
   const { addItem, cartDetails } = useShoppingCart()
   const detailsEl = useRef<HTMLHeadingElement>(null)
-  const [buyNowDialog, setBuyNowDialog] = useState(false)
 
   const cart = Object.keys(cartDetails).map((key) => {
     const { id, quantity } = cartDetails[key]
@@ -199,7 +54,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
     return model.size
   }
 
-  const addToCart = () => {
+  const addToCart = (dc?: boolean) => {
     const cartFind = cart.find(i => i.id === product.variants[sizeSelector].stripePrice)
 
     if(cartFind?.quantity >= product.variants[sizeSelector].stock) return toast.error('Die maximale Anzahl von diesem Produkt ist erreicht')
@@ -218,22 +73,11 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
       url: `/product/${product.slug}?size=${sizeSelector}`
     }
 
-    toast.promise(
-      addItem(item),
-      {
-        loading: `${product.title} ${product.variants[sizeSelector].size.toUpperCase()} wird hinzugefügt...`,
-        success: `${product.title} ${product.variants[sizeSelector].size.toUpperCase()} hinzugefügt`,
-        error: 'Da ist etwas schief gelaufen'
-      }
-    )
-  }
+    addItem(item)
 
-  const buyNow = async () => {
-    setBuyNowDialog(true)
-  }
-
-  const closeBuyNow = () => {
-    setBuyNowDialog(false)
+    // timeout for browser to register a change in shopping cart
+    if(dc === true) return setTimeout(() => { router.push('/checkout/begin') }, 100)
+    toast.success(`${product.title} ${product.variants[sizeSelector].size.toUpperCase()} hinzugefügt`)
   }
 
   const getDetailsElTopPosition = () => {
@@ -272,13 +116,6 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
 
   return (
     <div>
-      <BuyNowOverlay
-        product={{ id: product.variants[sizeSelector].stripePrice, quantity: 1 }}
-        open={buyNowDialog}
-        close={() => closeBuyNow()}
-        title={`${product.title} ${product.variants[sizeSelector].size.toUpperCase()}`}
-        cancelUrl={`/product/${product.slug}?size=${sizeSelector}`}
-      />
       <div css={tw`grid md:grid-template-columns[3fr 2fr] gap-4`}>
         <div css={tw`grid`} className="group">
           <div css={tw`flex flex-col items-center grid-area[1/1/2/2]`}>
@@ -338,9 +175,9 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
             <div css={tw`mt-4`}>
               {
                 product.variants[sizeSelector].isDifferent &&
-                <span css={tw`text-red-500 line-through text-sm font-light block`}>EUR { priceFormatter.format(product.variants[sizeSelector].price / 100) }</span>
+                <span css={tw`text-red-500 line-through text-sm font-light block`}>EUR { formatPrice(product.variants[sizeSelector].price / 100) }</span>
               }
-              <h2 css={tw`text-xl font-medium`}>EUR { priceFormatter.format(product.variants[sizeSelector].resPrice / 100) }</h2>
+              <h2 css={tw`text-xl font-medium`}>EUR { formatPrice(product.variants[sizeSelector].resPrice / 100) }</h2>
               {(() => {
                 const val = product.variants[sizeSelector].stock
                 switch (true) {
@@ -391,7 +228,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                     <span>Add to Cart</span>
                   </>
                 </Button>
-                <Button type='secondary' onClick={() => buyNow()} adCss={tw`w-[10.4rem]`}>
+                <Button type='secondary' onClick={() => addToCart(true)} adCss={tw`w-[10.4rem]`}>
                   <>
                     <HiOutlineCreditCard />
                     <span>Jetzt kaufen</span>

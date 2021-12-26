@@ -6,21 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
 import { useRef, useState, useEffect } from 'react'
-import axios, { AxiosError } from 'axios'
 import Button from '@/components/Button'
-import { PayPalScriptProvider, PayPalButtons, FUNDING } from '@paypal/react-paypal-js'
-import { useMutation } from 'react-query'
 import { useRouter } from 'next/router'
-
-interface OnApproveData {
-  billingToken?: string | null
-  facilitatorAccessToken: string
-  orderID: string
-  payerID?: string | null
-  paymentID?: string | null
-  subscriptionID?: string | null
-  authCode?: string | null
-}
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -34,7 +21,6 @@ const Cart: NextPage = () => {
   const [rightPanelTop, setRightPanelTop] = useState(0)
   const [allowSticky, setAllowSticky] = useState(false)
   const { cartDetails, clearCart, incrementItem, decrementItem, removeItem, totalPrice, cartCount } = useShoppingCart()
-  const [loadingSession, setLoadingSession] = useState(false)
 
   const cart = Object.keys(cartDetails).map((key) => {
     const { id, quantity, image, imageLQIP, name, price, size, value, stock, url } = cartDetails[key]
@@ -55,38 +41,6 @@ const Cart: NextPage = () => {
   const getRightPanelTopPosition = () => {
     const rect = rightPanel.current?.getBoundingClientRect()
     return rect?.top
-  }
-
-  const buyCart = async () => {
-    setLoadingSession(true)
-    const data = await axios.post('/api/checkout_sessions/stripe', { cart: cartDetails }).then(res => res.data)
-    setLoadingSession(false)
-    window.location = data.url
-  }
-
-  const createMutation = useMutation<{ data: any }, AxiosError, any, Response>(
-    (): any => axios.post('/api/checkout_sessions/paypal/create', { cart: cartDetails }),
-  )
-
-  const captureMutation = useMutation<string, AxiosError, any, Response>(
-    (data): any => axios.put('/api/checkout_sessions/paypal/capture', data),
-  )
-
-  const createPayPalOrder = async (): Promise<string> => {
-    setLoadingSession(true)
-    const response = await createMutation.mutateAsync({})
-    return response.data.orderID
-  }
-
-  const onApprove = async (data: OnApproveData): Promise<void> => {
-    setLoadingSession(false)
-    await captureMutation.mutateAsync({ orderID: data.orderID })
-    router.push('/success?pid=' + data.orderID + '&platform=paypal')
-    return
-  }
-
-  const onCancel = () => {
-    setLoadingSession(false)
   }
 
   useEffect(() => {
@@ -180,57 +134,34 @@ const Cart: NextPage = () => {
           <div css={[tw`flex flex-col-reverse lg:flex-col`, allowSticky ? tw`lg:sticky` : tw``]} ref={rightPanel} style={{ top: rightPanelTop }}>
             <div css={tw`flex items-end justify-center mt-3 flex-col lg:min-width[22rem]`}>
               <span>
-                <span css={tw`mr-4`}>Zwischensumme</span>
-                <span css={tw`sm:text-xl text-lg font-medium`}>
-                  EUR { priceFormatter.format(totalPrice / 100) }
-                </span>
-              </span>
-              <span>
-                <span css={tw`mr-4`}>Lieferung</span>
-                <span css={tw`sm:text-xl text-lg font-medium`}>
-                  EUR { priceFormatter.format(0) }
-                </span>
-              </span>
-              <span>
-                <span css={tw`mr-4 sm:text-lg`}>Gesamt</span>
+                <span css={tw`mr-4 sm:text-lg`}>Zwischensumme</span>
                 <span css={tw`sm:text-2xl text-xl font-semibold`}>
                   EUR { priceFormatter.format(totalPrice / 100) }
                 </span>
               </span>
+              <span>
+                <span css={tw`mr-4`}>Lieferung<sup>*</sup></span>
+                <span css={tw`sm:text-xl text-lg font-medium`}>
+                  EUR -,--
+                </span>
+              </span>
+              <span>
+                <span css={tw`mr-4`}>Gesamt<sup>*</sup></span>
+                <span css={tw`sm:text-xl text-lg font-medium`}>
+                  EUR -,--
+                </span>
+              </span>
               <div css={tw`mt-4 w-full`}>
-                <Button onClick={async () => await buyCart()} disabled={cart.length < 1} loading={loadingSession} adCss={tw`w-full`} type='primary' shimmering={true}>
+                <Button onClick={async () => router.push('/checkout/begin')} disabled={cart.length < 1} adCss={tw`w-full`} type='primary' shimmering={true}>
                   <>
                     <HiOutlineCreditCard />
-                    <span>Kaufen</span>
+                    <span>Weiter zur Kasse</span>
                   </>
                 </Button>
               </div>
-              <PayPalScriptProvider
-                options={{
-                  "client-id": process.env.NEXT_PUBLIC_PAYPAL_CID,
-                  currency: 'EUR'
-                }}
-              >
-                <div css={tw`w-full mt-2`}>
-                  <PayPalButtons
-                    style={{
-                      color: 'black',
-                      shape: 'rect',
-                      label: 'pay',
-                      height: 36,
-                      layout: 'vertical'
-                    }}
-                    fundingSource={FUNDING.PAYPAL}
-                    createOrder={createPayPalOrder}
-                    onApprove={onApprove}
-                    onCancel={onCancel}
-                    disabled={cart.length < 1 || loadingSession}
-                  />
-                </div>
-              </PayPalScriptProvider>
             </div>
             <div css={tw`flex mt-4 flex-col items-start`}>
-              <span css={tw`text-gray-400`}>* alle Preise inklusive MwSt</span>
+              <span css={tw`text-gray-400`}>* wird wärend des Checkouts berechnet</span>
               <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
             </div>
           </div>

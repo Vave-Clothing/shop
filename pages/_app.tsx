@@ -9,6 +9,7 @@ import getStripe from '@/lib/getStripeJs'
 import { CartProvider } from 'use-shopping-cart'
 import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import startsWith from '@/lib/startsWith'
 
 const queryClient = new QueryClient()
 
@@ -63,7 +64,10 @@ function MyApp({ Component, pageProps }: AppProps) {
           {
             router.pathname !== '/' &&
             <div css={tw`xl:(overflow-y-scroll h-screen)`} id="app">
-              <NavBar openMenu={setMenu} />
+              {
+                !startsWith(router.pathname, '/checkout') &&
+                <NavBar openMenu={setMenu} />
+              }
               <SideMenu open={menu} close={setMenu} />
               <PageContent>
                 <Component {...pageProps} />
