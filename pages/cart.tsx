@@ -163,7 +163,7 @@ const Cart: NextPage = () => {
           }
           {
             cart.length < 1 &&
-            <div css={tw`border-b border-gray-200 py-3 px-4 flex items-center gap-4`}>
+            <div css={tw`border-b border-gray-200 py-3 px-4 flex lg:items-center items-start lg:gap-4 gap-2 lg:flex-row flex-col`}>
               <span css={tw`text-xl font-medium`}>Keine Gegenstände im Einkaufswagen</span>
               <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200`}>
                 <Link href="/shop" passHref>
@@ -192,7 +192,7 @@ const Cart: NextPage = () => {
                 </span>
               </span>
               <span>
-                <span css={tw`mr-4 sm:text-lg`}>Gesamt (inkl. MwSt)</span>
+                <span css={tw`mr-4 sm:text-lg`}>Gesamt</span>
                 <span css={tw`sm:text-2xl text-xl font-semibold`}>
                   EUR { priceFormatter.format(totalPrice / 100) }
                 </span>
@@ -229,7 +229,8 @@ const Cart: NextPage = () => {
                 </div>
               </PayPalScriptProvider>
             </div>
-            <div css={tw`flex mt-4`}>
+            <div css={tw`flex mt-4 flex-col items-start`}>
+              <span css={tw`text-gray-400`}>* alle Preise inklusive MwSt</span>
               <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
             </div>
           </div>
