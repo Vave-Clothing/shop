@@ -28,6 +28,8 @@ export default async function handle(
     return { id, quantity, price: resAmount! / 100, name: resProduct.name }
   }))
 
+  const shippingRatePrice = await (await stripe.shippingRates.retrieve(req.body.shipping)).fixed_amount?.amount || 0
+
   const priceArr = cartItems.map((p) => {
     return p.price * p.quantity
   })
@@ -49,10 +51,10 @@ export default async function handle(
       {
         amount: {
           currency_code: 'EUR',
-          value: totalPrice.toString(),
+          value: ( totalPrice + (shippingRatePrice / 100) ).toString(),
           breakdown: {
             item_total: { currency_code: 'EUR', value: ( totalPrice * 0.81 ).toFixed(2).toString() },
-            shipping: { currency_code: 'EUR', value: '0' },
+            shipping: { currency_code: 'EUR', value: ( shippingRatePrice / 100 ).toString() },
             handling: { currency_code: 'EUR', value: '0' },
             tax_total: { currency_code: 'EUR', value: ( totalPrice * 0.19 ).toFixed(2).toString() },
             insurance: { currency_code: 'EUR', value: '0' },

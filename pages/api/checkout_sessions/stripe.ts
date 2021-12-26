@@ -16,15 +16,18 @@ export default async function handler(
         return { price: id, quantity }
       })
 
+      const shippingRateId: string = req.body.shipping
+
       const params: Stripe.Checkout.SessionCreateParams = {
         mode: 'payment',
         payment_method_types: [ 'card', 'sepa_debit', 'giropay', 'sofort', 'klarna' ],
         line_items: cartItems,
         success_url: `${req.headers.origin}/success?pid={CHECKOUT_SESSION_ID}&platform=stripe`,
-        cancel_url: req.body.cancelUrl ? req.headers.origin + req.body.cancelUrl : `${req.headers.origin}/cart`,
+        cancel_url: req.body.cancelUrl ? req.headers.origin + req.body.cancelUrl : `${req.headers.origin}/checkout/payment`,
         shipping_address_collection: {
           allowed_countries: [ 'DE', 'CH', 'AT' ],
         },
+        shipping_rates: [ shippingRateId ],
         locale: 'de',
         submit_type: 'pay',
       }
