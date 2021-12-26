@@ -36,7 +36,7 @@ export default async function handle(
 
   const payPalItems = cartItems.map(i => {
     const { quantity, price, name } = i
-    return { name: name, unit_amount: { currency_code: 'EUR', value: price.toString() }, quantity: quantity.toString(), category: 'PHYSICAL_GOODS' }
+    return { name: name, unit_amount: { currency_code: 'EUR', value: ( price * 0.81).toFixed(2).toString() }, quantity: quantity.toString(), category: 'PHYSICAL_GOODS' }
   })
 
   const PaypalClient = client()
@@ -51,10 +51,10 @@ export default async function handle(
           currency_code: 'EUR',
           value: totalPrice.toString(),
           breakdown: {
-            item_total: { currency_code: 'EUR', value: totalPrice.toString() },
+            item_total: { currency_code: 'EUR', value: ( totalPrice * 0.81 ).toFixed(2).toString() },
             shipping: { currency_code: 'EUR', value: '0' },
             handling: { currency_code: 'EUR', value: '0' },
-            tax_total: { currency_code: 'EUR', value: '0' },
+            tax_total: { currency_code: 'EUR', value: ( totalPrice * 0.19 ).toFixed(2).toString() },
             insurance: { currency_code: 'EUR', value: '0' },
             shipping_discount: { currency_code: 'EUR', value: '0' },
             discount: { currency_code: 'EUR', value: '0' }
