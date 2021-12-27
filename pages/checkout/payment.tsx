@@ -31,6 +31,10 @@ const Payment: NextPage = () => {
     return { priceId: id, quantity, image, imageLQIP, name, price, size, value, stock, url }
   })
 
+  const reqCart = cart.map((i:any) => {
+    return { id: i.priceId, quantity: i.quantity }
+  })
+
   const getShippingInfo = () => {
     const storage = localStorage.getItem('shippingPlan')
     if(!storage) return
@@ -45,13 +49,13 @@ const Payment: NextPage = () => {
 
   const buyCart = async () => {
     setLoadingSession(true)
-    const data = await axios.post('/api/checkout_sessions/stripe', { cart: cartDetails, shipping: getShippingInfo()?.id }).then(res => res.data)
+    const data = await axios.post('/api/checkout_sessions/stripe', { cart: reqCart, shipping: getShippingInfo()?.id }).then(res => res.data)
     setLoadingSession(false)
     window.location = data.url
   }
 
   const createMutation = useMutation<{ data: any }, AxiosError, any, Response>(
-    (): any => axios.post('/api/checkout_sessions/paypal/create', { cart: cartDetails, shipping: getShippingInfo()?.id }),
+    (): any => axios.post('/api/checkout_sessions/paypal/create', { cart: reqCart, shipping: getShippingInfo()?.id }),
   )
 
   const captureMutation = useMutation<string, AxiosError, any, Response>(

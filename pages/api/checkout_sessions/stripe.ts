@@ -1,19 +1,25 @@
 import { NextApiRequest, NextApiResponse } from 'next'
-
+import Joi from 'joi'
+import validate from '@/lib/middlewares/validation'
 import Stripe from 'stripe'
+
+const schema = Joi.object({
+  cart: Joi.array().items(Joi.object({
+    id: Joi.string().required(),
+    quantity: Joi.number().required(),
+  })),
+  shipping: Joi.string().required(),
+})
+
 const stripe = new Stripe(process.env.STRIPE_SK!, {
   apiVersion: '2020-08-27',
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default validate({ body: schema }, async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     try {
-      const cartItems = Object.keys(req.body.cart).map((key) => {
-        const { id, quantity } = req.body.cart[key]
-        return { price: id, quantity }
+      const cartItems = req.body.cart.map((i:any) => {
+        return { price: i.id, quantity: i.quantity }
       })
 
       const shippingRateId: string = req.body.shipping
@@ -39,6 +45,6 @@ export default async function handler(
     }
   } else {
     res.setHeader('Allow', 'POST')
-    res.status(405).end('Method Not Allowed')
+    res.status(405).send({ code: 405, message: 'Method Not Allowed' })
   }
-}
+})

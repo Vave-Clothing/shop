@@ -1,15 +1,18 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import startsWith from '@/lib/startsWith'
-
 import Stripe from 'stripe'
+import Joi from 'joi'
+import validate from '@/lib/middlewares/validation'
+
+const querySchema = Joi.object({
+  id: Joi.string().required(),
+})
+
 const stripe = new Stripe(process.env.STRIPE_SK!, {
   apiVersion: '2020-08-27',
 })
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+export default validate({ query: querySchema }, async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'GET') {
     const id: string = req.query.id.toString()
 
@@ -26,6 +29,6 @@ export default async function handler(
     }
   } else {
     res.setHeader('Allow', 'GET')
-    res.status(405).end('Method Not Allowed')
+    res.status(405).send({ code: 405, message: 'Method Not Allowed' })
   }
-}
+})

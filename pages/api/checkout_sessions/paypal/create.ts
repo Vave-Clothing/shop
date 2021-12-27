@@ -4,28 +4,34 @@ import paypal from '@paypal/checkout-server-sdk'
 import Stripe from 'stripe'
 import dbConnect from '@/lib/dbConnect'
 import Order from '@/schemas/Order'
+import Joi from 'joi'
+import validate from '@/lib/middlewares/validation'
+
+const schema = Joi.object({
+  cart: Joi.array().items(Joi.object({
+    id: Joi.string().required(),
+    quantity: Joi.number().required(),
+  })),
+  shipping: Joi.string().required(),
+})
 
 const stripe = new Stripe(process.env.STRIPE_SK!, {
   apiVersion: '2020-08-27',
 })
 
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default validate({ body: schema }, async (req: NextApiRequest, res: NextApiResponse,) => {
   if(req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
-    return res.status(405).end('Method Not Allowed')
+    return res.status(405).send({ code: 405, message: 'Method Not Allowed' })
   }
 
   await dbConnect()
 
-  const cartItems = await Promise.all(Object.keys(req.body.cart).map(async (key) => {
-    const { id, quantity } = req.body.cart[key]
-    const resPrice = await stripe.prices.retrieve(id)
+  const cartItems = await Promise.all(req.body.cart.map(async (i:any) => {
+    const resPrice = await stripe.prices.retrieve(i.id)
     const resAmount = resPrice.unit_amount
     const resProduct = await stripe.products.retrieve(resPrice.product.toString())
-    return { id, quantity, price: resAmount! / 100, name: resProduct.name }
+    return { id: i.id, quantity: i.quantity, price: resAmount! / 100, name: resProduct.name }
   }))
 
   const shippingRatePrice = await (await stripe.shippingRates.retrieve(req.body.shipping)).fixed_amount?.amount || 0
@@ -72,7 +78,7 @@ export default async function handle(
     },
   })
   const response = await PaypalClient.execute(request)
-  if (response.statusCode !== 201) return res.status(500).end('Internal Server Error')
+  if (response.statusCode !== 201) return res.status(500).send({ code: 500, message: 'Internal Server Error' })
 
   const dbItems = cartItems.map(i => {
     const { id, quantity, price } = i
@@ -98,8 +104,8 @@ export default async function handle(
   try {
     await order.save()
   } catch(err) {
-    return res.status(500).end('Internal Server Error')
+    return res.status(500).send({ code: 500, message: 'Internal Server Error' })
   }
 
-  res.json({ orderID: response.result.id })
-}
+  res.status(200).json({ orderID: response.result.id })
+})
