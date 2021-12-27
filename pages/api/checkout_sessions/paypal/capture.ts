@@ -27,16 +27,22 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
   if(!response) return res.status(500).send({ code: 500, message: 'Internal Server Error' })
   if(response.result.status !== 'COMPLETED') return res.status(403).send({ code: 403, message: 'Payment does not contain completed status' })
 
-  const country = () => {
-    switch (response.result.purchase_units[0].shipping.address.country_code) {
-      case 'DE':
-        return 'germany'
-      case 'AT':
-        return 'austria'
-      case 'CH':
-        return 'switzerland'
+  const paymentStatus = () => {
+    switch (response.result.status) {
+      case 'COMPLETED':
+        return 'paid'
+      case 'APPROVED':
+        return 'processing'
+      case 'VOIDED':
+        return 'failed'
+      case 'SAVED':
+        return 'processing'
+      case 'PAYER_ACTION_REQUIRED':
+        return 'processing'
+      case 'CREATED':
+        return 'pending'
       default:
-        break
+        return 'pending'
     }
   }
 
@@ -48,9 +54,9 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
       line2: response.result.purchase_units[0].shipping.address.address_line_2 || '',
       zip: Number(response.result.purchase_units[0].shipping.address.postal_code),
       city: response.result.purchase_units[0].shipping.address.admin_area_2,
-      country: country(),
+      country: response.result.purchase_units[0].shipping.address.country_code,
     },
-    status: 'paid',
+    status: paymentStatus(),
   }})
 
   res.status(200).json({ ...response.result })
