@@ -47,7 +47,7 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
         <div css={tw`flex flex-col text-xl gap-4 items-stretch h-full`}>
           <div css={tw`flex justify-end items-center text-2xl mb-4`}>
             <span>
-              <button onClick={() => { close(false) }}>
+              <button onClick={() => { close(false) }} tabIndex={!open ? -1 : 0}>
                 <HiOutlineX />
                 <span css={tw`sr-only`}>Schließen</span>
               </button>
@@ -62,8 +62,10 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
               {
                 menuItems.map((item, i) => (
                   <li key={i} onClick={() => close(false)}>
-                    <Link href={item.href}>
-                      {item.title}
+                    <Link href={item.href} passHref>
+                      <a href={item.href} tabIndex={!open ? -1 : 0}>
+                        {item.title}
+                      </a>
                     </Link>
                   </li>
                 ))
@@ -73,8 +75,10 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
               {
                 footerMenuItems.map((item, i) => (
                   <li key={i} onClick={() => close(false)}>
-                    <Link href={item.href}>
-                      {item.title}
+                    <Link href={item.href} passHref>
+                      <a href={item.href} tabIndex={!open ? -1 : 0}>
+                        {item.title}
+                      </a>
                     </Link>
                   </li>
                 ))

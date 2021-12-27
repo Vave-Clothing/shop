@@ -6,8 +6,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
 import { useRef, useState, useEffect } from 'react'
-import axios from 'axios'
 import Button from '@/components/Button'
+import { useRouter } from 'next/router'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -15,11 +15,12 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 })
 
 const Cart: NextPage = () => {
+  const router = useRouter()
+
   const rightPanel = useRef<HTMLDivElement>(null)
   const [rightPanelTop, setRightPanelTop] = useState(0)
   const [allowSticky, setAllowSticky] = useState(false)
   const { cartDetails, clearCart, incrementItem, decrementItem, removeItem, totalPrice, cartCount } = useShoppingCart()
-  const [loadingSession, setLoadingSession] = useState(false)
 
   const cart = Object.keys(cartDetails).map((key) => {
     const { id, quantity, image, imageLQIP, name, price, size, value, stock, url } = cartDetails[key]
@@ -40,13 +41,6 @@ const Cart: NextPage = () => {
   const getRightPanelTopPosition = () => {
     const rect = rightPanel.current?.getBoundingClientRect()
     return rect?.top
-  }
-
-  const buyCart = async () => {
-    setLoadingSession(true)
-    const data = await axios.post('/api/checkout_sessions/stripe', { cart: cartDetails }).then(res => res.data)
-    setLoadingSession(false)
-    window.location = data.url
   }
 
   useEffect(() => {
@@ -123,9 +117,9 @@ const Cart: NextPage = () => {
           }
           {
             cart.length < 1 &&
-            <div css={tw`border-b border-gray-200 py-3 px-4 flex items-center gap-4`}>
+            <div css={tw`border-b border-gray-200 py-3 px-4 flex lg:items-center items-start lg:gap-4 gap-2 lg:flex-row flex-col`}>
               <span css={tw`text-xl font-medium`}>Keine Gegenstände im Einkaufswagen</span>
-              <span css={tw`text-indigo-500 hover:text-indigo-400 transition duration-200`}>
+              <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200`}>
                 <Link href="/shop" passHref>
                   <a href="/shop" css={tw`flex items-center gap-1`}>
                     <span>Einkaufen</span>
@@ -140,34 +134,35 @@ const Cart: NextPage = () => {
           <div css={[tw`flex flex-col-reverse lg:flex-col`, allowSticky ? tw`lg:sticky` : tw``]} ref={rightPanel} style={{ top: rightPanelTop }}>
             <div css={tw`flex items-end justify-center mt-3 flex-col lg:min-width[22rem]`}>
               <span>
-                <span css={tw`mr-4`}>Zwischensumme</span>
-                <span css={tw`sm:text-xl text-lg font-medium`}>
-                  EUR { priceFormatter.format(totalPrice / 100) }
-                </span>
-              </span>
-              <span>
-                <span css={tw`mr-4`}>Lieferung</span>
-                <span css={tw`sm:text-xl text-lg font-medium`}>
-                  EUR { priceFormatter.format(0) }
-                </span>
-              </span>
-              <span>
-                <span css={tw`mr-4 sm:text-lg`}>Gesamt (inkl. MwSt)</span>
+                <span css={tw`mr-4 sm:text-lg`}>Zwischensumme</span>
                 <span css={tw`sm:text-2xl text-xl font-semibold`}>
                   EUR { priceFormatter.format(totalPrice / 100) }
                 </span>
               </span>
+              <span>
+                <span css={tw`mr-4`}>Lieferung<sup>*</sup></span>
+                <span css={tw`sm:text-xl text-lg font-medium`}>
+                  EUR -,--
+                </span>
+              </span>
+              <span>
+                <span css={tw`mr-4`}>Gesamt<sup>*</sup></span>
+                <span css={tw`sm:text-xl text-lg font-medium`}>
+                  EUR -,--
+                </span>
+              </span>
               <div css={tw`mt-4 w-full`}>
-                <Button onClick={async () => await buyCart()} disabled={cart.length < 1} loading={loadingSession} adCss={tw`w-full`} type='primary' shimmering={true}>
+                <Button onClick={async () => router.push('/checkout/begin')} disabled={cart.length < 1} adCss={tw`w-full`} type='primary' shimmering={true}>
                   <>
                     <HiOutlineCreditCard />
-                    <span>Kaufen</span>
+                    <span>Weiter zur Kasse</span>
                   </>
                 </Button>
               </div>
             </div>
-            <div css={tw`flex mt-4`}>
-              <button css={tw`text-indigo-400 disabled:(text-indigo-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
+            <div css={tw`flex mt-4 flex-col items-start`}>
+              <span css={tw`text-gray-400`}>* wird wärend des Checkouts berechnet</span>
+              <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
             </div>
           </div>
         </div>

@@ -15,18 +15,31 @@ const priceFormatter = new Intl.NumberFormat('de-DE', {
 })
 
 const Success: NextPage = () => {
-  const { query: { sid } } = useRouter()
+  const { query: { pid, platform } } = useRouter()
   const { clearCart } = useShoppingCart()
   const [statusComplete, setStatusComplete] = useState(false)
 
-  const { data, error } = useSWR('/api/get_session/stripe?id=' + sid, fetcher)
+  const { data, error } = useSWR('/api/get_session/' + platform + '?id=' + pid, fetcher)
+
+  const getPrice = () => {
+    if(platform === 'paypal') {
+      return priceFormatter.format(data?.total_price)
+    } else if (platform === 'stripe') {
+      return priceFormatter.format(data?.amount_total / 100)
+    } else {
+      return '0,00'
+    }
+  }
+
+  console.log(data);
+  
 
   useEffect(() => {
-    if(data?.status === 'complete' && statusComplete === false) {
-      clearCart()
-      shootFireworks()
-      setStatusComplete(true)
-    }
+    if(statusComplete !== false) return
+    if(data?.status !== 'complete' && data?.status !== 'paid') return
+    clearCart()
+    shootFireworks()
+    setStatusComplete(true)
   }, [data, clearCart, statusComplete])
 
   return (
@@ -50,7 +63,7 @@ const Success: NextPage = () => {
                 <span>Danke für deinen Einkauf 🤝</span>
               </div>
               <div css={tw`md:text-lg`}>
-                <span>Wir bearbeiten jetzt deine Bestellung im Wert von <span css={tw`font-semibold`}>EUR { priceFormatter.format(data?.amount_total / 100) }</span></span>
+                <span>Wir bearbeiten jetzt deine Bestellung im Wert von <span css={tw`font-semibold`}>EUR { getPrice() }</span></span>
               </div>
             </>
           )

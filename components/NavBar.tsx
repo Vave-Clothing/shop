@@ -28,7 +28,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
   }, [q, animationPlayed])
 
   return (
-    <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200 sticky top-0 z-40`}>
+    <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200 sticky top-0 z-40`} id="navBar">
       <div css={tw`max-w-[96rem] w-full text-black`}>
         <div css={tw`flex justify-between text-2xl items-center px-6 py-3`}>
           <div>
@@ -40,7 +40,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
               </Link>
             </span>
           </div>
-          <div css={tw`flex gap-4 items-center`}>
+          <div css={tw`flex gap-4 items-center justify-center`}>
             <span>
               <Link href="/login">
                 <a>
@@ -51,9 +51,9 @@ const NavBar = ({ openMenu }: navBarProps) => {
             </span>
             <span>
               <Link href="/cart" passHref>
-                <a css={tw`relative`} href="/cart">
-                  <HiOutlineShoppingCart />
-                  <span css={tw`h-4 min-width[1rem] px-1 bg-black rounded-full text-white text-xs block absolute top[2.25rem] right[-2rem] font-medium text-center`}>
+                <a css={tw`grid grid-cols-2 grid-rows-2 w-6 h-6`} href="/cart">
+                  <HiOutlineShoppingCart style={{ gridArea: '1 / 1 / 3 / 3' }} />
+                  <span css={tw`h-4 min-width[1rem] w-max px-1 bg-black rounded-full text-white text-xs block font-medium text-center grid-area[2/2/3/3]`}>
                     { cartCount || 0 }
                   </span>
                   <span css={tw`sr-only`}>Einkaufswagen</span>

@@ -10,16 +10,20 @@ interface buttonProps {
   children: React.ReactChild
   adCss?: CSSInterpolation
   loading?: boolean
+  size?: "small" | "medium" | "large"
 }
 
-const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading }: buttonProps) => {
+const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading, size }: buttonProps) => {
   return (
     <button
       css={[
-        tw`px-4 py-1 rounded-lg mt-3 flex items-center justify-center gap-1 text-lg transition duration-200 font-medium shadow relative overflow-hidden h-9 whitespace-nowrap`,
-        type === "primary" ? tw`bg-indigo-500 hover:bg-indigo-400 text-white disabled:(bg-indigo-400 cursor-not-allowed)` :
-        type === "secondary" ? tw`border border-indigo-500 text-current bg-transparent hover:(bg-indigo-400 text-white border-indigo-400) disabled:(border-indigo-400 bg-transparent text-current cursor-not-allowed)` :
-        tw`border border-gray-200 hover:(border-gray-300) disabled:(border-gray-100 text-gray-500 cursor-not-allowed)`,
+        tw`rounded-lg mt-3 flex items-center justify-center gap-1 transition duration-200 relative overflow-hidden h-9 whitespace-nowrap border focus:outline-none`,
+        size === "small" ? tw`px-3 py-1 shadow-sm focus-visible:ring-2` :
+        size === "large" ? tw`px-4 py-2 font-medium text-xl shadow focus-visible:ring-3` :
+        tw`px-4 py-1 font-medium text-lg shadow focus-visible:ring-3`,
+        type === "primary" ? tw`bg-primary-500 border-primary-500 ring-primary-300 hover:(bg-primary-400 border-primary-400) active:(border-primary-600) text-white disabled:(bg-primary-400 border-primary-400 ring-primary-100 cursor-not-allowed)` :
+        type === "secondary" ? tw`border-primary-500 ring-primary-300 text-current bg-transparent hover:(bg-primary-400 text-white border-primary-400) active:(border-primary-600) disabled:(border-primary-400 ring-primary-100 bg-transparent text-current cursor-not-allowed)` :
+        tw`border-gray-200 ring-gray-400 hover:(border-gray-300) active:(border-gray-500) disabled:(border-gray-100 ring-gray-200 text-gray-500 cursor-not-allowed)`,
         adCss ? adCss : tw``
       ]}
       onClick={() => onClick()}
@@ -33,8 +37,8 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading 
               shimmering && !disabled &&
               <div
                 css={[
-                  tw`flex-none w-full top-0 bottom-0 right-full absolute animate-shimmer flex items-center justify-center text-indigo-200`,
-                  type === "primary" ? tw`text-indigo-200` :
+                  tw`flex-none w-full top-0 bottom-0 right-full absolute animate-shimmer flex items-center justify-center text-primary-200`,
+                  type === "primary" ? tw`text-primary-200` :
                   type === "secondary" ? tw`text-gray-400` :
                   tw`text-gray-400`,
                 ]}
@@ -47,8 +51,8 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading 
           <span
             css={[
               tw`block h-4 w-4 rounded-full border-2 animate-spin`,
-              type === "primary" ? tw`border-indigo-300 border-t-indigo-100` :
-              type === "secondary" ? tw`border-indigo-200 border-t-indigo-400` :
+              type === "primary" ? tw`border-primary-300 border-t-primary-100` :
+              type === "secondary" ? tw`border-primary-200 border-t-primary-400` :
               tw`border-gray-200 border-t-gray-400`
             ]}
           >
