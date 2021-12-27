@@ -8,11 +8,7 @@ import { HiOutlineCheck, HiOutlineX, HiOutlineArrowNarrowRight } from 'react-ico
 import { useShoppingCart } from 'use-shopping-cart'
 import Link from 'next/link'
 import { shootFireworks } from '@/lib/confetti'
-
-const priceFormatter = new Intl.NumberFormat('de-DE', {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2
-})
+import { formatPrice } from '@/lib/priceFormatter'
 
 const Success: NextPage = () => {
   const { query: { pid, platform } } = useRouter()
@@ -21,22 +17,8 @@ const Success: NextPage = () => {
 
   const { data, error } = useSWR('/api/get_session/' + platform + '?id=' + pid, fetcher)
 
-  const getPrice = () => {
-    if(platform === 'paypal') {
-      return priceFormatter.format(data?.total_price)
-    } else if (platform === 'stripe') {
-      return priceFormatter.format(data?.amount_total / 100)
-    } else {
-      return '0,00'
-    }
-  }
-
-  console.log(data);
-  
-
   useEffect(() => {
     if(statusComplete !== false) return
-    if(data?.status !== 'complete' && data?.status !== 'paid') return
     clearCart()
     shootFireworks()
     setStatusComplete(true)
@@ -63,7 +45,13 @@ const Success: NextPage = () => {
                 <span>Danke für deinen Einkauf 🤝</span>
               </div>
               <div css={tw`md:text-lg`}>
-                <span>Wir bearbeiten jetzt deine Bestellung im Wert von <span css={tw`font-semibold`}>EUR { getPrice() }</span></span>
+                {
+                  data.status === 'paid' ? (
+                    <span>Wir bearbeiten jetzt deine Bestellung im Wert von <span css={tw`font-semibold`}>EUR { formatPrice(data?.total_price) }</span></span>
+                  ) : (
+                    <span>Wir werden deine Bestellung im Wert von <span css={tw`font-semibold`}>EUR { formatPrice(data?.total_price) }</span> bei Eingang der Zahlung bearbeiten</span>
+                  )
+                }
               </div>
             </>
           )

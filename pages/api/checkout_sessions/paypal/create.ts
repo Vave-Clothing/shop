@@ -89,17 +89,20 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
     platform: 'paypal',
     pid: response.result.id,
     purchased_items: dbItems,
-    total_price: totalPrice,
+    total_price: totalPrice + (shippingRatePrice / 100),
     email: 'john.doe@example.com',
     shipping_address: {
       name: 'John Doe',
       line1: 'Platz der Republik 1',
       zip: 11011,
       city: 'Berlin',
-      country: 'germany',
+      country: 'DE',
+    },
+    shipping_rate: {
+      id: req.body.shipping,
+      price: shippingRatePrice / 100,
     },
     status: 'pending',
-    date: new Date()
   })
   try {
     await order.save()
