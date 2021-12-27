@@ -36,13 +36,13 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
 
   const shippingRatePrice = await (await stripe.shippingRates.retrieve(req.body.shipping)).fixed_amount?.amount || 0
 
-  const priceArr = cartItems.map((p) => {
+  const priceArr = cartItems.map((p:any) => {
     return p.price * p.quantity
   })
 
   const totalPrice = priceArr.reduce((previousValue, currentValue) => previousValue + currentValue, 0)
 
-  const payPalItems = cartItems.map(i => {
+  const payPalItems = cartItems.map((i:any) => {
     const { quantity, price, name } = i
     return { name: name, unit_amount: { currency_code: 'EUR', value: ( price * 0.81).toFixed(2).toString() }, quantity: quantity.toString(), category: 'PHYSICAL_GOODS' }
   })
@@ -80,7 +80,7 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
   const response = await PaypalClient.execute(request)
   if (response.statusCode !== 201) return res.status(500).send({ code: 500, message: 'Internal Server Error' })
 
-  const dbItems = cartItems.map(i => {
+  const dbItems = cartItems.map((i:any) => {
     const { id, quantity, price } = i
     return { id, quantity, price }
   })
