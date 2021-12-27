@@ -1,7 +1,9 @@
+import dbConnect from '@/lib/dbConnect'
 import { buffer } from 'micro'
 import Cors from 'micro-cors'
 import { NextApiRequest, NextApiResponse } from 'next'
 import Stripe from 'stripe'
+import Order from '@/schemas/Order'
 
 const stripe = new Stripe(process.env.STRIPE_SK!, {
   apiVersion: '2020-08-27',
@@ -21,6 +23,8 @@ const cors = Cors({
 
 const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
+    await dbConnect()
+
     const buf = await buffer(req)
     const sig = req.headers['stripe-signature']!
 
@@ -34,27 +38,66 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
       return
     }
 
-    if (event.type === 'payment_intent.succeeded') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.log(`💰 PaymentIntent status: ${paymentIntent.status}`)
-    } else if (event.type === 'payment_intent.payment_failed') {
-      const paymentIntent = event.data.object as Stripe.PaymentIntent
-      console.log(`❌ Payment failed: ${paymentIntent.last_payment_error?.message}`)
-    } else if (event.type === 'charge.succeeded') {
-      const charge = event.data.object as Stripe.Charge
-      console.log(`💵 Charge id: ${charge.id}`)
-    } else if (event.type === 'checkout.session.completed') {
-      const session = event.data.object as Stripe.Checkout.Session
-      // const fetchedSession = await stripe.checkout.sessions.retrieve(session.id, { expand: [ 'line_items' ] })
-      console.log(`💻 Session id: ${session.id}`)
-    } else {
-      console.warn(`🤷 Unhandled event type: ${event.type}`)
+    let eventType
+    let paymentStatus
+
+    switch (event.type) {
+      case 'checkout.session.completed':
+        eventType = event.data.object as Stripe.Checkout.Session
+        paymentStatus = eventType.payment_status === 'paid' ? 'paid' : 'processing'
+        await Order.updateOne({ platform: 'stripe', pid: eventType.id }, { $set: {
+          status: paymentStatus,
+          email: eventType.customer_details?.email,
+          shipping_address: {
+            name: eventType.shipping?.name,
+            line1: eventType.shipping?.address?.line1,
+            line2: eventType.shipping?.address?.line2,
+            zip: eventType.shipping?.address?.postal_code,
+            city: eventType.shipping?.address?.city,
+            country: eventType.shipping?.address?.country,
+          }
+        } })
+        break
+      case 'checkout.session.async_payment_succeeded':
+        eventType = event.data.object as Stripe.Checkout.Session
+        paymentStatus = eventType.payment_status === 'paid' ? 'paid' : 'processing'
+        await Order.updateOne({ platform: 'stripe', pid: eventType.id }, { $set: {
+          status: paymentStatus
+        } })
+        // TODO: Notify user about processing status
+        break
+      case 'checkout.session.async_payment_failed':
+        eventType = event.data.object as Stripe.Checkout.Session
+        await Order.updateOne({ platform: 'stripe', pid: eventType.id }, { $set: {
+          status: 'failed'
+        } })
+        // TODO: Notify user about failing payment
+        break
+      case 'charge.dispute.created':
+        eventType = event.data.object as Stripe.Charge
+        console.log(`💵 Charge id: ${eventType.id} (disputed)`)
+        // TODO: Notify employees about disputed charge
+        break
+      case 'charge.dispute.funds_withdrawn':
+        eventType = event.data.object as Stripe.Charge
+        await Order.updateOne({ platform: 'stripe', pid: eventType.id }, { $set: {
+          status: 'disputed'
+        } })
+        break
+      case 'charge.succeeded':
+        eventType = event.data.object as Stripe.Charge
+        console.log(`💵 Receipt: ${eventType.receipt_url}`)
+        // TODO: Send customer reciept
+        break
+      default:
+        // console.warn(`🤷 Unhandled event type: ${event.type}`)
+        break
     }
 
     res.json({ received: true })
   } else {
     res.setHeader('Allow', 'POST')
-    res.status(405).end('Method Not Allowed')
+    res.status(405).send({ code: 405, message: 'Method Not Allowed' })
   }
 }
 
