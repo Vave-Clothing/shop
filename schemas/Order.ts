@@ -7,14 +7,15 @@ interface Order {
   total_price: number
   email: string
   shipping_address: shippingAddress
-  status?: "pending" | "processing" | "paid" | "refunded"
-  date: Date
+  shipping_rate: shippingRate
+  status?: "pending" | "processing" | "failed" | "paid" | "refunded" | "disputed"
+  stripePI?: string
 }
 
 interface purchasedItems {
   id: string
   quantity: number
-  price: string
+  price: number
 }
 
 interface shippingAddress {
@@ -23,7 +24,12 @@ interface shippingAddress {
   line2?: string
   zip: number
   city: string
-  country: "germany" | "austria" | "switzerland"
+  country: "DE" | "AT" | "CH"
+}
+
+interface shippingRate {
+  id: string
+  price: number
 }
 
 const orderSchema = new mongoose.Schema<Order>({
@@ -84,20 +90,30 @@ const orderSchema = new mongoose.Schema<Order>({
     country: {
       type: String,
       required: true,
-      enum: [ 'germany', 'austria', 'switzerland' ],
+      enum: [ 'DE', 'AT', 'CH' ],
+    },
+  },
+  shipping_rate: {
+    id: {
+      type: String,
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
     },
   },
   status: {
     type: String,
     required: true,
     default: 'pending',
-    enum: [ 'pending', 'paid', 'refunded', 'processing' ]
+    enum: [ 'pending', 'paid', 'failed', 'refunded', 'processing', 'disputed' ]
   },
-  date: {
-    type: Date,
-    required: true,
-  }
-})
+  stripePI: {
+    type: String,
+    default: "",
+  },
+}, { timestamps: true })
 
 const Order = mongoose.models.Orders || mongoose.model<Order>('Orders', orderSchema)
 export default Order
