@@ -81,7 +81,7 @@ const Payment: NextPage = () => {
       <h2 css={tw`text-2xl font-semibold mt-6 mb-4`}>Wähle eine Bezahlmethode aus</h2>
       <div css={tw`max-w-screen-lg w-full mx-auto flex flex-col md:flex-row gap-4 md:gap-0`}>
         <div css={tw`w-full md:(border-r border-r-gray-200 pr-3)`}>
-          <span css={tw`text-xl font-semibold mb-2`}>Bestellzusammenfassung</span>
+          <span css={tw`text-xl font-semibold mb-2 hidden md:block`}>Bestellzusammenfassung</span>
           <div>
             {
               cart.map((i:any) => (
@@ -97,7 +97,7 @@ const Payment: NextPage = () => {
               ))
             }
           </div>
-          <div css={tw`flex items-center justify-center`}>
+          <div css={tw`md:flex items-center justify-center hidden`}>
             <Button onClick={() => router.push('/checkout/shipping')} size='small'>
               <>
                 <HiOutlineArrowNarrowLeft />
@@ -107,7 +107,7 @@ const Payment: NextPage = () => {
           </div>
         </div>
         <div css={tw`w-full md:pl-3`}>
-          <span css={tw`text-xl font-semibold mb-2`}>Bezahlmethoden</span>
+          <span css={tw`text-xl font-semibold mb-2 hidden  md:block`}>Bezahlmethoden</span>
           <div css={tw`flex items-end justify-center flex-col`}>
             <span>
               <span css={tw`mr-4`}>Zwischensumme</span>
@@ -160,6 +160,14 @@ const Payment: NextPage = () => {
             </div>
           </PayPalScriptProvider>
           <span css={tw`text-gray-400 text-right block`}>* alle Preise inklusive MwSt</span>
+          <div css={tw`flex items-center justify-center md:hidden`}>
+            <Button onClick={() => router.push('/checkout/shipping')} size='small'>
+              <>
+                <HiOutlineArrowNarrowLeft />
+                <span>Zurück</span>
+              </>
+            </Button>
+          </div>
         </div>
       </div>
     </div>
