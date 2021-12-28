@@ -5,11 +5,12 @@ interface Order {
   pid: string,
   purchased_items: purchasedItems[]
   total_price: number
-  email: string
+  email?: string
   shipping_address: shippingAddress
   shipping_rate: shippingRate
   status?: "pending" | "processing" | "failed" | "paid" | "refunded" | "disputed"
   stripePI?: string
+  stripeReceipt?: string
 }
 
 interface purchasedItems {
@@ -19,12 +20,13 @@ interface purchasedItems {
 }
 
 interface shippingAddress {
-  name: string
-  line1: string
+  name?: string
+  line1?: string
   line2?: string
-  zip: number
-  city: string
-  country: "DE" | "AT" | "CH"
+  zip?: number
+  city?: string
+  state?: string
+  country?: "DE" | "AT" | "CH"
 }
 
 interface shippingRate {
@@ -64,33 +66,37 @@ const orderSchema = new mongoose.Schema<Order>({
   },
   email: {
     type: String,
-    required: true,
+    default: null,
   },
   shipping_address: {
     name: {
       type: String,
-      required: true,
+      default: null,
     },
     line1: {
       type: String,
-      required: true,
+      default: null,
     },
     line2: {
       type: String,
-      default: '',
+      default: null,
     },
     zip: {
       type: Number,
-      required: true,
+      default: null,
     },
     city: {
       type: String,
-      required: true,
+      default: null,
+    },
+    state: {
+      type: String,
+      default: null,
     },
     country: {
       type: String,
-      required: true,
-      enum: [ 'DE', 'AT', 'CH' ],
+      default: null,
+      enum: [ 'DE', 'AT', 'CH', null ],
     },
   },
   shipping_rate: {
@@ -110,6 +116,10 @@ const orderSchema = new mongoose.Schema<Order>({
     enum: [ 'pending', 'paid', 'failed', 'refunded', 'processing', 'disputed' ]
   },
   stripePI: {
+    type: String,
+    default: "",
+  },
+  stripeReceipt: {
     type: String,
     default: "",
   },

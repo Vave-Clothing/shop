@@ -54,6 +54,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             line2: eventType.shipping?.address?.line2,
             zip: eventType.shipping?.address?.postal_code,
             city: eventType.shipping?.address?.city,
+            state: eventType.shipping?.address?.state,
             country: eventType.shipping?.address?.country,
           }
         } })
@@ -86,7 +87,9 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
         break
       case 'charge.succeeded':
         eventType = event.data.object as Stripe.Charge
-        console.log(`💵 Receipt: ${eventType.receipt_url}`)
+        await Order.updateOne({ platform: 'stripe', stripePI: eventType.payment_intent }, { $set: {
+          stripeReceipt: eventType.receipt_url
+        } })
         // TODO: Send customer reciept
         break
       default:

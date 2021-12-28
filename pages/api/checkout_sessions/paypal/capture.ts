@@ -54,6 +54,7 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
       line2: response.result.purchase_units[0].shipping.address.address_line_2 || '',
       zip: Number(response.result.purchase_units[0].shipping.address.postal_code),
       city: response.result.purchase_units[0].shipping.address.admin_area_2,
+      state: response.result.purchase_units[0].shipping.address.admin_area_1,
       country: response.result.purchase_units[0].shipping.address.country_code,
     },
     status: paymentStatus(),
