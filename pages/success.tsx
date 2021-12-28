@@ -9,6 +9,7 @@ import { useShoppingCart } from 'use-shopping-cart'
 import Link from 'next/link'
 import { shootFireworks } from '@/lib/confetti'
 import { formatPrice } from '@/lib/priceFormatter'
+import Twemoji from '@/components/Twemoji'
 
 const Success: NextPage = () => {
   const { query: { pid, platform } } = useRouter()
@@ -18,8 +19,8 @@ const Success: NextPage = () => {
   const { data, error } = useSWR('/api/get_session/' + platform + '?id=' + pid, fetcher)
 
   useEffect(() => {
-    if(statusComplete !== false) return
     clearCart()
+    if(statusComplete !== false) return
     shootFireworks()
     setStatusComplete(true)
   }, [data, clearCart, statusComplete])
@@ -40,10 +41,12 @@ const Success: NextPage = () => {
             </div>
           ) : (
             <>
-              <div css={tw`flex items-center gap-2 md:text-2xl text-xl`}>
-                <HiOutlineCheck color={theme('colors.green.500')} />
-                <span>Danke für deinen Einkauf 🤝</span>
-              </div>
+              <Twemoji>
+                <div css={tw`flex items-center gap-2 md:text-2xl text-xl`}>
+                  <HiOutlineCheck color={theme('colors.green.500')} />
+                  <span>Danke für deinen Einkauf 🤝</span>
+                </div>
+              </Twemoji>
               <div css={tw`md:text-lg`}>
                 {
                   data.status === 'paid' ? (
@@ -54,7 +57,7 @@ const Success: NextPage = () => {
                 }
               </div>
               <div css={tw`text-sm md:text-base`}>
-                <span>Eine bestätigung wurde an <b>{ data.email.replace(/\*/g, '·') }</b> gesendet</span>
+                <span>Eine Bestätigung wurde an <b>{ data.email.replace(/\*/g, '·') }</b> gesendet</span>
               </div>
             </>
           )

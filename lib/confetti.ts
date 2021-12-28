@@ -21,7 +21,7 @@ const shootFireworks = () => {
     const particleCount = 50 * (timeLeft / duration)
     const ticks = 50 * -(timeLeft / duration - 1) + 60
 
-    if(window.outerWidth > 1024) {
+    if(window.outerWidth > 1280) {
       confetti(
         Object.assign({}, defaults, {
           particleCount,

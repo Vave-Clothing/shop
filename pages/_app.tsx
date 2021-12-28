@@ -10,6 +10,7 @@ import { CartProvider } from 'use-shopping-cart'
 import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import startsWith from '@/lib/startsWith'
+import '@/styles/emoji.css'
 
 const queryClient = new QueryClient()
 
