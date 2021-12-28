@@ -3,7 +3,6 @@ import tw from 'twin.macro'
 import client from '@/lib/sanityClient'
 import BlockContent from '@sanity/block-content-to-react'
 import serializers from '@/lib/sanityBlockContent'
-import moment from 'moment-timezone'
 
 const TermsOfService: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   return (
@@ -13,7 +12,7 @@ const TermsOfService: NextPage = ({ data }: InferGetServerSidePropsType<typeof g
       </h1>
       <p css={tw`mb-4 text-gray-500`}>
         Zuletzt bearbeitet:&nbsp;
-        {moment(data._updatedAt).format('DD.MM.YYYY')}
+        {new Date(data._updatedAt).toLocaleDateString('de-DE')}
       </p>
       <BlockContent
         blocks={data.privacy}

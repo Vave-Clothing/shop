@@ -4,7 +4,6 @@ import { HiOutlineUserCircle, HiOutlineX } from 'react-icons/hi'
 import { Transition } from '@headlessui/react'
 import { css, cx } from '@emotion/css'
 import Link from 'next/link'
-import moment from 'moment-timezone'
 
 const menuItems = [
   { title: 'Home', href: '/' },
@@ -83,7 +82,7 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
                   </li>
                 ))
               }
-              <li>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Vave Clothing</li>
+              <li>&copy; { new Date().getFullYear() } Vave Clothing</li>
             </ul>
           </div>
         </div>

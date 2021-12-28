@@ -1,31 +1,18 @@
 import tw from 'twin.macro'
 import { HiOutlineMenuAlt2, HiOutlineShoppingCart, HiOutlineUserCircle } from 'react-icons/hi'
 import Link from 'next/link'
-import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState, useEffect } from 'react'
-import Logo from '@/assets/vave-logo-head-fit.svg'
-import { gsap } from 'gsap'
+import { Dispatch, SetStateAction } from 'react'
 import { useShoppingCart } from 'use-shopping-cart'
 import { useRouter } from 'next/router'
+import NavBarLogo from '@/components/NavBarLogo'
 
 interface navBarProps {
   openMenu: Dispatch<SetStateAction<boolean>>
 }
 
 const NavBar = ({ openMenu }: navBarProps) => {
-  const router = useRouter();
-  const [animationPlayed, setAnimationPlayed] = useState(false)
-  const svg = useRef(null)
-  const q = gsap.utils.selector(svg)
+  const router = useRouter()
   const { cartCount } = useShoppingCart()
-
-  useLayoutEffect(() => {
-    if(animationPlayed === false) {
-      const tl = gsap.timeline({ defaults: { opacity: 0 } })
-      tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
-      tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
-      setAnimationPlayed(true)
-    }
-  }, [q, animationPlayed])
 
   return (
     <div css={tw`w-full flex justify-center items-center bg-gray-100 border-b border-gray-200 sticky top-0 z-40`} id="navBar">
@@ -34,8 +21,8 @@ const NavBar = ({ openMenu }: navBarProps) => {
           <div>
             <span>
               <Link href={router.pathname !== '/shop' ? '/shop' : '/'} passHref>
-                <a href={router.pathname !== '/shop' ? '/shop' : '/'} ref={svg}>
-                  <Logo id="logo_head" />
+                <a href={router.pathname !== '/shop' ? '/shop' : '/'}>
+                  <NavBarLogo />
                 </a>
               </Link>
             </span>

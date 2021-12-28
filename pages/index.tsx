@@ -4,12 +4,9 @@ import Image from 'next/image'
 import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineUserCircle, HiOutlineMenuAlt2 } from 'react-icons/hi'
 import Link from 'next/link'
 import SideMenu from '@/components/SideMenu'
-import { useState, useLayoutEffect, useRef } from 'react'
-import moment from 'moment-timezone'
+import { useState } from 'react'
 import client, { urlFor } from '@/lib/sanityClient'
-import Logo from '@/assets/vave-logo-head-fit.svg'
-import LogoInverted from '@/assets/vave-logo-head-fit-inverted.svg'
-import { gsap } from 'gsap'
+import NavBarLogo from '@/components/NavBarLogo'
 
 const footerLinks = [
   { title: 'AGBs', href: '/terms-of-service' },
@@ -18,23 +15,12 @@ const footerLinks = [
 
 const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const [menu, setMenu] = useState(false)
-  const svg = useRef(null)
-  const q = gsap.utils.selector(svg)
-  const [animationPlayed, setAnimationPlayed] = useState(false)
 
   const imgSrc = urlFor(page.mainImage).width(1920).height(1080).url()
   
   const objectPositionMainImage = () => {
     return page.mainImage.hotspot.x * 100 + '% ' + page.mainImage.hotspot.y * 100 + '%'
   }
-
-  useLayoutEffect(() => {
-    if(animationPlayed === true) return
-    const tl = gsap.timeline({ defaults: { opacity: 0 } })
-    tl.fromTo(q("#background"), { opacity: 0 }, { opacity: 1, delay: .5 })
-    tl.fromTo(q("#foreground"), { opacity: 0, scale: 1.25, transformOrigin: "center" }, { opacity: 1, scale: 1 })
-    setAnimationPlayed(true)
-  }, [q, animationPlayed])
 
   return (
     <>
@@ -52,17 +38,17 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
             <div css={tw`flex justify-between text-2xl items-center bg-white xl:(bg-transparent p-0) px-6 py-3`}>
               <div>
                 <Link href="/shop" passHref>
-                  <a ref={svg} href="/shop">
+                  <a href="/shop">
                     <span css={tw`hidden xl:block`}>
                       {
                         page.mainImageFgColor === 'black' ?
-                        <Logo id="logo_head" />
+                        <NavBarLogo />
                         :
-                        <LogoInverted id="logo_head" />
+                        <NavBarLogo inverted={true} />
                       }
                     </span>
                     <span css={tw`block xl:hidden`}>
-                      <Logo id="logo_head" />
+                      <NavBarLogo />
                     </span>
                   </a>
                 </Link>
@@ -111,7 +97,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
               tw`relative left-1/2 transform -translate-x-1/2`,
               tw`max-w-[110rem] w-full text-gray-400 px-2 py-1 flex justify-between items-center`
             ]}>
-              <span>&copy; { moment().tz('Europe/Berlin').format('yyyy') } Vave Clothing</span>
+              <span>&copy; { new Date().getFullYear() } Vave Clothing</span>
               <div css={tw`flex items-center gap-2`}>
                 {
                   footerLinks.map((link, i) => (
