@@ -53,6 +53,9 @@ const Success: NextPage = () => {
                   )
                 }
               </div>
+              <div css={tw`text-sm md:text-base`}>
+                <span>Eine bestätigung wurde an <b>{ data.email.replace(/\*/g, '·') }</b> gesendet</span>
+              </div>
             </>
           )
         }
