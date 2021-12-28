@@ -76,7 +76,6 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
       try {
         await order.save()
       } catch(err) {
-        console.log(err)
         return res.status(500).send({ code: 500, message: 'Internal Server Error' })
       }
 
