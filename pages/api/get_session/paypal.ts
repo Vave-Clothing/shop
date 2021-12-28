@@ -22,6 +22,7 @@ export default validate({ query: querySchema }, async (req: NextApiRequest, res:
         email: blurEmailAddress(order.email),
         platform: order.platform,
         pid: order.pid,
+        order_number: order.order_number,
         purchased_items: order.purchased_items,
         total_price: order.total_price,
         shipping_rate: order.shipping_rate,

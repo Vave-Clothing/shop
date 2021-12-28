@@ -4,6 +4,8 @@ import validate from '@/lib/middlewares/validation'
 import Stripe from 'stripe'
 import Order from '@/schemas/Order'
 import dbConnect from '@/lib/dbConnect'
+import moment from 'moment-timezone'
+import crypto from 'crypto'
 
 const schema = Joi.object({
   cart: Joi.array().items(Joi.object({
@@ -55,9 +57,12 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
 
       const shippingRateAmount = await (await stripe.shippingRates.retrieve(shippingRateId)).fixed_amount?.amount || 0
 
+      const orderNumber = (crypto.createHash('sha256').update(moment().toString()).digest('hex')).substring(0, 12)
+
       const order = new Order({
         platform: 'stripe',
         pid: checkoutSession.id,
+        order_number: orderNumber,
         purchased_items: dbItems,
         total_price: checkoutSession.amount_total! / 100,
         shipping_rate: {

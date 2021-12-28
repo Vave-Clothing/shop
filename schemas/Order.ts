@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 interface Order {
   platform?: "stripe" | "paypal",
   pid: string,
+  order_number: string
   purchased_items: purchasedItems[]
   total_price: number
   email?: string
@@ -42,6 +43,10 @@ const orderSchema = new mongoose.Schema<Order>({
     enum: [ 'stripe', 'paypal' ],
   },
   pid: {
+    type: String,
+    required: true,
+  },
+  order_number: {
     type: String,
     required: true,
   },
