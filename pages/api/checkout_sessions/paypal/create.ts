@@ -6,7 +6,6 @@ import dbConnect from '@/lib/dbConnect'
 import Order from '@/schemas/Order'
 import Joi from 'joi'
 import validate from '@/lib/middlewares/validation'
-import moment from 'moment-timezone'
 import crypto from 'crypto'
 
 const schema = Joi.object({
@@ -87,7 +86,7 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
     return { id, quantity, price }
   })
 
-  const orderNumber = (crypto.createHash('sha256').update(moment().toString()).digest('hex')).substring(0, 12)
+  const orderNumber = (crypto.createHash('sha256').update(new Date().toString()).digest('hex')).substring(0, 12)
 
   const order = new Order({
     platform: 'paypal',
