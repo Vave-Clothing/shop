@@ -9,9 +9,10 @@ import { useState } from 'react'
 import { useMutation } from 'react-query'
 import Button from '@/components/Button'
 import { HiOutlineArrowNarrowLeft, HiOutlineArrowNarrowRight, HiOutlineCreditCard } from 'react-icons/hi'
-import { PayPalButtons, PayPalScriptProvider, FUNDING } from '@paypal/react-paypal-js'
+import { PayPalButtons, PayPalScriptProvider, FUNDING, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import PaymentMethodCards from '@/components/PaymentMethodCards'
 import Link from 'next/link'
+import PayPalLogo from '@/assets/paymentmethod_logos/paypal.svg'
 
 interface OnApproveData {
   billingToken?: string | null
@@ -21,6 +22,42 @@ interface OnApproveData {
   paymentID?: string | null
   subscriptionID?: string | null
   authCode?: string | null
+}
+
+interface payPalButtonWrapperProps {
+  createPayPalOrder(): Promise<string>
+  onApprove(data: OnApproveData): Promise<void>
+  onCancel(): void
+  disabled: boolean
+}
+
+const PayPalButtonWrapper = ({ createPayPalOrder, onApprove, onCancel, disabled }: payPalButtonWrapperProps) => {
+  const [{ isPending }] = usePayPalScriptReducer()
+
+  return (
+    <div css={tw`w-full mt-2`}>
+      {
+        isPending &&
+        <div css={tw`flex justify-center items-center h-9 animate-pulse filter grayscale`}>
+          <PayPalLogo />
+        </div>
+      }
+      <PayPalButtons
+        style={{
+          color: 'black',
+          shape: 'rect',
+          label: 'pay',
+          height: 36,
+          layout: 'vertical'
+        }}
+        fundingSource={FUNDING.PAYPAL}
+        createOrder={createPayPalOrder}
+        onApprove={onApprove}
+        onCancel={onCancel}
+        disabled={disabled}
+      />
+    </div>
+  )
 }
 
 const Payment: NextPage = () => {
@@ -148,22 +185,12 @@ const Payment: NextPage = () => {
               currency: 'EUR'
             }}
           >
-            <div css={tw`w-full mt-2`}>
-              <PayPalButtons
-                style={{
-                  color: 'black',
-                  shape: 'rect',
-                  label: 'pay',
-                  height: 36,
-                  layout: 'vertical'
-                }}
-                fundingSource={FUNDING.PAYPAL}
-                createOrder={createPayPalOrder}
-                onApprove={onApprove}
-                onCancel={onCancel}
-                disabled={cart.length < 1 || loadingSession}
-              />
-            </div>
+            <PayPalButtonWrapper
+              createPayPalOrder={createPayPalOrder}
+              onApprove={onApprove}
+              onCancel={onCancel}
+              disabled={cart.length < 1 || loadingSession}
+            />
           </PayPalScriptProvider>
           <span css={tw`text-gray-400 text-right block`}>* alle Preise inklusive MwSt</span>
           <div css={tw`flex items-center justify-center md:hidden`}>
