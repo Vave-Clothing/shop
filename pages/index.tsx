@@ -9,6 +9,7 @@ import client, { urlFor } from '@/lib/sanityClient'
 import NavBarLogo from '@/components/NavBarLogo'
 
 const footerLinks = [
+  { title: 'Zahlungsmöglichkeiten', href: '/paymentmethods' },
   { title: 'AGBs', href: '/terms-of-service' },
   { title: 'Datenschutz', href: '/privacy' },
 ]

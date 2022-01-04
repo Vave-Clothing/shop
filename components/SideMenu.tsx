@@ -12,6 +12,7 @@ const menuItems = [
 ]
 
 const footerMenuItems = [
+  { title: 'Zahlungsmöglichkeiten', href: '/paymentmethods' },
   { title: 'AGBs', href: '/terms-of-service' },
   { title: 'Datenschutz', href: '/privacy' },
 ]

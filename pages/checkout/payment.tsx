@@ -8,8 +8,10 @@ import axios, { AxiosError } from 'axios'
 import { useState } from 'react'
 import { useMutation } from 'react-query'
 import Button from '@/components/Button'
-import { HiOutlineArrowNarrowLeft, HiOutlineCreditCard } from 'react-icons/hi'
+import { HiOutlineArrowNarrowLeft, HiOutlineArrowNarrowRight, HiOutlineCreditCard } from 'react-icons/hi'
 import { PayPalButtons, PayPalScriptProvider, FUNDING } from '@paypal/react-paypal-js'
+import PaymentMethodCards from '@/components/PaymentMethodCards'
+import Link from 'next/link'
 
 interface OnApproveData {
   billingToken?: string | null
@@ -171,6 +173,17 @@ const Payment: NextPage = () => {
                 <span>Zurück</span>
               </>
             </Button>
+          </div>
+          <div css={tw`mt-4`}>
+            <PaymentMethodCards alignment='center' />
+            <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200 text-sm font-light mt-1 flex justify-center`}>
+              <Link href="/paymentmethods" passHref>
+                <a href="/paymentmethods" css={tw`flex items-center gap-1`}>
+                  <span>Weitere Infos</span>
+                  <HiOutlineArrowNarrowRight />
+                </a>
+              </Link>
+            </span>
           </div>
         </div>
       </div>
