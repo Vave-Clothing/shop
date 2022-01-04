@@ -228,7 +228,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
                     <span>Add to Cart</span>
                   </>
                 </Button>
-                <Button type='secondary' onClick={() => addToCart(true)} adCss={tw`w-[10.4rem]`}>
+                <Button type='secondary' onClick={() => addToCart(true)}>
                   <>
                     <HiOutlineCreditCard />
                     <span>Jetzt kaufen</span>

@@ -17,7 +17,7 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading,
   return (
     <button
       css={[
-        tw`rounded-lg mt-3 flex items-center justify-center gap-1 transition duration-200 relative overflow-hidden h-9 whitespace-nowrap border focus:outline-none`,
+        tw`rounded-lg mt-3 flex items-center justify-center transition duration-200 relative overflow-hidden h-9 whitespace-nowrap border focus:outline-none`,
         size === "small" ? tw`px-3 py-1 shadow-sm focus-visible:ring-2` :
         size === "large" ? tw`px-4 py-2 font-medium text-xl shadow focus-visible:ring-3` :
         tw`px-4 py-1 font-medium text-lg shadow focus-visible:ring-3`,
@@ -29,25 +29,28 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading,
       onClick={() => onClick()}
       disabled={disabled || loading}
     >
+      <div css={[
+        tw`flex items-center justify-center gap-1`,
+        loading ? tw`invisible` : tw`visible`
+      ]}>
+        { children }
+      </div>
       {
-        !loading ? (
-          <>
-            { children }
-            {
-              shimmering && !disabled &&
-              <div
-                css={[
-                  tw`flex-none w-full top-0 bottom-0 right-full absolute animate-shimmer flex items-center justify-center text-primary-200`,
-                  type === "primary" ? tw`text-primary-200` :
-                  type === "secondary" ? tw`text-gray-400` :
-                  tw`text-gray-400`,
-                ]}
-              >
-                <ShimmerSvg />
-              </div>
-            }
-          </>
-        ) : (
+        shimmering && !disabled && !loading &&
+        <div
+          css={[
+            tw`w-full top-0 bottom-0 right-full absolute animate-shimmer flex items-center justify-center text-primary-200`,
+            type === "primary" ? tw`text-primary-200` :
+            type === "secondary" ? tw`text-gray-400` :
+            tw`text-gray-400`,
+          ]}
+        >
+          <ShimmerSvg />
+        </div>
+      }
+      {
+        loading &&
+        <span css={tw`block absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}>
           <span
             css={[
               tw`block h-4 w-4 rounded-full border-2 animate-spin`,
@@ -57,9 +60,8 @@ const Button = ({ onClick, shimmering, type, disabled, children, adCss, loading,
             ]}
           >
           </span>
-        )
+        </span>
       }
-      
     </button>
   )
 }
