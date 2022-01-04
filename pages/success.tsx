@@ -4,18 +4,20 @@ import useSWR from 'swr'
 import fetcher from '@/lib/fetcher'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { HiOutlineCheck, HiOutlineX, HiOutlineArrowNarrowRight } from 'react-icons/hi'
+import { HiOutlineCheck, HiOutlineX, HiOutlineArrowNarrowRight, HiOutlineClipboardCopy } from 'react-icons/hi'
 import { useShoppingCart } from 'use-shopping-cart'
 import Link from 'next/link'
 import { shootFireworks } from '@/lib/confetti'
 import { formatPrice } from '@/lib/priceFormatter'
 import Twemoji from '@/components/Twemoji'
+import Button from '@/components/Button'
 
 const Success: NextPage = () => {
-  const { query: { pid, platform } } = useRouter()
+  const router = useRouter()
   const { clearCart } = useShoppingCart()
   const [statusComplete, setStatusComplete] = useState(false)
 
+  const { query: { pid, platform } } = router
   const { data, error } = useSWR('/api/get_session/' + platform + '?id=' + pid, fetcher)
 
   useEffect(() => {
@@ -58,6 +60,14 @@ const Success: NextPage = () => {
               </div>
               <div css={tw`text-sm md:text-base`}>
                 <span>Eine Bestätigung wurde an <b>{ data.email.replace(/\*/g, '·') }</b> gesendet</span>
+              </div>
+              <div>
+                <Button onClick={() => router.push(`/order/${data.order_number}`)} size='small'>
+                  <>
+                    <HiOutlineClipboardCopy />
+                    <span>Bestellung anzeigen</span>
+                  </>
+                </Button>
               </div>
             </>
           )

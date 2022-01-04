@@ -10,6 +10,7 @@ interface Order {
   shipping_address: shippingAddress
   shipping_rate: shippingRate
   status?: "pending" | "processing" | "failed" | "paid" | "refunded" | "disputed"
+  shipping_status?: "orderRecieved" | "handedOver" | "onTheWay" | "atCustomers"
   stripePI?: string
   stripeReceipt?: string
 }
@@ -119,6 +120,11 @@ const orderSchema = new mongoose.Schema<Order>({
     required: true,
     default: 'pending',
     enum: [ 'pending', 'paid', 'failed', 'refunded', 'processing', 'disputed' ]
+  },
+  shipping_status: {
+    type: String,
+    default: 'orderRecieved',
+    enum: [ 'orderRecieved', 'handedOver', 'onTheWay', 'atCustomers' ],
   },
   stripePI: {
     type: String,
