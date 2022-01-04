@@ -71,7 +71,7 @@ const Shipping: NextPage = ({ shippingPlansStripe }: InferGetStaticPropsType<typ
           {
             shippingPlansStripe.map((p:shippingPlan, i:number) => (
               <RadioGroup.Option value={p.value} key={i} css={tw`focus:outline-none focus-visible:ring-3 ring-gray-400 rounded-lg transition duration-200`} className="group">
-                {({ checked, active }) => (
+                {({ checked }) => (
                   <div css={[
                     tw`flex justify-between items-center py-2 px-5 rounded-lg my-2 shadow cursor-pointer transition duration-200`,
                     checked ? tw`bg-gray-500 text-white` : tw`bg-gray-200 group-hover:bg-gray-300`

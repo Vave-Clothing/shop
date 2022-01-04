@@ -2,7 +2,7 @@ import { CSSInterpolation } from '@emotion/css'
 import tw from 'twin.macro'
 
 interface formFieldButtonProps {
-  onClick: Function
+  onClick(): any
   disabled?: boolean
   children: React.ReactChild
   adCss?: CSSInterpolation

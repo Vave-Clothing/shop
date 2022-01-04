@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import CheckoutTitle from '@/components/CheckoutTitle'
 
 const Begin: NextPage = () => {
-  const { cartDetails, totalPrice, cartCount } = useShoppingCart()
+  const { cartDetails, totalPrice } = useShoppingCart()
   const router = useRouter()
 
   const cart = Object.keys(cartDetails).map((key) => {

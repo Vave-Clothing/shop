@@ -22,7 +22,7 @@ const TermsOfService: NextPage = ({ data }: InferGetServerSidePropsType<typeof g
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const data = await client.fetch(`
     *[_id == "tos"]{
       _updatedAt,

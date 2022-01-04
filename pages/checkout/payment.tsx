@@ -122,13 +122,13 @@ const Payment: NextPage = () => {
             <span>
               <span css={tw`mr-4`}>Lieferung: <span css={tw`font-light`}>{ getShippingInfo()?.title }</span></span>
               <span css={tw`sm:text-xl text-lg font-medium`}>
-                EUR { formatPrice( getShippingInfo()?.price! / 100 ) }
+                EUR { formatPrice( Number(getShippingInfo()?.price) / 100 ) }
               </span>
             </span>
             <span>
               <span css={tw`mr-4 sm:text-lg`}>Gesamt</span>
               <span css={tw`sm:text-2xl text-xl font-semibold`}>
-                EUR { formatPrice( (totalPrice + getShippingInfo()?.price!) / 100 ) }
+                EUR { formatPrice( (totalPrice + getShippingInfo()?.price) / 100 ) }
               </span>
             </span>
           </div>

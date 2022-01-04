@@ -6,7 +6,7 @@ interface formFieldProps {
   appendIcon?: React.ReactChild
   placeholder?: string
   disabled?: boolean
-  onEnter?: Function
+  onEnter?(): any
   value: string
   onChange: ChangeEventHandler
   error?: boolean

@@ -150,7 +150,7 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
 
 export default Shop
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const stripe = new Stripe(process.env.STRIPE_SK!, {
     apiVersion: '2020-08-27',
   })

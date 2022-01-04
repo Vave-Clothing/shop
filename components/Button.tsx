@@ -3,7 +3,7 @@ import ShimmerSvg from '@/assets/shimmer.svg'
 import { CSSInterpolation } from '@emotion/css'
 
 interface buttonProps {
-  onClick: Function
+  onClick(): any
   shimmering?: boolean
   type?: "primary" | "secondary"
   disabled?: boolean

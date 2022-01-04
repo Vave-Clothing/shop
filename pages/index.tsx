@@ -117,7 +117,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
 
 export default Home
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const data = await client.fetch(`
     *[_id == "homePage"]{
       mainImage,

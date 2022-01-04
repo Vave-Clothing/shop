@@ -281,7 +281,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
             <tr>
               <td css={tw`font-normal uppercase`}>Waist</td>
               {
-                product.variants.map((v:any, i:number) => (
+                product.variants.map((v:any) => (
                   <td key={v._key} css={tw`text-center`}>{v.mesurements.waist}</td>
                 ))
               }

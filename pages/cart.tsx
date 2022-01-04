@@ -44,7 +44,7 @@ const Cart: NextPage = () => {
   }
 
   useEffect(() => {
-    var timeout: any = undefined
+    let timeout: any = undefined
   
     const handleResize = () => {
       setAllowSticky(false)
