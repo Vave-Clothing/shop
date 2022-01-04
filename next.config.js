@@ -15,7 +15,7 @@ module.exports = withBundleAnalyzer({
   reactStrictMode: true,
   poweredByHeader: false,
   images: {
-    domains: [ 'cdn.sanity.io' ]
+    domains: [ 'cdn.sanity.io', 'x.klarnacdn.net' ]
   },
   async headers() {
     return [
