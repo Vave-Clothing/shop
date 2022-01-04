@@ -1,5 +1,5 @@
 import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from "next"
-import { HiOutlineCheck, HiOutlineClipboardList, HiOutlineCube, HiOutlineDocumentText, HiOutlineEye, HiOutlineReceiptTax, HiOutlineTruck, HiOutlineUser } from "react-icons/hi"
+import { HiOutlineCheck, HiOutlineClipboardList, HiOutlineCube, HiOutlineEye, HiOutlineReceiptTax, HiOutlineTruck, HiOutlineUser } from "react-icons/hi"
 import tw from 'twin.macro'
 import axios from "axios"
 import { formatPrice } from "@/lib/priceFormatter"
@@ -278,7 +278,7 @@ const Order: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerS
               <span>{ paymentStatus()?.message }</span>
               {
                 paymentStatus()?.color === 'red' &&
-                <span css={tw`italic font-light`}>Informationen an { data.email.replace(/\*/g, '·') }</span>
+                <span css={tw`italic font-light`}>Informationen an { data.email.replace(/\*/g, '·') } gesendet</span>
               }
             </div>
             {
