@@ -11,6 +11,7 @@ module.exports = {
       fontFamily: {
         display: ['Poppins', 'sans-serif'],
         body: ['Poppins', 'sans-serif'],
+        mono: ['Fira Mono', 'monospace'],
       },
       keyframes: {
         shimmer: {

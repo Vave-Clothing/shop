@@ -31,7 +31,7 @@ const PaymentMethodCards = ({ alignment }: paymentMethodCardsProps) => {
         <AXPLogo css={tw`h-8`} width="100%" />
       </div>
       <div css={tw`border border-gray-200 rounded flex items-center justify-center w-16 h-[2.125rem] relative`}>
-        <Image src="https://x.klarnacdn.net/payment-method/assets/badges/generic/klarna.svg" layout='fixed' width={38.592} height={21.44} draggable={false} />
+        <Image src="https://x.klarnacdn.net/payment-method/assets/badges/generic/klarna.svg" layout='fixed' width={38.592} height={21.44} draggable={false} alt="Klarna Badge" />
         <span css={tw`absolute inset-0`}>
           {/* span for hiding "copy image" options in the browser */}
         </span>
