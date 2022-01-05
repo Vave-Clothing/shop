@@ -54,7 +54,7 @@ const PaymentMethods: NextPage = () => {
             American Express
           </li>
           <li css={tw`pl-1`}>
-            Klarna
+            Klarna<span css={tw`font-light ml-2`}>Buy now, pay later &amp; Ratenzahlung</span>
           </li>
           <li css={tw`pl-1`}>
             Klarna SOFORT
@@ -74,6 +74,9 @@ const PaymentMethods: NextPage = () => {
         <ul css={tw`list-disc ml-8 mb-3`}>
           <li css={tw`pl-1`}>
             PayPal Guthaben
+          </li>
+          <li css={tw`pl-1`}>
+            PayPal Ratenzahlung
           </li>
           <li css={tw`pl-1`}>
             Mastercard
