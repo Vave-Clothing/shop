@@ -17,31 +17,29 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
   }
   await dbConnect()
 
-  try {
-    const rawOrder = await Order.findOne({ order_number: req.query.orderNumber })
-    let order = {
-      email: blurEmailAddress(rawOrder.email),
-      platform: rawOrder.platform,
-      pid: rawOrder.pid,
-      order_number: rawOrder.order_number,
-      purchased_items: rawOrder.purchased_items,
-      total_price: rawOrder.total_price,
-      shipping_rate: rawOrder.shipping_rate,
-      status: rawOrder.status,
-      shipping_status: rawOrder.shipping_status,
-    }
-  
-    if(Number(req.query['postalCode']) === rawOrder.shipping_address.zip) {
-      order = {
-        ...order,
-        // @ts-ignore
-        shipping_address: rawOrder.shipping_address,
-        stripeReceipt: rawOrder.stripeReceipt,
-      }
-    }
+  const rawOrder = await Order.findOne({ order_number: req.query.orderNumber })
+  if(!rawOrder) return res.status(404).send({ code: 404, message: 'This Order cannot be found' })
 
-    res.send(order)
-  } catch(err: any) {
-    res.status(500).send({ code: 500, message: err.message })
+  let order = {
+    email: blurEmailAddress(rawOrder.email),
+    platform: rawOrder.platform,
+    pid: rawOrder.pid,
+    order_number: rawOrder.order_number,
+    purchased_items: rawOrder.purchased_items,
+    total_price: rawOrder.total_price,
+    shipping_rate: rawOrder.shipping_rate,
+    status: rawOrder.status,
+    shipping_status: rawOrder.shipping_status,
   }
+
+  if(Number(req.query['postalCode']) === rawOrder.shipping_address.zip) {
+    order = {
+      ...order,
+      // @ts-ignore
+      shipping_address: rawOrder.shipping_address,
+      stripeReceipt: rawOrder.stripeReceipt,
+    }
+  }
+
+  res.send(order)
 })

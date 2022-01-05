@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { NextPage, GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
@@ -13,8 +13,9 @@ import Button from '@/components/Button'
 import serializers from '@/lib/sanityBlockContent'
 import BlockContent from '@sanity/block-content-to-react'
 import { formatPrice } from '@/lib/priceFormatter'
+import FallbackPage from '@/components/FallbackPage'
 
-const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const router = useRouter()
   const { size } = router.query
 
@@ -106,13 +107,18 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
   }
 
   useEffect(() => {
+    if(!product) return
     if(size && Number(size) < product.variants.length) {
       setSizeSelector(Number(size))
       return
     }
     const defaultVariant = product.variants.findIndex((v:any) => v.isDefault === true)
     setSizeSelector(defaultVariant)
-  }, [product.variants, size])
+  }, [product, size])
+
+  if(router.isFallback) {
+    return <FallbackPage />
+  }
 
   return (
     <div>
@@ -296,7 +302,7 @@ const Product: NextPage = ({ product }: InferGetServerSidePropsType<typeof getSe
 
 export default Product
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getStaticProps: GetStaticProps = async (ctx) => {
   const data = await client.fetch(`
     *[_type == "product" && slug.current == "${ctx.params?.slug}"]{
       _id,
@@ -323,6 +329,8 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
       slug
     }
   `)
+
+  if(data.length < 1) return { notFound: true }
 
   const resolvedStripePrices = await Promise.all(data[0].variants.map(async (v:any) => {
     const stripe = new Stripe(process.env.STRIPE_SK!, {
@@ -370,6 +378,24 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   return {
     props: {
       product: formattedData
+    },
+    revalidate: 60 * 30
+  }
+}
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const products = await client.fetch(`
+    *[_type == "product"]{
+      slug
     }
+  `)
+
+  const slugs = products.map((product: any) => ({
+    params: { slug: product.slug.current }
+  }))
+
+  return {
+    paths: slugs,
+    fallback: true
   }
 }

@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { NextPage, GetStaticProps, InferGetStaticPropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
 import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineUserCircle, HiOutlineMenuAlt2 } from 'react-icons/hi'
@@ -14,7 +14,7 @@ const footerLinks = [
   { title: 'Datenschutz', href: '/privacy' },
 ]
 
-const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Home: NextPage = ({ page }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [menu, setMenu] = useState(false)
 
   const imgSrc = urlFor(page.mainImage).width(1920).height(1080).url()
@@ -118,7 +118,7 @@ const Home: NextPage = ({ page }: InferGetServerSidePropsType<typeof getServerSi
 
 export default Home
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const data = await client.fetch(`
     *[_id == "homePage"]{
       mainImage,
@@ -129,6 +129,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       page: data[0]
-    }
+    },
+    revalidate: 60 * 60
   }
 }

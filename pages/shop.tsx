@@ -1,4 +1,4 @@
-import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { NextPage, GetStaticProps, InferGetStaticPropsType } from 'next'
 import tw, { theme } from 'twin.macro'
 import Image from 'next/image'
 import { HiOutlineStar } from 'react-icons/hi'
@@ -42,7 +42,7 @@ const RadioButton = ({ title, value }: radioButtonProps) => {
   )
 }
 
-const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const [products, setProducts] = useState(shopProducts)
   const [collection, setCollection] = useState('all')
   const collectionsPanel = useRef<HTMLDivElement>(null)
@@ -150,7 +150,7 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetServerSidePro
 
 export default Shop
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const stripe = new Stripe(process.env.STRIPE_SK!, {
     apiVersion: '2020-08-27',
   })
@@ -211,6 +211,7 @@ export const getServerSideProps: GetServerSideProps = async () => {
     props: {
       shopProducts: formattedProducts,
       shopCollections: collections
-    }
+    },
+    revalidate: 60 * 30
   }
 }

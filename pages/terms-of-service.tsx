@@ -1,10 +1,10 @@
-import type { NextPage, GetServerSideProps, InferGetServerSidePropsType } from 'next'
+import type { NextPage, GetStaticProps, InferGetStaticPropsType } from 'next'
 import tw from 'twin.macro'
 import client from '@/lib/sanityClient'
 import BlockContent from '@sanity/block-content-to-react'
 import serializers from '@/lib/sanityBlockContent'
 
-const TermsOfService: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const TermsOfService: NextPage = ({ data }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <div>
       <h1 css={tw`text-4xl font-semibold mt-6 mb-1`}>
@@ -22,7 +22,7 @@ const TermsOfService: NextPage = ({ data }: InferGetServerSidePropsType<typeof g
   )
 }
 
-export const getServerSideProps: GetServerSideProps = async () => {
+export const getStaticProps: GetStaticProps = async () => {
   const data = await client.fetch(`
     *[_id == "tos"]{
       _updatedAt,
@@ -33,7 +33,8 @@ export const getServerSideProps: GetServerSideProps = async () => {
   return {
     props: {
       data: data[0]
-    }
+    },
+    revalidate: 60 * 60 * 6
   }
 }
 

@@ -336,7 +336,12 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const postalCode = ctx.query['postalCode']
 
-  const data = await axios.get(`http://localhost:3000/api/order/get?orderNumber=${ctx.params?.number}`, { params: { postalCode: postalCode } }).then(res => res.data)
+  let data
+  try {
+    data = await axios.get(`http://localhost:3000/api/order/get?orderNumber=${ctx.params?.number}`, { params: { postalCode: postalCode } }).then(res => res.data)
+  } catch(err: any) {
+    if(err.response.status === 404) return { notFound: true }
+  }
 
   const cartItems = await Promise.all(data.purchased_items.map(async (i:any) => {
     const { id, quantity, price } = i
