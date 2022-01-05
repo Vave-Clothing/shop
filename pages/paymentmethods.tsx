@@ -1,10 +1,34 @@
 import type { NextPage } from 'next'
 import tw from 'twin.macro'
 import PaymentMethodCards from '@/components/PaymentMethodCards'
+import { useRouter } from 'next/router'
+import Button from '@/components/Button'
+import { HiOutlineArrowNarrowRight } from 'react-icons/hi'
 
 const PaymentMethods: NextPage = () => {
+  const router = useRouter()
+  const { query: { backTo } } = router
+
+  const getBackLink = () => {
+    switch (backTo) {
+      case 'checkout':
+        return '/checkout/payment'
+      default:
+        return '/shop'
+    }
+  }
+
   return (
     <div>
+      {
+        backTo &&
+        <Button onClick={() => router.push(getBackLink())}>
+          <>
+            <span>Zurück</span>
+            <HiOutlineArrowNarrowRight />
+          </>
+        </Button>
+      }
       <h1 css={tw`text-4xl font-semibold mt-6 mb-1`}>
         Bezahlmethoden
       </h1>
