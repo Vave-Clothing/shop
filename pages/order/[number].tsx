@@ -218,6 +218,9 @@ const Order: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerS
     router.push(`/order/${data.order_number}?postalCode=${postalCode}`)
   }
 
+  console.log(router.asPath);
+  
+
   return (
     <div>
       <h1 css={tw`text-4xl font-semibold mb-4 flex flex-col justify-center leading-none`}><span>Deine Bestellung</span><span css={tw`font-mono text-base leading-none text-gray-600`}>{data.order_number}</span></h1>

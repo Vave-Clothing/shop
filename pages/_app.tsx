@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import startsWith from '@/lib/startsWith'
 import '@/styles/emoji.css'
+import { DefaultSeo } from 'next-seo'
 
 const queryClient = new QueryClient()
 
@@ -56,6 +57,20 @@ function MyApp({ Component, pageProps }: AppProps) {
                   secondary: theme`colors.gray.200`,
                 },
               }
+            }}
+          />
+          <DefaultSeo
+            titleTemplate='%s – Vave Clothing'
+            defaultTitle='Vave Clothing'
+            canonical={'https://vave-clohting.de' + router.asPath.split('?')[0]}
+            openGraph={{
+              type: 'website',
+              locale: 'de_DE',
+              url: 'https://vave-clohting.de' + router.asPath,
+              site_name: 'Vave Clothing',
+            }}
+            twitter={{
+              cardType: 'summary_large_image',
             }}
           />
           {
