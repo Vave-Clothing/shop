@@ -1,42 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateAuthenticationOptions } from '@simplewebauthn/server'
-import { getDb } from '@/lib/mongodb'
-import { DbCredential, saveChallenge } from '@/lib/webauthn'
+import { saveChallenge } from '@/lib/webauthn'
+import Joi from 'joi'
+import validate from '@/lib/middlewares/validation'
+import WebauthnCredential from '@/schemas/WebauthnCredential'
+import dbConnect from '@/lib/dbConnect'
+import clientPromise from '@/lib/mongodb'
 
-const dbName = process.env.WEBAUTHN_DBNAME
+const querySchema = Joi.object({
+  email: Joi.string().email().required(),
+})
 
-/**
- * handles GET /api/auth/webauthn/authenticate.
- * 
- * It generates and returns authentication options.
- */
-export default async function WebauthnAuthenticate(
-  req: NextApiRequest,
-  res: NextApiResponse,
-) {
+export default validate({ query: querySchema }, async ( req: NextApiRequest, res: NextApiResponse, ) => {
   if (req.method === 'GET') {
-    const email = req.query['email'] as string
-    if (!email) {
-      return res.status(400).json({ message: 'Email is required.' })
-    }
-    const db = await getDb(dbName)
-    const credentials = await db.collection<DbCredential>('credentials').find({
-      userID: email,
-    }).toArray()
+    await dbConnect()
+    const email = req.query.email.toString()
+
+    const credentials = await WebauthnCredential.find({ userEmail: email })
+
     const options = generateAuthenticationOptions({
       userVerification: 'preferred',
     })
-
     options.allowCredentials = credentials.map(c => ({
       id: c.credentialID,
       type: 'public-key',
     }))
+
+    const mongo = await clientPromise
+
     try {
-      await saveChallenge({ userID: email, challenge: options.challenge })
+      const user = await mongo.db().collection('users').findOne({ email: email })
+      await saveChallenge({ userID: String(user!._id), challenge: options.challenge })
     } catch (err) {
-      return res.status(500).json({ message: 'Could not set up challenge.' })
+      return res.status(500).send({ code: 500, message: 'could not set up challenge' })
     }
-    return res.status(200).json(options)
+    return res.send(options)
   }
-  return res.status(404).json({ message: 'The method is forbidden.' });
-}
+  return res.status(405).send({ code: 405, message: 'Method Not Allowed' })
+})

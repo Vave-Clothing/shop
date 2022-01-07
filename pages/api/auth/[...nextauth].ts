@@ -6,12 +6,12 @@ import clientPromise, { getDb } from '@/lib/mongodb'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import base64url from 'base64url'
-import { Document } from 'mongodb'
-import { DbCredential, getChallenge } from '@/lib/webauthn'
+import {  getChallenge } from '@/lib/webauthn'
+import dbConnect from '@/lib/dbConnect'
+import WebauthnCredential from '@/schemas/WebauthnCredential'
 
 const domain = process.env.APP_DOMAIN
 const origin = process.env.APP_ORIGIN
-const webauthnDbName = process.env.WEBAUTHN_DBNAME
 
 export default async function auth(req: NextApiRequest, res: NextApiResponse) {
   return NextAuth(req, res, {
@@ -53,45 +53,48 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
             },
           }
 
-          const db = await getDb(webauthnDbName)
-          const authenticator = await db.collection<DbCredential & Document>('credentials').findOne({
+          await dbConnect()
+
+          const authenticator = await WebauthnCredential.findOne({
             credentialID: credential.id
           })
           if (!authenticator) {
             return null
           }
+
           const challenge = await getChallenge(authenticator.userID)
           if (!challenge) {
             return null
           }
+
           try {
-              const { verified, authenticationInfo: info } = verifyAuthenticationResponse({
-                credential: credential as any,
-                expectedChallenge: challenge.value,
-                expectedOrigin: origin,
-                expectedRPID: domain,
-                authenticator: {
-                  credentialPublicKey: authenticator.credentialPublicKey.buffer as Buffer,
-                  credentialID: base64url.toBuffer(authenticator.credentialID),
-                  counter: authenticator.counter,
-                },
-              })
-  
-              if (!verified || !info) {
-                return null
+            const { verified, authenticationInfo: info } = verifyAuthenticationResponse({
+              credential: credential as any,
+              expectedChallenge: challenge.value,
+              expectedOrigin: origin,
+              expectedRPID: domain,
+              authenticator: {
+                credentialPublicKey: authenticator.credentialPublicKey as Buffer,
+                credentialID: base64url.toBuffer(authenticator.credentialID),
+                counter: authenticator.counter,
+              },
+            })
+            if (!verified || !info) {
+              return null
+            }
+
+            await WebauthnCredential.updateOne({
+              _id: authenticator._id
+            }, {
+              $set: {
+                counter: info.newCounter
               }
-              await db.collection<DbCredential>('credentials').updateOne({
-                _id: authenticator._id
-              }, {
-                $set: {
-                  counter: info.newCounter
-                }
-              })
+            })
           } catch (err) {
             console.log(err)
             return null
           }
-          return { email: authenticator.userID }
+          return { email: authenticator.userEmail }
         }
       })    
     ],
@@ -101,6 +104,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     },
     pages: {
       signIn: '/auth/login',
+      verifyRequest: '/auth/login?verifyRequest=true'
     }
   })
 }

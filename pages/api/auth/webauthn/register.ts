@@ -1,30 +1,27 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { generateRegistrationOptions, verifyRegistrationResponse } from '@simplewebauthn/server'
 import { getSession } from 'next-auth/react'
-import { getDb } from '@/lib/mongodb'
+import clientPromise from '@/lib/mongodb'
 import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types'
-import { DbCredential, getChallenge, saveChallenge, saveCredentials } from '@/lib/webauthn'
+import { getChallenge, saveChallenge, saveCredentials } from '@/lib/webauthn'
+import WebauthnCredential from '@/schemas/WebauthnCredential'
+import dbConnect from '@/lib/dbConnect'
 
 const domain = process.env.APP_DOMAIN
 const origin = process.env.APP_ORIGIN
 const appName = process.env.APP_NAME
 const dbName = process.env.WEBAUTHN_DBNAME
 
-/**
- * handles GET /api/auth/webauthn/register.
- *
- * This function generates and returns registration options.
- */
-async function handlePreRegister(req: NextApiRequest, res: NextApiResponse) {
+const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
   const session = await getSession({ req })
+
   const email = session?.user?.email
   if (!email) {
-    return res.status(401).json({ message: 'Authentication is required' })
+    return res.status(401).send({ code: 401, message: 'Unauthorized' })
   }
-  const db = await getDb(dbName)
-  const credentials = await db.collection<DbCredential>('credentials').find({
-    userID: email,
-  }).toArray()
+
+  await dbConnect()
+  const credentials = await WebauthnCredential.find({ userEmail: email })
 
   const options = generateRegistrationOptions({
     rpID: domain,
@@ -34,7 +31,7 @@ async function handlePreRegister(req: NextApiRequest, res: NextApiResponse) {
     attestationType: 'none',
     authenticatorSelection: {
       userVerification: 'preferred',
-      authenticatorAttachment: 'platform',
+      authenticatorAttachment: 'cross-platform',
     },
   })
   options.excludeCredentials = credentials.map(c => ({
@@ -42,33 +39,42 @@ async function handlePreRegister(req: NextApiRequest, res: NextApiResponse) {
     type: 'public-key',
   }))
 
+  const mongo = await clientPromise
+
   try {
-    await saveChallenge({ userID: email, challenge: options.challenge })
+    const user = await mongo.db().collection('users').findOne({ email: email })
+    await saveChallenge({ userID: String(user!._id), challenge: options.challenge })
   } catch (err) {
-    return res.status(500).json({ message: 'Could not set up challenge.' })
+    console.log(err)
+    return res.status(500).send({ code: 500, message: 'could not set up challenge' })
   }
-  return res.status(200).json(options)
+  return res.send(options)
 }
 
-/**
- * handles POST /api/auth/webauthn/register.
- * 
- * This function verifies and stores user's public key.
- */
-async function handleRegister(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
+const handleRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
   const session = await getSession({ req })
+
   const email = session?.user?.email
   if (!email) {
-    return res.status(401).json({ success: false, message: 'You are not connected.' })
+    return res.status(401).send({ code: 401, message: 'Unauthorized' })
   }
-  const challenge = await getChallenge(email)
+
+  const mongo = await clientPromise
+  let user
+  try {
+    user = await mongo.db().collection('users').findOne({ email: email })
+  } catch(err) {
+    return res.status(500).send({ code: 500, message: 'Internal Server Error' })
+  }
+  console.log(user)
+
+  const challenge = await getChallenge(String(user!._id))
   if (!challenge) {
-    return res.status(401).json({ success: false, message: 'Pre-registration is required.' })
+    return res.status(403).send({ code: 403, message: 'Pre-registration is required' })
   }
+
   const credential: RegistrationCredentialJSON = req.body
+
   const { verified, registrationInfo: info } = await verifyRegistrationResponse({
     credential,
     expectedRPID: domain,
@@ -76,24 +82,25 @@ async function handleRegister(
     expectedChallenge: challenge.value,
   })
   if (!verified || !info) {
-    return res.status(500).json({ success: false, message: 'Something went wrong' })
+    return res.status(500).send({ code: 500, message: 'Internal Server Error' })
   }
-  console.log(req.body)
+
   try {
     await saveCredentials({
       credentialID: credential.id,
       transports: credential.transports ?? ['internal'],
-      userID: email,
+      userID: String(user!._id),
+      userEmail: email,
       key: info.credentialPublicKey,
       counter: info.counter
     })
-    return res.status(201).json({ success: true })
+    return res.status(201).send({ success: true })
   } catch (err) {
-    return res.status(500).json({ success: false, message: 'Could not register the credential.' })
+    return res.status(500).send({ code: 500, message: 'Could not register credential' })
   }
 }
 
-export default async function WebauthnRegister(
+export default async function Register(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -103,5 +110,5 @@ export default async function WebauthnRegister(
   if (req.method === 'POST') {
     return handleRegister(req, res)
   }
-  return res.status(405).json({ code: 405, message: 'Method Not Allowed' })
+  return res.status(405).send({ code: 405, message: 'Method Not Allowed' })
 }

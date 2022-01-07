@@ -29,7 +29,7 @@ const NavBar = ({ openMenu }: navBarProps) => {
           </div>
           <div css={tw`flex gap-4 items-center justify-center`}>
             <span>
-              <Link href="/login">
+              <Link href="/auth/login">
                 <a>
                   <HiOutlineUserCircle />
                   <span css={tw`sr-only`}>Login</span>

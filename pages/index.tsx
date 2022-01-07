@@ -56,7 +56,7 @@ const Home: NextPage = ({ page }: InferGetStaticPropsType<typeof getStaticProps>
               </div>
               <div css={tw`flex gap-4 items-center`}>
                 <span>
-                  <Link href="/login">
+                  <Link href="/auth/login">
                     <a>
                       <HiOutlineUserCircle />
                       <span css={tw`sr-only`}>Login</span>
