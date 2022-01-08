@@ -95,7 +95,6 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
               }
             })
           } catch (err) {
-            console.log(err)
             return null
           }
           return { email: authenticator.userEmail }

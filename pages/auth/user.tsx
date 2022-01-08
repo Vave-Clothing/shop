@@ -19,10 +19,7 @@ export default function Home() {
     const opt = await optionsResponse.data
 
     try {
-      console.log(opt)
       const credential = await startRegistration(opt)
-
-      console.log(credential.transports)
 
       const response = await fetch('/api/auth/webauthn/register', {
         method: 'POST',

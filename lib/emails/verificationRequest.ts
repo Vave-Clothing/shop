@@ -40,9 +40,9 @@ const sendVerificationRequest = async ({ identifier: email, url, provider: { ser
 }
 
 // Email HTML body
-const html = ({ url, host, email }: Record<"url" | "host" | "email", string>) => {
+const html = ({ url, email }: Record<"url" | "host" | "email", string>) => {
   const escapedEmail = `${email.replace(/\./g, "&#8203;.")}`
-  const escapedHost = `${host.replace(/\./g, "&#8203;.")}`
+  // const escapedHost = `${host.replace(/\./g, "&#8203;.")}`
 
   const backgroundColor = "#ffffff"
   const textColor = "#000000"
@@ -85,7 +85,7 @@ const html = ({ url, host, email }: Record<"url" | "host" | "email", string>) =>
 `
 }
 
-const text = ({ url, host }: Record<"url" | "host", string>) => {
+const text = ({ url }: Record<"url" | "host", string>) => {
   return `Bei Vave Clothing einloggen\n${url}\n\n`
 }
 

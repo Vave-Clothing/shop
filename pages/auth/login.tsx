@@ -80,7 +80,6 @@ const Login: NextPage = () => {
     try {
       await signInWithWebauthn()
     } catch(err) {
-      console.warn(err)
       await signInWithEmail()
     }
   }

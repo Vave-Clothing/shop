@@ -46,7 +46,6 @@ const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) =>
     const user = await mongo.db().collection('users').findOne({ email: email })
     await saveChallenge({ userID: String(user!._id), challenge: options.challenge })
   } catch (err) {
-    console.log(err)
     return res.status(500).send({ code: 500, message: 'could not set up challenge' })
   }
   return res.send(options)
@@ -67,7 +66,6 @@ const handleRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
   } catch(err) {
     return res.status(500).send({ code: 500, message: 'Internal Server Error' })
   }
-  console.log(user)
 
   const challenge = await getChallenge(String(user!._id))
   if (!challenge) {
