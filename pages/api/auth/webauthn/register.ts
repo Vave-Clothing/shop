@@ -10,7 +10,6 @@ import dbConnect from '@/lib/dbConnect'
 const domain = process.env.APP_DOMAIN
 const origin = process.env.APP_ORIGIN
 const appName = process.env.APP_NAME
-const dbName = process.env.WEBAUTHN_DBNAME
 
 const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
   const session = await getSession({ req })
@@ -23,6 +22,8 @@ const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) =>
   await dbConnect()
   const credentials = await WebauthnCredential.find({ userEmail: email })
 
+  const platform = req.query['platform']
+
   const options = generateRegistrationOptions({
     rpID: domain,
     rpName: appName,
@@ -31,7 +32,7 @@ const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) =>
     attestationType: 'none',
     authenticatorSelection: {
       userVerification: 'preferred',
-      authenticatorAttachment: 'cross-platform',
+      authenticatorAttachment: platform ? 'platform' : 'cross-platform',
     },
   })
   options.excludeCredentials = credentials.map(c => ({

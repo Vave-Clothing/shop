@@ -10,8 +10,8 @@ export default function Home() {
     }
   })
 
-  async function registerWebauthn() {
-    const optionsResponse = await axios.get('/api/auth/webauthn/register')
+  async function registerWebauthn(platform?: boolean) {
+    const optionsResponse = await axios.get('/api/auth/webauthn/register', { params: { platform: platform } })
     if (optionsResponse.status !== 200) {
       alert('Could not get registration options from server')
       return
@@ -51,7 +51,8 @@ export default function Home() {
           <h1>
             Welcome to <a href="https://webauthn.guide/" target="_blank" rel="noopener noreferrer">Webauthn</a> Demo
           </h1>
-          <button onClick={registerWebauthn} css={tw`bg-gray-200`}>Register Webauthn</button>
+          <button onClick={() => registerWebauthn()} css={tw`bg-gray-200`}>Register cross-platform Webauthn</button>
+          <button onClick={() => registerWebauthn(true)} css={tw`bg-gray-200`}>Register platform Webauthn</button>
 
           <span>Signed in as {session?.user?.email}</span>
           <button onClick={() => signOut()} css={tw`bg-gray-200`}>Log out</button>

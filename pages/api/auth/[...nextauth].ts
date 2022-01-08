@@ -2,13 +2,14 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import NextAuth from 'next-auth'
 import EmailProvider from 'next-auth/providers/email'
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter'
-import clientPromise, { getDb } from '@/lib/mongodb'
+import clientPromise from '@/lib/mongodb'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { verifyAuthenticationResponse } from '@simplewebauthn/server'
 import base64url from 'base64url'
 import {  getChallenge } from '@/lib/webauthn'
 import dbConnect from '@/lib/dbConnect'
 import WebauthnCredential from '@/schemas/WebauthnCredential'
+import sendVerificationRequest from '@/lib/emails/verificationRequest'
 
 const domain = process.env.APP_DOMAIN
 const origin = process.env.APP_ORIGIN
@@ -25,7 +26,10 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
             pass: process.env.EMAIL_SERVER_PASSWORD,
           },
         },
-        from: process.env.EMAIL_FROM
+        from: process.env.EMAIL_FROM,
+        sendVerificationRequest({ identifier, url, provider }) {
+          sendVerificationRequest({ identifier, url, provider })
+        }
       }),
       CredentialsProvider({
         name: 'webauthn',
@@ -102,6 +106,7 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     session: {
       strategy: 'jwt'
     },
+    secret: process.env.TOKEN_SECRET,
     pages: {
       signIn: '/auth/login',
       verifyRequest: '/auth/login?verifyRequest=true'

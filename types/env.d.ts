@@ -12,9 +12,13 @@ declare namespace NodeJS {
     EMAIL_SERVER_HOST: string
     EMAIL_SERVER_PORT: number
     EMAIL_FROM: string
+    EMAIL_DKIM_DOMAIN: string
+    EMAIL_DKIM_SELECTOR: string
     WEBAUTHN_DBNAME: string
     APP_DOMAIN: string
     APP_ORIGIN: string
     APP_NAME: string
+    TOKEN_SECRET: string
+    NEXTAUTH_URL: string
   }
 }
