@@ -109,5 +109,6 @@ export default async function Register(
   if (req.method === 'POST') {
     return handleRegister(req, res)
   }
+  res.setHeader('Allow', 'GET, POST')
   return res.status(405).send({ code: 405, message: 'Method Not Allowed' })
 }

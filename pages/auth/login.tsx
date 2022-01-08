@@ -5,12 +5,14 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types'
 import { startAuthentication } from '@simplewebauthn/browser'
-import axios from 'axios'
-import { HiOutlineAtSymbol, HiOutlineKey, HiOutlineUserCircle } from 'react-icons/hi'
+import axios, { AxiosError } from 'axios'
+import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlineKey, HiOutlineUserCircle } from 'react-icons/hi'
 import FormFieldWrapper from '@/components/FormFieldWrapper'
 import FormField from '@/components/FormField'
 import FormFieldButton from '@/components/FormFieldButton'
 import Joi from 'joi'
+import toast from 'react-hot-toast'
+import Link from 'next/link'
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState('')
@@ -76,6 +78,18 @@ const Login: NextPage = () => {
 
   const handleSignIn = async () => {
     setLoading(true)
+    try {
+      await axios.get('/api/auth/user/checkUser', { params: { email: email } })
+    } catch(err) {
+      const error = err as AxiosError
+      if(error.response?.status === 404) {
+        toast.error('Dieser Account ist nicht registriert')
+        return setLoading(false)
+      } else {
+        toast.error('Ein fehler ist aufgetreten')
+        return setLoading(false)
+      }
+    }
 
     try {
       await signInWithWebauthn()
@@ -103,7 +117,7 @@ const Login: NextPage = () => {
         <h1 css={tw`text-4xl font-semibold mb-4`}>Login</h1>
         <div css={tw`w-full max-w-sm text-center`}>
           <p css={tw`text-lg`}>Um dich anzumelden, musst du auf den Link in der Email klicken, die du gerade von uns erhalten hast.</p>
-          <p css={tw`font-light text-gray-600`}>Die Email ist von <span css={tw`text-black font-normal`}>noreply@vave-clohting.de</span></p>
+          <p css={tw`font-light text-gray-600`}>Absender: <span css={tw`text-black font-normal`}>noreply@vave-clohting.de</span></p>
         </div>
       </div>
     </div>
@@ -116,7 +130,7 @@ const Login: NextPage = () => {
           <HiOutlineUserCircle />
         </div>
         <h1 css={tw`text-4xl font-semibold mb-4`}>Login</h1>
-        <div css={tw`w-full max-w-sm`}>
+        <div css={tw`w-full max-w-md`}>
           <FormFieldWrapper error={error}>
             <>
               <FormField
@@ -139,6 +153,14 @@ const Login: NextPage = () => {
           </FormFieldWrapper>
         </div>
       </div>
+      <span css={tw`text-indigo-500 hover:text-indigo-400 transition duration-200 text-sm`}>
+        <Link href="/auth/register" passHref>
+          <a href="/auth/register" css={tw`flex items-center gap-1`}>
+            <span>Registrieren</span>
+            <HiOutlineArrowNarrowRight />
+          </a>
+        </Link>
+      </span>
     </div>
   )
 }

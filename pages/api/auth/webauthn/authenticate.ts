@@ -36,5 +36,6 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
     }
     return res.send(options)
   }
+  res.setHeader('Allow', 'GET')
   return res.status(405).send({ code: 405, message: 'Method Not Allowed' })
 })
