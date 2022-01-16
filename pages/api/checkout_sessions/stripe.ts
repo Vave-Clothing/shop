@@ -5,6 +5,9 @@ import Stripe from 'stripe'
 import Order from '@/schemas/Order'
 import dbConnect from '@/lib/dbConnect'
 import crypto from 'crypto'
+import { getSession } from 'next-auth/react'
+import User from '@/schemas/User'
+import UserData from '@/schemas/UserData'
 
 const schema = Joi.object({
   cart: Joi.array().items(Joi.object({
@@ -21,6 +24,20 @@ const stripe = new Stripe(process.env.STRIPE_SK!, {
 export default validate({ body: schema }, async (req: NextApiRequest, res: NextApiResponse) => {
   if (req.method === 'POST') {
     await dbConnect()
+
+    const session = await getSession({ req })
+    let customer = ''
+    let userID = ''
+    if(session) {
+      try {
+        const user = await User.findOne({ email: session.user?.email })
+        userID = user._id
+        const userData = await UserData.findOne({ uid: user._id })
+        customer = userData.stripeCustomerID
+      } catch(err) {
+        return res.status(500).send({ code: 500, message: 'Internal Server Error' })
+      }
+    }
 
     try {
       const cartItems = await Promise.all(req.body.cart.map(async (i:any) => {
@@ -48,6 +65,7 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
         locale: 'de',
         submit_type: 'pay',
       }
+      if(customer !== '') params.customer = customer
       const checkoutSession: Stripe.Checkout.Session = await stripe.checkout.sessions.create(params)
 
       const dbItems = cartItems.map((i:any) => {
@@ -69,7 +87,8 @@ export default validate({ body: schema }, async (req: NextApiRequest, res: NextA
           price: shippingRateAmount / 100
         },
         status: 'pending',
-        stripePI: checkoutSession.payment_intent
+        stripePI: checkoutSession.payment_intent,
+        user_id: userID
       })
 
       try {
