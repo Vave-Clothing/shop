@@ -6,13 +6,14 @@ import { useRouter } from 'next/router'
 import { PublicKeyCredentialRequestOptionsJSON } from '@simplewebauthn/typescript-types'
 import { startAuthentication } from '@simplewebauthn/browser'
 import axios, { AxiosError } from 'axios'
-import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlineKey, HiOutlineUserCircle } from 'react-icons/hi'
+import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlineLogin, HiOutlineUserCircle } from 'react-icons/hi'
 import FormFieldWrapper from '@/components/FormFieldWrapper'
 import FormField from '@/components/FormField'
 import FormFieldButton from '@/components/FormFieldButton'
 import Joi from 'joi'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
+import Alert from '@/components/Alert'
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState('')
@@ -20,7 +21,7 @@ const Login: NextPage = () => {
   const [loading, setLoading] = useState(false)
 
   const router = useRouter()
-  const { query: { callbackUrl, verifyRequest } } = router
+  const { query: { callbackUrl, verifyRequest, error: queryError } } = router
   const { status } = useSession()
 
   const schema = Joi.string().email({ tlds: false }).required().label('Email').messages({
@@ -103,7 +104,7 @@ const Login: NextPage = () => {
       if(callbackUrl) {
         router.push(callbackUrl.toString())
       } else {
-        router.push('/auth/user')
+        router.push('/u/home')
       }
     }
   })
@@ -145,7 +146,7 @@ const Login: NextPage = () => {
               />
               <FormFieldButton onClick={async () => await submit()} loading={loading}>
                 <>
-                  <HiOutlineKey />
+                  <HiOutlineLogin />
                   <span>Login</span>
                 </>
               </FormFieldButton>
@@ -161,6 +162,12 @@ const Login: NextPage = () => {
           </a>
         </Link>
       </span>
+      {
+        queryError === 'SessionRequired' &&
+        <div css={tw`w-full max-w-sm`}>
+          <Alert title='Nicht angemeldet' description='Du musst angemeldet sein, um auf diese Seite zu gelangen.' type='critical' />
+        </div>
+      }
     </div>
   )
 }

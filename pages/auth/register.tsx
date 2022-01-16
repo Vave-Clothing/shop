@@ -7,7 +7,6 @@ import axios, { AxiosError } from 'axios'
 import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlinePlus, HiOutlineUserCircle } from 'react-icons/hi'
 import FormFieldWrapper from '@/components/FormFieldWrapper'
 import FormField from '@/components/FormField'
-import FormFieldButton from '@/components/FormFieldButton'
 import Joi from 'joi'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -111,7 +110,7 @@ const Register: NextPage = () => {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      router.push('/auth/user')
+      router.push('/u/home')
     }
   })
 
