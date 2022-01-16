@@ -11,6 +11,10 @@ import React, { Dispatch, SetStateAction, useState } from "react"
 import Joi from "joi"
 import { useRouter } from "next/router"
 import Button from "@/components/Button"
+import { getSession } from "next-auth/react"
+import dbConnect from "@/lib/dbConnect"
+import User from "@/schemas/User"
+import crypto from "crypto"
 
 interface currentStatusBarProps {
   status: number
@@ -336,9 +340,22 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
   const postalCode = ctx.query['postalCode']
 
+  const session = await getSession(ctx)
+  const email = session?.user?.email
+  let userID = ''
+  if(session) {
+    await dbConnect()
+    const user = await User.findOne({ email: email })
+    userID = user._id.toString()
+  }
+
   let data
   try {
-    data = await axios.get(`http://localhost:3000/api/order/get?orderNumber=${ctx.params?.number}`, { params: { postalCode: postalCode } }).then(res => res.data)
+    const accessHash = (crypto.createHash('sha256').update(`${userID}:${process.env.STRIPE_SK}`).digest('hex')).substring(0, 16)
+    data = await axios.get(`http://localhost:3000/api/order/get?orderNumber=${ctx.params?.number}`, { params: { postalCode: postalCode, accessHash: accessHash } }).then(res => res.data)
+    if(data.user_id) {
+      if(userID !== data.user_id) return { notFound: true }
+    }
   } catch(err: any) {
     if(err.response.status === 404) return { notFound: true }
   }
