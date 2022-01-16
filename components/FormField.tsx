@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useRef } from 'react'
+import React, { useRef } from 'react'
 import tw from 'twin.macro'
 
 interface formFieldProps {
@@ -8,7 +8,7 @@ interface formFieldProps {
   disabled?: boolean
   onEnter?(): any
   value: string
-  onChange: ChangeEventHandler
+  onChange: React.ChangeEventHandler<HTMLInputElement>
   error?: boolean
   autocomplete?: "off" | "on" | "email" | "given-name" | "family-name" | "username"
 }
