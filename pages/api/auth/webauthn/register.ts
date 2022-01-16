@@ -6,6 +6,7 @@ import { RegistrationCredentialJSON } from '@simplewebauthn/typescript-types'
 import { getChallenge, saveChallenge, saveCredentials } from '@/lib/webauthn'
 import WebauthnCredential from '@/schemas/WebauthnCredential'
 import dbConnect from '@/lib/dbConnect'
+import User from '@/schemas/User'
 
 const domain = process.env.APP_DOMAIN
 const origin = process.env.APP_ORIGIN
@@ -21,13 +22,14 @@ const handlePreRegister = async ( req: NextApiRequest, res: NextApiResponse ) =>
 
   await dbConnect()
   const credentials = await WebauthnCredential.find({ userEmail: email })
+  const user = await User.findOne({ email: email })
 
-  const platform = req.query['platform']
+  const platform = req.query['platform'] === 'true' ? true : false
 
   const options = generateRegistrationOptions({
     rpID: domain,
     rpName: appName,
-    userID: email,
+    userID: user._id,
     userName: email,
     attestationType: 'none',
     authenticatorSelection: {
@@ -58,6 +60,9 @@ const handleRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
   if (!email) {
     return res.status(401).send({ code: 401, message: 'Unauthorized' })
   }
+
+  const name = req.query['name'].toString()
+  if(!name) return res.status(400).send({ code: 400, message: 'A name is required' })
 
   const mongo = await clientPromise
   let user
@@ -91,7 +96,8 @@ const handleRegister = async ( req: NextApiRequest, res: NextApiResponse ) => {
       userID: String(user!._id),
       userEmail: email,
       key: info.credentialPublicKey,
-      counter: info.counter
+      counter: info.counter,
+      name: name,
     })
     return res.status(201).send({ success: true })
   } catch (err) {
