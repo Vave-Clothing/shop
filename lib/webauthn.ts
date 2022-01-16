@@ -23,7 +23,7 @@ export const getChallenge = async (userID: string) => {
   return challengeObj
 }
 
-export const saveCredentials = async (cred: { transports: AuthenticatorTransport[]; credentialID: string; counter: number; userID: string; userEmail: string; key: Buffer }) => {
+export const saveCredentials = async (cred: { transports: AuthenticatorTransport[]; credentialID: string; counter: number; userID: string; userEmail: string; key: Buffer; name: string }) => {
   await dbConnect()
   const credential = new WebauthnCredential({
     credentialID: cred.credentialID,
@@ -32,6 +32,7 @@ export const saveCredentials = async (cred: { transports: AuthenticatorTransport
     userEmail: cred.userEmail,
     credentialPublicKey: cred.key,
     counter: cred.counter,
+    credentialName: cred.name,
   })
   await credential.save()
 }

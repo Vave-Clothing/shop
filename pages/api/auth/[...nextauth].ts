@@ -108,7 +108,9 @@ export default async function auth(req: NextApiRequest, res: NextApiResponse) {
     secret: process.env.TOKEN_SECRET,
     pages: {
       signIn: '/auth/login',
-      verifyRequest: '/auth/login?verifyRequest=true'
+      verifyRequest: '/auth/login?verifyRequest=true',
+      signOut: '/auth/logout',
+      newUser: '/u/home?new=true',
     }
   })
 }
