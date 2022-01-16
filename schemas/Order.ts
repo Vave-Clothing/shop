@@ -13,6 +13,7 @@ interface Order {
   shipping_status?: "orderRecieved" | "handedOver" | "onTheWay" | "atCustomers"
   stripePI?: string
   stripeReceipt?: string
+  user_id?: string
 }
 
 interface purchasedItems {
@@ -131,6 +132,10 @@ const orderSchema = new mongoose.Schema<Order>({
     default: "",
   },
   stripeReceipt: {
+    type: String,
+    default: "",
+  },
+  user_id: {
     type: String,
     default: "",
   },

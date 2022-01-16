@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
-import { Binary } from 'mongodb'
 
 interface Credential {
   credentialID: string
+  credentialName: string
   userID: string
   userEmail: string
   transports: AuthenticatorTransport[]
@@ -14,6 +14,11 @@ const credentialSchema = new mongoose.Schema<Credential>({
   credentialID: {
     type: String,
     required: true,
+  },
+  credentialName: {
+    type: String,
+    required: true,
+    default: 'WebAuthn',
   },
   userID: {
     type: String,
