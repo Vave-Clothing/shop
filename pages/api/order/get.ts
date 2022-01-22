@@ -22,6 +22,8 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
   const rawOrder = await Order.findOne({ order_number: req.query.orderNumber })
   if(!rawOrder) return res.status(404).send({ code: 404, message: 'This Order cannot be found' })
 
+  if(!rawOrder.email) return res.status(404).send({ code: 404, message: 'Order has incomplete data' })
+
   let order = {
     email: blurEmailAddress(rawOrder.email),
     platform: rawOrder.platform,
