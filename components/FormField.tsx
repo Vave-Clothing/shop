@@ -10,7 +10,7 @@ interface formFieldProps {
   value: string
   onChange: React.ChangeEventHandler<HTMLInputElement>
   error?: boolean
-  autocomplete?: "off" | "on" | "email" | "given-name" | "family-name" | "username"
+  autocomplete?: "off" | "on" | "email" | "given-name" | "family-name" | "username" | "name"
 }
 
 const FormField = ({ prependIcon, appendIcon, placeholder, disabled, onEnter, value, onChange, error, autocomplete }: formFieldProps) => {

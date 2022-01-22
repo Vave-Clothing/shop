@@ -8,6 +8,7 @@ import WebauthnCredential from "@/schemas/WebauthnCredential"
 import Order from "@/schemas/Order"
 import UserData from "@/schemas/UserData"
 import Stripe from "stripe"
+import RegistrationData from "@/schemas/RegistrationData"
 
 const stripe = new Stripe(process.env.STRIPE_SK!, {
   apiVersion: '2020-08-27',
@@ -46,6 +47,11 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
   await dbConnect()
 
   const user = await User.findOne({ email: email }).catch(() => { return res.status(500).send({ code: 500, message: 'Internal Server Error' }) })
+  if(!user.name) {
+    const regData = await RegistrationData.findOneAndDelete({ email: email }).catch(() => { return res.status(500).send({ code: 500, message: 'Internal Server Error' }) })
+    await User.findByIdAndUpdate(user._id, { name: regData.name })
+    user.name = regData.name
+  }
   const userObject = {
     id: user._id,
     email: user.email,
@@ -93,21 +99,23 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
     }) : []
   }
 
-  let paymentMethodObject
+  let paymentMethodObject: { id: any; name: any; exp_month: any; exp_year: any; last4: any; brand: any }[] = []
   if(scopes().paymentMethods === true) {
     const userData = await UserData.findOne({ uid: user._id })
-    const methods = await (await stripe.customers.listPaymentMethods(userData.stripeCustomerID, { type: "card" })).data
-    const cards = methods.map((m:any) => {
-      return {
-        id: m.id,
-        name: m.billing_details.name,
-        exp_month: m.card.exp_month,
-        exp_year: m.card.exp_year,
-        last4: m.card.last4,
-        brand: m.card.brand,
-      }
-    })
-    paymentMethodObject = cards
+    if(userData) {
+      const methods = await (await stripe.customers.listPaymentMethods(userData.stripeCustomerID, { type: "card" })).data
+      const cards = methods.map((m:any) => {
+        return {
+          id: m.id,
+          name: m.billing_details.name,
+          exp_month: m.card.exp_month,
+          exp_year: m.card.exp_year,
+          last4: m.card.last4,
+          brand: m.card.brand,
+        }
+      })
+      paymentMethodObject = cards
+    }
   }
 
   const data = {

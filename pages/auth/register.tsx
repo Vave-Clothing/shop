@@ -4,7 +4,7 @@ import { signIn, useSession } from 'next-auth/react'
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import axios, { AxiosError } from 'axios'
-import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlinePlus, HiOutlineUserCircle } from 'react-icons/hi'
+import { HiOutlineArrowNarrowRight, HiOutlineAtSymbol, HiOutlinePlus, HiOutlineUser, HiOutlineUserCircle } from 'react-icons/hi'
 import FormFieldWrapper from '@/components/FormFieldWrapper'
 import FormField from '@/components/FormField'
 import Joi from 'joi'
@@ -39,15 +39,24 @@ const Register: NextPage = () => {
   const [loading, setLoading] = useState(false)
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [termsError, setTermsError] = useState('')
+  const [name, setName] = useState('')
+  const [nameError, setNameError] = useState('')
 
   const router = useRouter()
   const { status } = useSession()
 
-  const schema = Joi.string().email({ tlds: false }).required().label('Email').messages({
+  const emailSchema = Joi.string().email({ tlds: false }).required().label('Email').messages({
     'any.required': `"Email" ist erforderlich`,
     'string.base': `"Email" muss eine Zeichenfolge sein`,
     'string.email': `"Email" muss eine gültige Email-Adresse sein`,
     'string.empty': `"Email" ist erforderlich`
+  })
+
+  const nameSchema = Joi.string().regex(/^(\w{1,}\s){1,}\w{1,}$/).required().label('Name').messages({
+    'any.required': `"Name" ist erforderlich`,
+    'string.base': `"Name" muss eine Zeichenfolge sein`,
+    'string.empty': `"Name" ist erforderlich`,
+    'string.pattern.base': `"Name" muss aus mindestens zwei Teilen bestehen`,
   })
 
   const validateTerms = (value?: boolean) => {
@@ -62,8 +71,16 @@ const Register: NextPage = () => {
   }
 
   const validateEmail = (value?: string) => {
-    const result = schema.validate(value || email)
+    const result = emailSchema.validate(value || email)
     setEmailError(result.error?.details[0].message || '')
+
+    if(!result.error) return true
+    return false
+  }
+
+  const validateName = (value?: string) => {
+    const result = nameSchema.validate(value || name)
+    setNameError(result.error?.details[0].message || '')
 
     if(!result.error) return true
     return false
@@ -75,6 +92,12 @@ const Register: NextPage = () => {
     setEmail(value)
   }
 
+  const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    validateName(value)
+    setName(value)
+  }
+
   const onChangeTerms = () => {
     const value = !termsAccepted
     validateTerms(value)
@@ -84,7 +107,8 @@ const Register: NextPage = () => {
   const submit = async () => {
     const email = validateEmail()
     const terms = validateTerms()
-    if(email && terms) await handleSignIn()
+    const name = validateName()
+    if(email && terms && name) await handleSignIn()
   }
 
   const signUpWithEmail = async () => {
@@ -104,6 +128,8 @@ const Register: NextPage = () => {
         return setLoading(false)
       }
     }
+
+    await axios.post('/api/auth/user/preRegistration', { email: email, name: name })
 
     await signUpWithEmail()
   }
@@ -131,6 +157,18 @@ const Register: NextPage = () => {
               error={emailError ? true : false}
               onEnter={async () => await submit()}
               autocomplete='email'
+              disabled={loading}
+            />
+          </FormFieldWrapper>
+          <FormFieldWrapper error={nameError}>
+            <FormField
+              value={name}
+              onChange={onChangeName}
+              placeholder='John Doe'
+              prependIcon={<HiOutlineUser />}
+              error={nameError ? true : false}
+              onEnter={async () => await submit()}
+              autocomplete="name"
               disabled={loading}
             />
           </FormFieldWrapper>
