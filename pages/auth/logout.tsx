@@ -26,7 +26,7 @@ const Logout: NextPage = () => {
         <h1 css={tw`text-4xl font-semibold mb-4`}>Logout</h1>
         <div css={tw`w-full max-w-md flex flex-col gap-2`}>
           <p>Bist du sicher, dass du dich ausloggen willst ???</p>
-          <FormButton onClick={() => signOut()}>
+          <FormButton onClick={() => signOut({ callbackUrl: '/auth/login' })}>
             <>
               <HiOutlineLogout />
               <span>Logout</span>
