@@ -10,7 +10,7 @@ import type { NextPage } from "next"
 import { useSession } from "next-auth/react"
 import { ChangeEvent, useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { HiSave } from "react-icons/hi"
+import { HiOutlineExternalLink, HiSave } from "react-icons/hi"
 import useSWR from "swr"
 import tw from 'twin.macro'
 
@@ -18,10 +18,10 @@ const Edit: NextPage = () => {
   const { status } = useSession({ required: true })
 
   const [name, setName] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState('no')
   const [error, setError] = useState('')
 
-  const { data, mutate } = useSWR('/api/auth/user/self?scopes=self security', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
+  const { data, mutate } = useSWR('/api/auth/user/self?scopes=self', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
 
   useEffect(() => {
     if(status === 'authenticated' && !data) mutate()
@@ -47,16 +47,22 @@ const Edit: NextPage = () => {
     setError(result.error?.details[0].message || '')
     if(!result.error) {
       try {
-        setLoading(true)
+        setLoading('save')
         await axios.patch('/api/auth/user/updateName', { name: name })
-        setLoading(false)
+        setLoading('no')
         toast.success('Name aktualisiert')
         mutate()
       } catch(err) {
         toast.error('Etwas ist schiefgelaufen')
-        setLoading(false)
+        setLoading('no')
       }
     }
+  }
+
+  const goToCustomerPortal = async () => {
+    const data = await axios.post('/api/auth/user/getCustomerPortal').then(res => res.data)
+    if(data.noCustomer) return
+    window.location = data.url
   }
 
   if(status === 'authenticated') return (
@@ -66,16 +72,25 @@ const Edit: NextPage = () => {
         <h1 css={tw`text-xl font-semibold leading-tight`}>User-Informationen</h1>
         <span css={tw`block mb-4 leading-tight font-light text-sm`}>Bearbeite hier deine User-Infos</span>
         <div css={tw`grid md:grid-cols-2 gap-2`}>
-          <div>
+          <div css={tw`flex justify-start flex-col gap-1`}>
+            <FormFieldWrapper title="Name" error={error}>
+              <FormField value={name} onChange={onChange} placeholder="John Doe" disabled={loading !== 'no'} onEnter={() => onSubmit()} error={error ? true : false} />
+            </FormFieldWrapper>
             <FormFieldWrapper title="Email" error="Emails können momentan nicht geändert werden">
               <FormField value={data?.self.email} onChange={() => { return }} disabled={true} error={true} />
             </FormFieldWrapper>
           </div>
-          <div css={tw`flex justify-end flex-col gap-1`}>
-            <FormFieldWrapper title="Name" error={error}>
-              <FormField value={name} onChange={onChange} placeholder="John Doe" disabled={loading} onEnter={() => onSubmit()} error={error ? true : false} />
-            </FormFieldWrapper>
-            <FormButton onClick={() => onSubmit()} loading={loading}>
+          <div css={tw`flex justify-start flex-col gap-2`}>
+            <div>
+              <span css={tw`text-gray-600 text-xs font-light`}>Bearbeite hier deine Lieferadresse</span>
+              <FormButton onClick={() => goToCustomerPortal()} loading={loading === 'portal'} disabled={loading === 'save'}>
+                <>
+                  <HiOutlineExternalLink />
+                  <span>Stripe Kundenportal</span>
+                </>
+              </FormButton>
+            </div>
+            <FormButton onClick={() => onSubmit()} loading={loading === 'save'} disabled={loading === 'portal'}>
               <>
                 <HiSave />
                 <span>Speichern</span>
