@@ -1,10 +1,11 @@
 import tw from 'twin.macro'
-import { HiOutlineMenuAlt2, HiOutlineShoppingCart, HiOutlineUserCircle } from 'react-icons/hi'
+import { HiOutlineMenuAlt2, HiOutlineShoppingCart } from 'react-icons/hi'
 import Link from 'next/link'
 import { Dispatch, SetStateAction } from 'react'
 import { useShoppingCart } from 'use-shopping-cart'
 import { useRouter } from 'next/router'
 import NavBarLogo from '@/components/NavBarLogo'
+import LoginHeader from './LoginHeader'
 
 interface navBarProps {
   openMenu: Dispatch<SetStateAction<boolean>>
@@ -27,15 +28,8 @@ const NavBar = ({ openMenu }: navBarProps) => {
               </Link>
             </span>
           </div>
-          <div css={tw`flex gap-4 items-center justify-center`}>
-            <span>
-              <Link href="/login">
-                <a>
-                  <HiOutlineUserCircle />
-                  <span css={tw`sr-only`}>Login</span>
-                </a>
-              </Link>
-            </span>
+          <div css={tw`flex gap-4 items-center justify-center relative`}>
+            <LoginHeader />
             <span>
               <Link href="/cart" passHref>
                 <a css={tw`grid grid-cols-2 grid-rows-2 w-6 h-6`} href="/cart">

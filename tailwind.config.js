@@ -28,6 +28,12 @@ module.exports = {
       ringWidth: {
         '3': '3px',
       },
+      height: {
+        '18': '4.5rem',
+      },
+      width: {
+        '18': '4.5rem',
+      },
     },
     borderWidth: {
       DEFAULT: '1px',

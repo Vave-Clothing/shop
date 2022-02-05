@@ -1,9 +1,13 @@
 import tw from 'twin.macro'
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, useEffect } from 'react'
 import { HiOutlineUserCircle, HiOutlineX } from 'react-icons/hi'
 import { Transition } from '@headlessui/react'
 import { css, cx } from '@emotion/css'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
+import useSWR from 'swr'
+import fetcher from '@/lib/fetcher'
+import getInitials from '@/lib/getInitials'
 
 const menuItems = [
   { title: 'Home', href: '/' },
@@ -23,6 +27,14 @@ interface sideMenuProps {
 }
 
 const SideMenu = ({ open, close }: sideMenuProps) => {
+  const { status, data: session } = useSession()
+
+  const { data, mutate } = useSWR('/api/auth/user/self?scopes=self', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
+
+  useEffect(() => {
+    if(status === 'authenticated') mutate()
+  }, [status, mutate])
+
   return (
     <div css={tw`fixed top-0 left-0 z-50`}>
       <Transition
@@ -53,10 +65,25 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
               </button>
             </span>
           </div>
-          <div css={tw`flex gap-2 items-center flex-grow-0`}>
-            <HiOutlineUserCircle />
-            <span>Login</span>
-          </div>
+          {
+            status === 'authenticated' ? (
+              <Link href="/u/home" passHref>
+                <a href="/u/home" css={tw`flex gap-2 items-center flex-grow-0`} tabIndex={!open ? -1 : 0} onClick={() => close(false)}>
+                  <span css={tw`flex w-5 h-5 bg-black items-center justify-center rounded-full`}>
+                    <span css={tw`text-xs font-medium text-white`}>{ getInitials(data?.self.name || '@') }</span>
+                  </span>
+                  <span>{ data?.self.name || session?.user?.email }</span>
+                </a>
+              </Link>
+            ) : (
+              <Link href="/auth/login" passHref>
+                <a href="/auth/login" css={tw`flex gap-2 items-center flex-grow-0 select-none`} tabIndex={!open ? -1 : 0} onClick={() => close(false)}>
+                  <HiOutlineUserCircle />
+                  <span>Login</span>
+                </a>
+              </Link>
+            )
+          }
           <div css={tw`flex flex-col justify-between flex-grow leading-relaxed`}>
             <ul>
               {

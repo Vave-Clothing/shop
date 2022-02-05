@@ -44,6 +44,7 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
     switch (event.type) {
       case 'checkout.session.completed':
         eventType = event.data.object as Stripe.Checkout.Session
+        if(eventType.mode !== 'payment') break
         paymentStatus = eventType.payment_status === 'paid' ? 'paid' : 'processing'
         await Order.updateOne({ platform: 'stripe', pid: eventType.id }, { $set: {
           status: paymentStatus,

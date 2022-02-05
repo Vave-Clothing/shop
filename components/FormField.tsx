@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, useRef } from 'react'
+import React, { useRef } from 'react'
 import tw from 'twin.macro'
 
 interface formFieldProps {
@@ -8,11 +8,12 @@ interface formFieldProps {
   disabled?: boolean
   onEnter?(): any
   value: string
-  onChange: ChangeEventHandler
+  onChange: React.ChangeEventHandler<HTMLInputElement>
   error?: boolean
+  autocomplete?: "off" | "on" | "email" | "given-name" | "family-name" | "username" | "name"
 }
 
-const FormField = ({ prependIcon, appendIcon, placeholder, disabled, onEnter, value, onChange, error }: formFieldProps) => {
+const FormField = ({ prependIcon, appendIcon, placeholder, disabled, onEnter, value, onChange, error, autocomplete }: formFieldProps) => {
   const inputField = useRef<HTMLInputElement>(null)
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -35,7 +36,7 @@ const FormField = ({ prependIcon, appendIcon, placeholder, disabled, onEnter, va
           ]} onClick={() => inputField.current?.focus()}>{ prependIcon }</div>
         }
         <input
-          type="text"
+          type={autocomplete === 'email' ? 'email' : 'text'}
           css={tw`bg-transparent w-full focus:outline-none placeholder:text-gray-500 text-gray-900 disabled:(cursor-not-allowed placeholder:text-gray-300 text-gray-500)`}
           placeholder={placeholder}
           onKeyDown={(e) => handleKeyDown(e)}
@@ -43,6 +44,7 @@ const FormField = ({ prependIcon, appendIcon, placeholder, disabled, onEnter, va
           value={value}
           onChange={onChange}
           ref={inputField}
+          autoComplete={autocomplete}
         />
         {
           appendIcon &&

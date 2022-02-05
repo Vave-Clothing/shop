@@ -1,12 +1,13 @@
 import type { NextPage, GetStaticProps, InferGetStaticPropsType } from 'next'
 import tw from 'twin.macro'
 import Image from 'next/image'
-import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineUserCircle, HiOutlineMenuAlt2 } from 'react-icons/hi'
+import { HiOutlineArrowRight, HiOutlineShoppingCart, HiOutlineMenuAlt2 } from 'react-icons/hi'
 import Link from 'next/link'
 import SideMenu from '@/components/SideMenu'
 import { useState } from 'react'
 import client, { urlFor } from '@/lib/sanityClient'
 import NavBarLogo from '@/components/NavBarLogo'
+import LoginHeader from '@/components/LoginHeader'
 
 const footerLinks = [
   { title: 'Zahlungsmöglichkeiten', href: '/paymentmethods' },
@@ -54,15 +55,8 @@ const Home: NextPage = ({ page }: InferGetStaticPropsType<typeof getStaticProps>
                   </a>
                 </Link>
               </div>
-              <div css={tw`flex gap-4 items-center`}>
-                <span>
-                  <Link href="/login">
-                    <a>
-                      <HiOutlineUserCircle />
-                      <span css={tw`sr-only`}>Login</span>
-                    </a>
-                  </Link>
-                </span>
+              <div css={tw`flex gap-4 items-center relative`}>
+                <LoginHeader white={page.mainImageFgColor === 'white'} />
                 <span>
                   <Link href="/cart">
                     <a>

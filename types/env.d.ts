@@ -7,5 +7,18 @@ declare namespace NodeJS {
     PAYPAL_CS: string
     PAYPAL_WID: string
     MONGODB_URI: string
+    EMAIL_SERVER_USER: string
+    EMAIL_SERVER_PASSWORD: string
+    EMAIL_SERVER_HOST: string
+    EMAIL_SERVER_PORT: number
+    EMAIL_FROM: string
+    EMAIL_DKIM_DOMAIN: string
+    EMAIL_DKIM_SELECTOR: string
+    WEBAUTHN_DBNAME: string
+    APP_DOMAIN: string
+    APP_ORIGIN: string
+    APP_NAME: string
+    TOKEN_SECRET: string
+    NEXTAUTH_URL: string
   }
 }

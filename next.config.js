@@ -11,7 +11,9 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 
-module.exports = withBundleAnalyzer({
+const withTM = require('next-transpile-modules')(['@simplewebauthn/browser'])
+
+module.exports = withBundleAnalyzer(withTM({
   reactStrictMode: true,
   poweredByHeader: false,
   images: {
@@ -47,4 +49,4 @@ module.exports = withBundleAnalyzer({
 
     return config;
   }
-})
+}))
