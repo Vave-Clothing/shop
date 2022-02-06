@@ -67,7 +67,7 @@ const Cart: NextPage = () => {
         <div css={tw`flex-grow`}>
           {
             cart.map((i:any) => (
-              <div css={tw`border-b border-gray-200 py-3 px-4 flex sm:(justify-between items-center flex-row gap-1) flex-col gap-3`} key={i.priceId}>
+              <div css={tw`border-b border-gray-200 dark:border-gray-700 py-3 px-4 flex sm:(justify-between items-center flex-row gap-1) flex-col gap-3`} key={i.priceId}>
                 <div css={tw`flex items-center gap-2`}>
                   <div css={tw`relative w-12 h-12 rounded overflow-hidden`}>
                     <Image src={i.image} layout="fill" objectFit="cover" alt={i.name} placeholder="blur" blurDataURL={i.imageLQIP} />
@@ -84,7 +84,7 @@ const Cart: NextPage = () => {
                 <div css={tw`flex items-center gap-4 sm:justify-start justify-between`}>
                   <div css={tw`flex`}>
                     <button
-                      css={tw`w-8 h-8 hover:(bg-red-200 text-red-500) rounded flex items-center justify-center transition duration-200 disabled:(cursor-not-allowed text-gray-400 hover:(text-red-400 bg-red-50))`}
+                      css={tw`w-8 h-8 hover:(bg-red-200 text-red-500 dark:(bg-red-700 text-red-300)) rounded flex items-center justify-center transition duration-200 disabled:(cursor-not-allowed text-gray-400 hover:(text-red-400 bg-red-50 dark:(bg-red-800 text-red-400)))`}
                       disabled={ i.quantity < 2 }
                       onClick={() => decrementItem(i.priceId)}
                     >
@@ -92,7 +92,7 @@ const Cart: NextPage = () => {
                     </button>
                     <span css={tw`w-8 h-8 flex items-center justify-center`}>{ i.quantity }</span>
                     <button
-                      css={tw`w-8 h-8 hover:(bg-green-200 text-green-500) rounded flex items-center justify-center transition duration-200 disabled:(cursor-not-allowed text-gray-400 hover:(text-green-400 bg-green-50))`}
+                      css={tw`w-8 h-8 hover:(bg-green-200 text-green-500 dark:(bg-green-700 text-green-300)) rounded flex items-center justify-center transition duration-200 disabled:(cursor-not-allowed text-gray-400 hover:(text-green-400 bg-green-50 dark:(bg-green-800 text-green-400)))`}
                       disabled={ i.quantity >= i.stock }
                       onClick={() => incrementItem(i.priceId)}
                     >
@@ -117,9 +117,9 @@ const Cart: NextPage = () => {
           }
           {
             cart.length < 1 &&
-            <div css={tw`border-b border-gray-200 py-3 px-4 flex lg:items-center items-start lg:gap-4 gap-2 lg:flex-row flex-col`}>
+            <div css={tw`border-b border-gray-200 dark:border-gray-700 py-3 px-4 flex lg:items-center items-start lg:gap-4 gap-2 lg:flex-row flex-col`}>
               <span css={tw`text-xl font-medium`}>Keine Gegenstände im Einkaufswagen</span>
-              <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200`}>
+              <span css={tw`text-primary-500 hover:text-primary-400 dark:(text-primary-300 hover:text-primary-200) transition duration-200`}>
                 <Link href="/shop" passHref>
                   <a href="/shop" css={tw`flex items-center gap-1`}>
                     <span>Einkaufen</span>
@@ -130,7 +130,7 @@ const Cart: NextPage = () => {
             </div>
           }
         </div>
-        <div css={tw`lg:(border-l pl-3) border-gray-200`}>
+        <div css={tw`lg:(border-l pl-3) border-gray-200 dark:border-gray-700`}>
           <div css={[tw`flex flex-col-reverse lg:flex-col`, allowSticky ? tw`lg:sticky` : tw``]} ref={rightPanel} style={{ top: rightPanelTop }}>
             <div css={tw`flex items-end justify-center mt-3 flex-col lg:min-width[22rem]`}>
               <span>
@@ -162,7 +162,7 @@ const Cart: NextPage = () => {
             </div>
             <div css={tw`flex mt-4 flex-col items-start`}>
               <span css={tw`text-gray-400`}>* wird wärend des Checkouts berechnet</span>
-              <button css={tw`text-primary-400 disabled:(text-primary-100 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
+              <button css={tw`text-primary-400 disabled:(text-primary-900 cursor-not-allowed)`} onClick={() => emptyCart()} disabled={cartCount < 1}>Einkaufswagen leeren</button>
             </div>
           </div>
         </div>

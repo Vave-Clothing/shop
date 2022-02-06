@@ -127,10 +127,10 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
           <div css={tw`flex flex-col items-center grid-area[1/1/2/2]`}>
             <div css={tw`md:height[48rem] height[24rem] w-full relative rounded-xl overflow-hidden`}>
               <div css={tw`absolute top-1/2 left-0 right-0 transform -translate-y-1/2 md:flex items-center justify-between opacity-0 group-hover:opacity-100 transition duration-200 z-index[+1] px-2 hidden`}>
-                <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(false)}>
+                <div css={tw`text-xl bg-white text-black bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(false)}>
                   <HiOutlineArrowLeft />
                 </div>
-                <div css={tw`text-xl bg-white bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(true)}>
+                <div css={tw`text-xl bg-white text-black bg-opacity-75 py-4 px-2 rounded cursor-pointer`} onClick={() => changeImg(true)}>
                   <HiOutlineArrowRight />
                 </div>
               </div>
@@ -204,16 +204,16 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
             </div>
             <div css={tw`mt-4`}>
               <div css={tw`flex items-center gap-2 flex-wrap`}>
-                <div css={tw`flex items-center gap-2 border border-gray-200 w-max rounded-lg p-0.5 text-sm shadow-sm mt-3 h-9`}>
+                <div css={tw`flex items-center gap-2 border border-gray-200 dark:border-gray-700 w-max rounded-lg p-0.5 text-sm shadow-sm mt-3 h-9`}>
                   {
                     product.variants.map((v:any, i:number) => (
                       <button
                         css={[
                           tw`uppercase rounded-lg px-3 py-1 cursor-pointer transition duration-300`,
-                          tw`focus:outline-none focus-visible:(ring-2 ring-gray-400)`,
-                          tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-300)`,
-                          tw`disabled:(bg-red-100 cursor-not-allowed hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-red-300))`,
-                          sizeSelector === i ? tw`bg-gray-200 disabled:bg-red-200` : tw``,
+                          tw`focus:outline-none focus-visible:(ring-2 ring-gray-400 dark:ring-gray-500)`,
+                          tw`hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-gray-300 dark:ring-offset-gray-600)`,
+                          tw`disabled:(bg-red-100 cursor-not-allowed hover:(ring ring-inset ring-transparent ring-offset-1 ring-offset-red-300) dark:(bg-red-700 hover:ring-offset-red-500))`,
+                          sizeSelector === i ? tw`bg-gray-200 disabled:bg-red-200 dark:(bg-gray-700 disabled:bg-red-800)` : tw``,
                         ]}
                         key={v._key}
                         onClick={() => {
@@ -248,7 +248,7 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
       <div css={tw`mt-8`}>
         <div css={tw`items-center justify-center md:flex hidden`}>
           <button css={[
-            tw`p-2 text-xl border border-gray-200 rounded-full shadow transition duration-200 ring-gray-400 hover:(border-gray-300) active:(border-gray-500)`,
+            tw`p-2 text-xl border border-gray-200 rounded-full shadow transition duration-200 ring-gray-400 hover:(border-gray-300) active:(border-gray-500) dark:(border-gray-700 ring-gray-500 hover:border-gray-600)`,
             tw`focus:outline-none focus-visible:ring-3`
           ]} onClick={() => scrollToDetails()}>
             <HiOutlineArrowDown />
@@ -266,7 +266,7 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
         </h2>
         <table css={tw`w-full border-collapse md:max-w-2xl max-w-xl text-sm md:text-base`}>
           <tbody>
-            <tr css={tw`border-b border-gray-200`}>
+            <tr css={tw`border-b border-gray-200 dark:border-gray-700`}>
               <th css={tw`md:text-sm text-xs font-normal text-left`}>in cm</th>
               {
                 product.variants.map((v:any) => (
@@ -276,7 +276,7 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
                 ))
               }
             </tr>
-            <tr css={tw`border-b border-gray-200`}>
+            <tr css={tw`border-b border-gray-200 dark:border-gray-700`}>
               <td css={tw`font-normal uppercase`}>Chest</td>
               {
                 product.variants.map((v:any) => (

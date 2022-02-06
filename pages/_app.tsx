@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import NavBar from '@/components/NavBar'
 import PageContent from '@/components/PageContent'
 import SideMenu from '@/components/SideMenu'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useLayoutEffect } from 'react'
 import getStripe from '@/lib/getStripeJs'
 import { CartProvider } from 'use-shopping-cart'
 import { Toaster } from 'react-hot-toast'
@@ -12,6 +12,8 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import startsWith from '@/lib/startsWith'
 import '@/styles/emoji.css'
 import { SessionProvider } from 'next-auth/react'
+import darkmode from '@/lib/darkmode'
+import Footer from '@/components/Footer'
 
 const queryClient = new QueryClient()
 
@@ -21,6 +23,10 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
 
   useEffect(() => {
     getStripe.name
+  }, [])
+
+  useLayoutEffect(() => {
+    darkmode()
   }, [])
 
   return (
@@ -70,9 +76,14 @@ function MyApp({ Component, pageProps: { session, ...pageProps } }: AppProps) {
                   <NavBar openMenu={setMenu} />
                 }
                 <SideMenu open={menu} close={setMenu} />
-                <PageContent>
-                  <Component {...pageProps} />
-                </PageContent>
+                <div css={[tw`flex flex-col w-full justify-between items-center`, !startsWith(router.pathname, '/checkout') ? tw`min-height[calc(100% - 3.125rem)]` : tw`min-height[100%]`]}>
+                  <PageContent>
+                    <Component {...pageProps} />
+                  </PageContent>
+                  <div css={tw`flex flex-col items-center w-full py-1`}>
+                    <Footer />
+                  </div>
+                </div>
               </div>
             }
           </CartProvider>

@@ -189,7 +189,7 @@ const Security: NextPage = () => {
         <span css={tw`block mb-4 leading-tight font-light text-sm`}>Melde dich mit einem Sicherheitsschlüssel schneller an und klicke nicht mehr in Emails rum</span>
         <table css={tw`table-fixed w-full`}>
           <thead>
-            <tr css={tw`border-b border-b-gray-200`}>
+            <tr css={tw`border-b border-b-gray-200 dark:border-b-gray-700`}>
               <th>
                 Name
               </th>
@@ -205,7 +205,7 @@ const Security: NextPage = () => {
           <tbody>
             {
               data?.security.map((s: any) => (
-                <tr key={s.id} css={tw`last-of-type:border-b-0 border-b border-b-gray-200 text-center`}>
+                <tr key={s.id} css={tw`last-of-type:border-b-0 border-b border-b-gray-200 dark:border-b-gray-700 text-center`}>
                   <td css={tw`font-medium`}>{ s.credentialName }</td>
                   <td css={tw`font-light`}>{ new Date(s.createdAt).toLocaleDateString('de-DE', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }</td>
                   <td css={tw`flex gap-2 justify-center py-2`}>
@@ -299,16 +299,16 @@ const Security: NextPage = () => {
                 <div css={tw`ml-1`}>
                   <RadioGroup.Option value="cross-platform">
                     {({ checked, disabled }) => (
-                      <span css={[tw`cursor-pointer flex items-center gap-1`, disabled ? tw`text-gray-600 cursor-not-allowed` : tw`text-black`]}>
-                        <span css={[tw`block w-4 h-4 rounded-full ring-4 ring-inset ring-offset-4 ring-offset-white border border-gray-200 flex-shrink-0`, checked ? disabled ? tw`ring-gray-600` : tw`ring-black` : tw`ring-white`]} />
+                      <span css={[tw`cursor-pointer flex items-center gap-1`, disabled ? tw`text-gray-600 cursor-not-allowed dark:text-gray-300` : tw`text-black dark:text-gray-100`]}>
+                        <span css={[tw`block w-4 h-4 rounded-full ring-4 ring-inset ring-offset-4 ring-offset-white border border-gray-200 flex-shrink-0 dark:(ring-offset-gray-900 border-gray-700)`, checked ? disabled ? tw`ring-gray-600 dark:ring-gray-300` : tw`ring-black dark:ring-gray-100` : tw`ring-white dark:ring-gray-900`]} />
                         <span>Cross-Plaform (z.B. Yubikey)</span>
                       </span>
                     )}
                   </RadioGroup.Option>
                   <RadioGroup.Option value="platform" disabled={!canPlatformKey}>
                     {({ checked, disabled }) => (
-                      <span css={[tw`cursor-pointer flex items-center gap-1`, disabled ? tw`text-gray-600 cursor-not-allowed` : tw`text-black`]}>
-                        <span css={[tw`block w-4 h-4 rounded-full ring-4 ring-inset ring-offset-4 ring-offset-white border border-gray-200 flex-shrink-0`, checked ? disabled ? tw`ring-gray-600` : tw`ring-black` : tw`ring-white`]} />
+                      <span css={[tw`cursor-pointer flex items-center gap-1`, disabled ? tw`text-gray-600 cursor-not-allowed dark:text-gray-300` : tw`text-black dark:text-gray-100`]}>
+                        <span css={[tw`block w-4 h-4 rounded-full ring-4 ring-inset ring-offset-4 ring-offset-white border border-gray-200 flex-shrink-0 dark:(ring-offset-gray-900 border-gray-700)`, checked ? disabled ? tw`ring-gray-600 dark:ring-gray-300` : tw`ring-black dark:ring-gray-100` : tw`ring-white dark:ring-gray-900`]} />
                         <span>Plaform (z.B. Touch-ID, Windows Hello, Face-ID)</span>
                       </span>
                     )}

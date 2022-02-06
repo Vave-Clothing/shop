@@ -29,7 +29,7 @@ const Success: NextPage = () => {
 
   return (
     <div css={tw`flex items-center flex-col gap-3`}>
-      <div css={tw`flex flex-col items-center bg-gray-100 rounded-xl py-7 px-6 shadow-sm gap-4 md:gap-0`}>
+      <div css={tw`flex flex-col items-center bg-gray-100 dark:bg-gray-800 rounded-xl py-7 px-6 shadow-sm gap-4 md:gap-0`}>
         {
           error ? (
             <div css={tw`flex items-center gap-2 md:text-2xl text-xl`}>
@@ -38,7 +38,7 @@ const Success: NextPage = () => {
             </div>
           ) : !data ? (
             <div css={tw`flex items-center gap-2 md:text-2xl text-xl`}>
-              <span css={tw`block w-6 h-6 border-3 border-yellow-200 border-t-yellow-400 rounded-full animate-spin`}></span>
+              <span css={tw`block w-6 h-6 border-3 border-yellow-200 border-t-yellow-400 dark:(border-yellow-700 border-t-yellow-500) rounded-full animate-spin`}></span>
               <span>Lädt...</span>
             </div>
           ) : (
@@ -73,7 +73,7 @@ const Success: NextPage = () => {
           )
         }
       </div>
-      <span css={tw`text-indigo-500 hover:text-indigo-400 transition duration-200`}>
+      <span css={tw`text-primary-500 hover:text-primary-400 dark:(text-primary-300 hover:text-primary-200) transition duration-200`}>
         <Link href="/shop" passHref>
           <a href="/shop" css={tw`flex items-center gap-1`}>
             <span>Zurück zum Shop</span>

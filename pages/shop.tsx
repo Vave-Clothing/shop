@@ -93,7 +93,7 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetStaticPropsTy
       <div css={tw`grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4`}>
         {
           products.map((product: any, i: number) => (
-            <div key={i} css={tw`border border-gray-200 rounded-lg p-4 relative`} className="group">
+            <div key={i} css={tw`border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative`} className="group">
               <div css={tw`flex justify-center items-center`}>
                 <div css={tw`w-80 h-80 overflow-hidden group-hover:scale-105 transition duration-200 rounded relative`}>
                   <Image src={product.img} layout="fill" objectFit="cover" objectPosition={imgHotspot(product.imgHotspot)} alt={product.title} placeholder="blur" blurDataURL={product.imgLQIP} />

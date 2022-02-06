@@ -11,9 +11,10 @@ import fetcher from '@/lib/fetcher'
 
 interface loginHeaderProps {
   white?: boolean
+  ingoreDarkmode?: boolean
 }
 
-const LoginHeader = ({ white }: loginHeaderProps) => {
+const LoginHeader = ({ white, ingoreDarkmode }: loginHeaderProps) => {
   const { status } = useSession()
 
   const { data, mutate } = useSWR('/api/auth/user/self?scopes=self', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
@@ -30,8 +31,18 @@ const LoginHeader = ({ white }: loginHeaderProps) => {
             {({ open }) => (
               <>
                 <Menu.Button>
-                  <span css={[tw`flex w-6 h-6 bg-black rounded-full items-center justify-center select-none`, white ? tw`xl:bg-white` : tw``]}>
-                    <span css={[tw`text-white text-xs font-medium`, white ? tw`xl:text-black` : tw``]}>{ getInitials(data?.self.name || '@') }</span>
+                  <span css={[
+                    tw`flex w-6 h-6 bg-black rounded-full items-center justify-center select-none`,
+                    white ? tw`xl:bg-white` : tw``,
+                    ingoreDarkmode ? tw`` : tw`dark:bg-gray-100`
+                  ]}>
+                    <span css={[
+                      tw`text-white text-xs font-medium`,
+                      white ? tw`xl:text-black` :
+                      ingoreDarkmode ? tw`` : tw`dark:text-black`
+                    ]}>
+                      { getInitials(data?.self.name || '@') }
+                    </span>
                   </span>
                 </Menu.Button>
                 <Transition
@@ -46,11 +57,14 @@ const LoginHeader = ({ white }: loginHeaderProps) => {
                     leaveTo: cx(css(tw`transform scale-95 opacity-0`)),
                   }}
                 >
-                  <Menu.Items css={tw`absolute text-lg -left-1 top-7 bg-white border border-gray-200 rounded-lg px-1 shadow flex flex-col divide-y divide-gray-200`} static>
+                  <Menu.Items css={[
+                    tw`absolute text-lg -left-1 top-7 bg-white border border-gray-200 rounded-lg px-1 shadow flex flex-col divide-y divide-gray-200`,
+                    ingoreDarkmode ? tw`` : tw`dark:(bg-gray-900 border-gray-700 divide-gray-700)`
+                  ]} static>
                     <div css={tw`py-1 w-full`}>
                       <Menu.Item as="div">
                         <Link href="/u/home" passHref>
-                          <a href="/u/home" css={tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full`}>
+                          <a href="/u/home" css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full`, ingoreDarkmode ? tw`` : tw`dark:hover:bg-gray-700`]}>
                             <HiOutlineCog />
                             <span>Profil</span>
                           </a>
@@ -59,7 +73,7 @@ const LoginHeader = ({ white }: loginHeaderProps) => {
                     </div>
                     <div css={tw`py-1 w-full`}>
                       <Menu.Item as="div">
-                        <button onClick={() => signOut({ callbackUrl: '/auth/login' })} css={tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full`}>
+                        <button onClick={() => signOut({ callbackUrl: '/auth/login' })} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full`, ingoreDarkmode ? tw`` : tw`dark:hover:bg-gray-700`]}>
                           <HiOutlineLogout />
                           <span>Logout</span>
                         </button>
@@ -73,7 +87,7 @@ const LoginHeader = ({ white }: loginHeaderProps) => {
         ) : (
           <span>
             <Link href="/auth/login" passHref>
-              <a href="/auth/login" css={[tw`text-black`, white ? tw`xl:text-white` : tw`xl:text-black`]}>
+              <a href="/auth/login" css={[tw`text-black dark:text-white!`, white ? tw`xl:text-white` : tw`xl:text-black`]}>
                 <HiOutlineUserCircle />
                 <span css={tw`sr-only`}>Login</span>
               </a>

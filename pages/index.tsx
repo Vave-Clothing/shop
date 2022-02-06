@@ -56,7 +56,7 @@ const Home: NextPage = ({ page }: InferGetStaticPropsType<typeof getStaticProps>
                 </Link>
               </div>
               <div css={tw`flex gap-4 items-center relative`}>
-                <LoginHeader white={page.mainImageFgColor === 'white'} />
+                <LoginHeader white={page.mainImageFgColor === 'white'} ingoreDarkmode={true} />
                 <span>
                   <Link href="/cart">
                     <a>

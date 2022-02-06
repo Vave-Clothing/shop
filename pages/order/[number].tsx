@@ -31,13 +31,13 @@ const CurrentStatusBar = ({ status }: currentStatusBarProps) => {
       <div css={tw`grid w-full`}>
         <div css={tw`grid-area[1/1/2/2] flex items-center`}>
           <span css={tw`block w-full border-b border-b-transparent`}></span>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 1 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 1 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
         </div>
         <div css={tw`grid-area[1/1/2/2] flex flex-col items-center`}>
           <span css={tw`invisible text-sm md:text-base text-center`}>Auftrag erhalten</span>
           <span css={[
             tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110 bg-gray-400`,
-            status > 0 ? tw`bg-green-500` : tw`bg-gray-400`
+            status > 0 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
           ]}>
             <span css={tw`text-lg md:text-xl text-white`}>
               {
@@ -54,14 +54,14 @@ const CurrentStatusBar = ({ status }: currentStatusBarProps) => {
       </div>
       <div css={tw`grid w-full`}>
         <div css={tw`grid-area[1/1/2/2] flex items-center`}>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 1 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 2 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 1 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 2 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
         </div>
         <div css={tw`grid-area[1/1/2/2] flex flex-col items-center`}>
           <span css={tw`invisible text-sm md:text-base text-center`}>Paket an Versand übergeben</span>
           <span css={[
             tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-            status > 1 ? tw`bg-green-500` : tw`bg-gray-400`
+            status > 1 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
           ]}>
             <span css={tw`text-lg md:text-xl text-white`}>
               {
@@ -78,14 +78,14 @@ const CurrentStatusBar = ({ status }: currentStatusBarProps) => {
       </div>
       <div css={tw`grid w-full`}>
         <div css={tw`grid-area[1/1/2/2] flex items-center`}>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 2 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 3 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 2 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 3 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
         </div>
         <div css={tw`grid-area[1/1/2/2] flex flex-col items-center`}>
           <span css={tw`invisible text-sm md:text-base text-center`}>Auf dem Weg zu dir</span>
           <span css={[
             tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-            status > 2 ? tw`bg-green-500` : tw`bg-gray-400`
+            status > 2 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
           ]}>
             <span css={tw`text-lg md:text-xl text-white`}>
               {
@@ -102,14 +102,14 @@ const CurrentStatusBar = ({ status }: currentStatusBarProps) => {
       </div>
       <div css={tw`grid w-full`}>
         <div css={tw`grid-area[1/1/2/2] flex items-center`}>
-          <span css={[ tw`block w-full border-b transition duration-200`, status > 3 ? tw` border-b-green-400` : tw` border-b-gray-200` ]}></span>
+          <span css={[ tw`block w-full border-b transition duration-200`, status > 3 ? tw`border-b-green-400 dark:border-b-green-500` : tw`border-b-gray-200 dark:border-b-gray-700` ]}></span>
           <span css={tw`block w-full border-b border-b-transparent`}></span>
         </div>
         <div css={tw`grid-area[1/1/2/2] flex flex-col items-center`}>
           <span css={tw`invisible text-sm md:text-base text-center`}>Bei dir</span>
           <span css={[
             tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-            status > 3 ? tw`bg-green-500` : tw`bg-gray-400`
+            status > 3 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
           ]}>
             <span css={tw`text-lg md:text-xl text-white`}>
               {
@@ -224,15 +224,15 @@ const Order: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerS
 
   return (
     <div>
-      <h1 css={tw`text-4xl font-semibold mb-4 flex flex-col justify-center leading-none`}><span>Deine Bestellung</span><span css={tw`font-mono text-base leading-none text-gray-600`}>{data.order_number}</span></h1>
+      <h1 css={tw`text-4xl font-semibold mb-4 flex flex-col justify-center leading-none`}><span>Deine Bestellung</span><span css={tw`font-mono text-base leading-none text-gray-600 dark:text-gray-300`}>{data.order_number}</span></h1>
       <CurrentStatusBar status={shippingStatus()} />
       <div css={tw`max-w-screen-lg w-full mx-auto flex flex-col md:flex-row gap-4 md:gap-0 mt-8`}>
-        <div css={tw`w-full md:(border-r border-r-gray-200 pr-3)`}>
+        <div css={tw`w-full md:(border-r border-r-gray-200 dark:border-r-gray-700 pr-3)`}>
           <span css={tw`text-xl font-semibold mb-2 hidden md:block`}>Bestellte Produkte</span>
           <div>
             {
               cart.map((i:any) => (
-                <div css={tw`flex items-center justify-between border-b border-b-gray-200 py-1 px-3`} key={i.priceId}>
+                <div css={tw`flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 py-1 px-3`} key={i.priceId}>
                   <div css={tw`flex flex-col justify-center`}>
                     <span>{ i.quantity }x { i.name }</span>
                   </div>
@@ -272,12 +272,12 @@ const Order: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerS
             <div css={tw`flex gap-2 items-center`}>
               <span css={[
                 tw`block w-2 h-2 rounded-full shadow`,
-                paymentStatus()?.color === 'gray' ? tw`bg-gray-400` :
-                paymentStatus()?.color === 'yellow' ? tw`bg-yellow-400` :
-                paymentStatus()?.color === 'green' ? tw`bg-green-500` :
-                paymentStatus()?.color === 'red' ? tw`bg-red-500` :
-                paymentStatus()?.color === 'blue' ? tw`bg-blue-400` :
-                tw`bg-gray-400`
+                paymentStatus()?.color === 'gray' ? tw`bg-gray-400 dark:bg-gray-500` :
+                paymentStatus()?.color === 'yellow' ? tw`bg-yellow-400 dark:bg-yellow-500` :
+                paymentStatus()?.color === 'green' ? tw`bg-green-500 dark:bg-green-400` :
+                paymentStatus()?.color === 'red' ? tw`bg-red-500 dark:bg-red-400` :
+                paymentStatus()?.color === 'blue' ? tw`bg-blue-400 dark:bg-blue-500` :
+                tw`bg-gray-400 dark:bg-gray-500`
               ]}></span>
               <span>{ paymentStatus()?.message }</span>
               {
@@ -297,7 +297,7 @@ const Order: NextPage = ({ data }: InferGetServerSidePropsType<typeof getServerS
                   <span css={tw`font-medium mt-1`}>Emails an</span>
                   <span>{data.email.replace(/\*/g, '·')}</span>
                   <span css={tw`font-medium mt-1`}>Lieferung an</span>
-                  <div css={tw`flex flex-col border border-gray-200 px-2 py-1 rounded shadow-sm leading-snug`}>
+                  <div css={tw`flex flex-col border border-gray-200 dark:border-gray-700 px-2 py-1 rounded shadow-sm leading-snug`}>
                     <span>{data.shipping_address.name}</span>
                     <span>{data.shipping_address.line1}</span>
                     <span>{data.shipping_address.line2}</span>

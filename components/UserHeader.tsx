@@ -14,13 +14,13 @@ const UserHeader = ({ name, email }: userHeaderProps) => {
 
   return (
     <div css={tw`flex gap-3 items-center w-full`}>
-      <span css={tw`flex text-xl bg-black items-center justify-center w-14 h-14 text-white rounded-full font-semibold select-none`}>
+      <span css={tw`flex text-xl bg-black items-center justify-center w-14 h-14 text-white rounded-full font-semibold select-none dark:(bg-gray-100 text-black)`}>
         <span>{ getInitials(inputName) }</span>
       </span>
       <div css={tw`flex flex-col`}>
         <span css={tw`text-lg font-medium leading-tight`}>{ inputName }</span>
         <span css={tw`text-sm font-light leading-tight`}>{ inputEmail }</span>
-        <span css={tw`text-xs font-light leading-tight text-indigo-500 hover:text-indigo-400 transition duration-200`}>
+        <span css={tw`text-xs font-light leading-tight text-primary-500 hover:text-primary-400 dark:(text-primary-300 hover:text-primary-200) transition duration-200`}>
           <Link href="/u/home" passHref>
             <a href="/u/home" css={tw`flex items-center gap-0.5`}>
               <HiOutlineHome />

@@ -136,11 +136,11 @@ const Home: NextPage = () => {
 
   if (status === 'authenticated') return (
     <div css={tw`flex flex-col gap-4 items-center`}>
-      <div css={tw`grid w-full md:grid-cols-2 grid-cols-1 max-w-2xl mt-8 border-b border-gray-200 pb-4`}>
+      <div css={tw`grid w-full md:grid-cols-2 grid-cols-1 max-w-2xl mt-8 border-b border-gray-200 dark:border-gray-700 pb-4`}>
         <div css={tw`flex flex-col items-center gap-2`}>
           <div css={tw`select-none`}>
-            <span css={tw`flex w-18 h-18 bg-black rounded-full items-center justify-center`}>
-              <span css={tw`text-white text-3xl font-semibold`}>{ getInitials(data?.self.name || '') }</span>
+            <span css={tw`flex w-18 h-18 bg-black dark:bg-gray-100 rounded-full items-center justify-center`}>
+              <span css={tw`text-white dark:text-black text-3xl font-semibold`}>{ getInitials(data?.self.name || '') }</span>
             </span>
           </div>
           <div css={tw`flex flex-col items-center`}>
@@ -168,7 +168,7 @@ const Home: NextPage = () => {
         <span css={tw`block mb-4 leading-tight`}>Deine letzten fünf Bestellungen</span>
         <table css={tw`table-fixed text-center`}>
           <thead>
-            <tr css={tw`border-b border-gray-200 md:text-base text-sm`}>
+            <tr css={tw`border-b border-gray-200 dark:border-gray-700 md:text-base text-sm`}>
               <th>
                 <span css={tw`md:inline hidden`}>Bestellungsnummer</span>
                 <span css={tw`md:hidden`}>Bestellung</span>
@@ -190,12 +190,12 @@ const Home: NextPage = () => {
           <tbody>
             {
               data?.orders.slice(0, 5).map((o:any) => (
-                <tr key={o.id} css={tw`border-b border-gray-200 odd-of-type:bg-gray-100 hover:bg-gray-200 select-none`}>
+                <tr key={o.id} css={tw`border-b border-gray-200 odd-of-type:bg-gray-100 hover:bg-gray-200 select-none dark:(border-gray-700 odd-of-type:bg-gray-800 hover:bg-gray-700)`}>
                   <td css={tw`py-1`}>
                     <Link href={`/order/${o.order_number}`} passHref>
                       <a href={`/order/${o.order_number}`} css={tw`flex items-center justify-center`}>
-                        <span css={tw`font-mono text-gray-600 md:hidden`}>{ o.order_number.substring(0, 3) + '...' }</span>
-                        <span css={tw`font-mono text-gray-600 md:inline hidden`}>{o.order_number}</span>
+                        <span css={tw`font-mono text-gray-600 dark:text-gray-300 md:hidden`}>{ o.order_number.substring(0, 3) + '...' }</span>
+                        <span css={tw`font-mono text-gray-600 dark:text-gray-300 md:inline hidden`}>{o.order_number}</span>
                         <span css={tw`text-gray-500`}>
                           <HiOutlineExternalLink />
                         </span>
@@ -245,9 +245,9 @@ const Home: NextPage = () => {
         <div css={tw`grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-2`}>
           {
             data?.paymentMethods.map((m:any, i:number) => (
-              <div key={m.id} css={tw`bg-gray-50 aspect-ratio[4280/2699] w-full border border-gray-200 border-radius[10px] relative overflow-hidden `}>
+              <div key={m.id} css={tw`bg-gray-50 aspect-ratio[4280/2699] w-full border border-gray-200 border-radius[10px] relative overflow-hidden dark:(bg-gray-800 border-gray-700)`}>
                 <div css={tw`absolute bottom-0 right-0 left-1/2 top-1/2 flex items-end justify-end p-2`}>
-                  <span css={tw`w-1/2 h-1/2 text-gray-500`}>
+                  <span css={tw`w-1/2 h-1/2 text-gray-500 bg-gray-50 rounded dark:(ring-2 ring-gray-400)`}>
                     <CardBrands brand={m.brand} />
                   </span>
                 </div>
@@ -292,7 +292,7 @@ const Home: NextPage = () => {
                 >
                   <div css={tw`absolute inset-0 bg-black bg-opacity-25 flex items-center justify-center`} onClick={() => switchCardOption(i)}>
                     <div css={tw`flex gap-1`}>
-                      <IconButton onClick={() => deleteCard(m.id)} icon={<HiOutlineTrash />} adCss={tw`bg-white`} />
+                      <IconButton onClick={() => deleteCard(m.id)} icon={<HiOutlineTrash />} adCss={tw`bg-white dark:bg-black`} />
                     </div>
                   </div>
                 </Transition>

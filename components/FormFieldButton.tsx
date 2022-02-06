@@ -15,6 +15,7 @@ const FormFieldButton = ({ children, onClick, disabled, adCss, loading }: formFi
       css={[
         tw`flex justify-center items-center relative focus:outline-none first:rounded-l-lg last:rounded-r-lg px-3 py-1 transition duration-200 whitespace-nowrap focus-visible:ring-2`,
         tw`border border-gray-200 hover:(border-gray-300) active:(border-gray-500) ring-gray-400 disabled:(border-gray-100 ring-gray-200 text-gray-500 cursor-not-allowed)`,
+        tw`dark:(border-gray-700 hover:border-gray-600 ring-gray-500 disabled:(border-gray-800 ring-gray-700))`,
         adCss ? adCss : tw``
       ]}
       onClick={() => onClick()}
@@ -32,7 +33,7 @@ const FormFieldButton = ({ children, onClick, disabled, adCss, loading }: formFi
           <span
             css={[
               tw`block h-4 w-4 rounded-full border-2 animate-spin`,
-              tw`border-gray-200 border-t-gray-400`
+              tw`border-gray-200 border-t-gray-400 dark:(border-gray-700 border-t-gray-500)`
             ]}
           >
           </span>

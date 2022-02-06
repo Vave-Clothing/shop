@@ -63,7 +63,7 @@ const Orders: NextPage = () => {
         <span css={tw`block mb-4 leading-tight font-light text-sm`}>Hier sind alle deine Bestellungen</span>
         <table css={tw`table-fixed text-center w-full`}>
           <thead>
-            <tr css={tw`border-b border-gray-200 md:text-base text-sm`}>
+            <tr css={tw`border-b border-gray-200 dark:border-gray-700 md:text-base text-sm`}>
               <th>
                 <span css={tw`md:inline hidden`}>Bestellungsnummer</span>
                 <span css={tw`md:hidden`}>Bestellung</span>
@@ -85,12 +85,12 @@ const Orders: NextPage = () => {
           <tbody>
             {
               data?.orders.map((o:any) => (
-                <tr key={o.id} css={tw`border-b border-gray-200 odd-of-type:bg-gray-100 hover:bg-gray-200 select-none`}>
+                <tr key={o.id} css={tw`border-b border-gray-200 odd-of-type:bg-gray-100 hover:bg-gray-200 select-none dark:(border-gray-700 odd-of-type:bg-gray-800 hover:bg-gray-700)`}>
                   <td css={tw`py-1`}>
                     <Link href={`/order/${o.order_number}`} passHref>
                       <a href={`/order/${o.order_number}`} css={tw`flex items-center justify-center`}>
-                        <span css={tw`font-mono text-gray-600 md:hidden`}>{ o.order_number.substring(0, 3) + '...' }</span>
-                        <span css={tw`font-mono text-gray-600 md:inline hidden`}>{o.order_number}</span>
+                        <span css={tw`font-mono text-gray-600 dark:text-gray-300 md:hidden`}>{ o.order_number.substring(0, 3) + '...' }</span>
+                        <span css={tw`font-mono text-gray-600 dark:text-gray-300 md:inline hidden`}>{o.order_number}</span>
                         <span css={tw`text-gray-500`}>
                           <HiOutlineExternalLink />
                         </span>
@@ -121,7 +121,7 @@ const Orders: NextPage = () => {
               data?.orders.length < 1 &&
               <tr>
                 <td colSpan={4}>
-                  <span css={tw`py-0.5 text-gray-400`}>Du hast noch keine Bestellungen</span>
+                  <span css={tw`py-0.5 text-gray-400 dark:text-gray-500`}>Du hast noch keine Bestellungen</span>
                 </td>
               </tr>
             }

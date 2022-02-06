@@ -118,7 +118,7 @@ const Login: NextPage = () => {
         <h1 css={tw`text-4xl font-semibold mb-4`}>Login</h1>
         <div css={tw`w-full max-w-sm text-center`}>
           <p css={tw`text-lg`}>Um dich anzumelden, musst du auf den Link in der Email klicken, die du gerade von uns erhalten hast.</p>
-          <p css={tw`font-light text-gray-600`}>Absender: <span css={tw`text-black font-normal`}>noreply@vave-clohting.de</span></p>
+          <p css={tw`font-light text-gray-600 dark:text-gray-300`}>Absender: <span css={tw`text-black dark:text-gray-100 font-normal`}>noreply@vave-clohting.de</span></p>
         </div>
       </div>
     </div>
@@ -154,7 +154,7 @@ const Login: NextPage = () => {
           </FormFieldWrapper>
         </div>
       </div>
-      <span css={tw`text-indigo-500 hover:text-indigo-400 transition duration-200 text-sm`}>
+      <span css={tw`text-primary-500 hover:text-primary-400 dark:(text-primary-300 hover:text-primary-200) transition duration-200 text-sm`}>
         <Link href="/auth/register" passHref>
           <a href="/auth/register" css={tw`flex items-center gap-1`}>
             <span>Registrieren</span>

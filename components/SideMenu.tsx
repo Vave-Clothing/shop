@@ -48,12 +48,12 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
           leaveTo: cx(css(tw`opacity-0`)),
         }}
       >
-        <div css={tw`fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-20 hidden sm:block`} onClick={() => { close(false) }}></div>
+        <div css={tw`fixed top-0 left-0 bottom-0 right-0 bg-black bg-opacity-20 dark:bg-opacity-30 hidden sm:block`} onClick={() => { close(false) }}></div>
       </Transition>
 
       {/* This is a very bad way of implementing an animation */}
       <div css={[
-        tw`fixed top-0 right-0 sm:bg-gray-100 bg-white max-w-[40rem] w-full h-full py-4 px-6 sm:border-l border-gray-200 transform transition-all duration-300`, 
+        tw`fixed top-0 right-0 sm:bg-gray-100 bg-white max-w-[40rem] w-full h-full py-4 px-6 sm:border-l border-gray-200 transform transition-all duration-300 dark:(sm:bg-gray-800 bg-gray-900! border-gray-700)`, 
         open ? tw`translate-x-0` : tw`translate-x-full`
       ]}>
         <div css={tw`flex flex-col text-xl gap-4 items-stretch h-full`}>
@@ -69,8 +69,8 @@ const SideMenu = ({ open, close }: sideMenuProps) => {
             status === 'authenticated' ? (
               <Link href="/u/home" passHref>
                 <a href="/u/home" css={tw`flex gap-2 items-center flex-grow-0`} tabIndex={!open ? -1 : 0} onClick={() => close(false)}>
-                  <span css={tw`flex w-5 h-5 bg-black items-center justify-center rounded-full`}>
-                    <span css={tw`text-xs font-medium text-white`}>{ getInitials(data?.self.name || '@') }</span>
+                  <span css={tw`flex w-5 h-5 bg-black dark:bg-gray-100 items-center justify-center rounded-full`}>
+                    <span css={tw`text-xs font-medium text-white dark:text-black`}>{ getInitials(data?.self.name || '@') }</span>
                   </span>
                   <span>{ data?.self.name || session?.user?.email }</span>
                 </a>

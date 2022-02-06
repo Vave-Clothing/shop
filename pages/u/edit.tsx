@@ -82,7 +82,7 @@ const Edit: NextPage = () => {
           </div>
           <div css={tw`flex justify-start flex-col gap-2`}>
             <div>
-              <span css={tw`text-gray-600 text-xs font-light`}>Bearbeite hier deine Lieferadresse</span>
+              <span css={tw`text-gray-600 dark:text-gray-300 text-xs font-light`}>Bearbeite hier deine Lieferadresse</span>
               <FormButton onClick={() => goToCustomerPortal()} loading={loading === 'portal'} disabled={loading === 'save'}>
                 <>
                   <HiOutlineExternalLink />

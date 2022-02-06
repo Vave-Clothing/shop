@@ -24,7 +24,7 @@ const Begin: NextPage = () => {
       <h2 css={tw`text-2xl font-semibold mt-6 mb-4`}>Überprüfe noch einmal Deine Bestellung</h2>
       {
         cart.map((i:any) => (
-          <div css={tw`border-b border-gray-200 py-3 px-4 flex sm:(justify-between items-center flex-row gap-1) flex-col gap-3`} key={i.priceId}>
+          <div css={tw`border-b border-gray-200 dark:border-gray-700 py-3 px-4 flex sm:(justify-between items-center flex-row gap-1) flex-col gap-3`} key={i.priceId}>
             <div css={tw`flex items-center gap-2`}>
               <div css={tw`relative w-12 h-12 rounded overflow-hidden`}>
                 <Image src={i.image} layout="fill" objectFit="cover" alt={i.name} placeholder="blur" blurDataURL={i.imageLQIP} />

@@ -19,8 +19,8 @@ const Logout: NextPage = () => {
     <div css={tw`flex items-center flex-col gap-3 md:pt-6 pt-4`}>
       <div css={tw`flex flex-col items-center gap-4 md:gap-0`}>
         <div css={tw`select-none`}>
-          <span css={tw`flex w-12 h-12 bg-black rounded-full items-center justify-center`}>
-            <span css={tw`text-white text-xl font-semibold`}>{ getInitials(data?.self.name || '') }</span>
+          <span css={tw`flex w-12 h-12 bg-black dark:bg-gray-100 rounded-full items-center justify-center`}>
+            <span css={tw`text-white dark:text-black text-xl font-semibold`}>{ getInitials(data?.self.name || '') }</span>
           </span>
         </div>
         <h1 css={tw`text-4xl font-semibold mb-4`}>Logout</h1>

@@ -123,12 +123,12 @@ const Payment: NextPage = () => {
       <CheckoutTitle router={router} />
       <h2 css={tw`text-2xl font-semibold mt-6 mb-4`}>Wähle eine Bezahlmethode aus</h2>
       <div css={tw`max-w-screen-lg w-full mx-auto flex flex-col md:flex-row gap-4 md:gap-0`}>
-        <div css={tw`w-full md:(border-r border-r-gray-200 pr-3)`}>
+        <div css={tw`w-full md:(border-r border-r-gray-200 dark:border-r-gray-700 pr-3)`}>
           <span css={tw`text-xl font-semibold mb-2 hidden md:block`}>Bestellzusammenfassung</span>
           <div>
             {
               cart.map((i:any) => (
-                <div css={tw`flex items-center justify-between border-b border-b-gray-200 py-1 px-3`} key={i.priceId}>
+                <div css={tw`flex items-center justify-between border-b border-b-gray-200 dark:border-b-gray-700 py-1 px-3`} key={i.priceId}>
                   <div css={tw`flex flex-col justify-center`}>
                     <span>{ i.quantity }x { i.name }</span>
                     <span css={tw`text-xs`}>Größe: { i.size.toUpperCase() }</span>
@@ -203,7 +203,7 @@ const Payment: NextPage = () => {
           </div>
           <div css={tw`mt-4`}>
             <PaymentMethodCards alignment='center' />
-            <span css={tw`text-primary-500 hover:text-primary-400 transition duration-200 text-sm font-light mt-1 flex justify-center`}>
+            <span css={tw`text-primary-500 hover:text-primary-400 dark:(text-primary-300 hover:text-primary-200) transition duration-200 text-sm font-light mt-1 flex justify-center`}>
               <Link href="/paymentmethods?backTo=checkout" passHref>
                 <a href="/paymentmethods?backTo=checkout" css={tw`flex items-center gap-1`}>
                   <span>Weitere Infos</span>

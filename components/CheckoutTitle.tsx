@@ -26,7 +26,7 @@ const CheckoutTitle = ({ router }: checkoutTitleProps) => {
     <div>
       <h1 css={tw`text-4xl font-semibold mb-4 flex items-center gap-3`}>
         <HeadLogo />
-        <span css={tw`block border-l border-l-gray-200 h-7 ml-0.5`}></span>
+        <span css={tw`block border-l border-l-gray-200 dark:border-l-gray-700 h-7 ml-0.5`}></span>
         <span>Checkout</span>
       </h1>
       <div css={tw`flex justify-around`}>
@@ -35,7 +35,7 @@ const CheckoutTitle = ({ router }: checkoutTitleProps) => {
             <a href="/checkout/begin" className='group' css={tw`flex flex-col items-center justify-center`}>
               <span css={[
                 tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-                currentStep() > 0 ? tw`bg-green-500` : tw`bg-gray-400`
+                currentStep() > 0 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
               ]}>
                 <span css={tw`text-lg md:text-xl text-white`}>
                   {
@@ -56,7 +56,7 @@ const CheckoutTitle = ({ router }: checkoutTitleProps) => {
             <a href="/checkout/shipping" className='group' css={tw`flex flex-col items-center justify-center`}>
               <span css={[
                 tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-                currentStep() > 1 ? tw`bg-green-500` : tw`bg-gray-400`
+                currentStep() > 1 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
               ]}>
                 <span css={tw`text-lg md:text-xl text-white`}>
                   {
@@ -82,7 +82,7 @@ const CheckoutTitle = ({ router }: checkoutTitleProps) => {
             >
               <span css={[
                 tw`flex w-10 h-10 md:(w-12 h-12) rounded-full items-center justify-center transform transition duration-200 group-hover:scale-110`,
-                currentStep() > 2 ? tw`bg-green-500` : tw`bg-gray-400`
+                currentStep() > 2 ? tw`bg-green-500` : tw`bg-gray-400 dark:bg-gray-500`
               ]}>
                 <span css={tw`text-lg md:text-xl text-white`}>
                   {
