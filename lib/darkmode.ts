@@ -1,12 +1,31 @@
+const media = window.matchMedia('(prefers-color-scheme: dark)')
+
 const initializeDarkmode = () => {
-  if(!localStorage.getItem('darkmode')) localStorage.setItem('darkmode', 'light')
-  const theme = localStorage.getItem('darkmode')
-  if(theme === 'dark') document.documentElement.classList.add('dark')
+  const current = getCurrentTheme()
+  if(current === 'system') {
+    if(media.matches) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  } else if(current === 'dark') {
+    document.documentElement.classList.add('dark')
+  }
+
+  media.addEventListener('change', () => {
+    updateDOM()
+  })
 }
 
 const updateDOM = () => {
-  const theme = localStorage.getItem('darkmode')
-  if(theme === 'dark') {
+  const theme = getCurrentTheme()
+  if(theme === 'system') {
+    if(media.matches) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
+    }
+  } else if(theme === 'dark') {
     document.documentElement.classList.add('dark')
   } else {
     document.documentElement.classList.remove('dark')
@@ -22,17 +41,14 @@ const changeDarkmode = (theme: "light" | "dark" | "system") => {
       localStorage.setItem('darkmode', 'dark')
       break
     case 'system':
-      if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        localStorage.setItem('darkmode', 'dark')
-      } else {
-        localStorage.setItem('darkmode', 'light')
-      }
+      localStorage.setItem('darkmode', 'system')
       break
   }
   updateDOM()
 }
 
 const getCurrentTheme = () => {
+  if(!localStorage.getItem('darkmode')) localStorage.setItem('darkmode', 'light')
   const theme = localStorage.getItem('darkmode')
   return theme
 }

@@ -63,11 +63,14 @@ const Footer = () => {
                   <Menu.Button>
                     <span>
                       {
-                        getCurrentTheme() === 'dark' ? (
+                        getCurrentTheme() === 'system' ? (
+                          <HiOutlineDesktopComputer />
+                        ) :
+                          getCurrentTheme() === 'dark' ? (
                           <HiOutlineMoon />
-                        ) : (
-                          <HiOutlineSun />
-                        )
+                          ) : (  
+                            <HiOutlineSun />
+                          )
                       }
                     </span>
                   </Menu.Button>
