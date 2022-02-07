@@ -1,6 +1,6 @@
-const media = window.matchMedia('(prefers-color-scheme: dark)')
-
 const initializeDarkmode = () => {
+  const media = window.matchMedia('(prefers-color-scheme: dark)')
+
   const current = getCurrentTheme()
   if(current === 'system') {
     if(media.matches) {
@@ -20,7 +20,7 @@ const initializeDarkmode = () => {
 const updateDOM = () => {
   const theme = getCurrentTheme()
   if(theme === 'system') {
-    if(media.matches) {
+    if(window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.classList.add('dark')
     } else {
       document.documentElement.classList.remove('dark')
