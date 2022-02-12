@@ -3,6 +3,7 @@ import mongoose from 'mongoose'
 interface UserData {
   uid: string
   stripeCustomerID: string
+  theme: "light" | "dark" | "system"
 }
 
 const userDataSchema = new mongoose.Schema<UserData>({
@@ -13,6 +14,11 @@ const userDataSchema = new mongoose.Schema<UserData>({
   stripeCustomerID: {
     type: String,
     default: "",
+  },
+  theme: {
+    type: String,
+    default: "light",
+    enum: ['light', 'dark', 'system'],
   },
 }, { timestamps: true })
 

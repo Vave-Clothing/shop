@@ -1,10 +1,15 @@
 import { css, cx } from '@emotion/css'
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useState } from 'react'
-import { HiOutlineChevronDoubleDown, HiOutlineDesktopComputer, HiOutlineMoon, HiOutlineSun } from 'react-icons/hi'
+import { Fragment, useEffect, useState } from 'react'
+import { HiOutlineChevronDoubleDown, HiOutlineDesktopComputer, HiOutlineMoon, HiOutlineSave, HiOutlineSun } from 'react-icons/hi'
 import tw from 'twin.macro'
 import { changeDarkmode, getCurrentTheme } from '@/lib/darkmode'
 import Link from 'next/link'
+import axios from 'axios'
+import toast from 'react-hot-toast'
+import { useSession } from 'next-auth/react'
+import useSWR from 'swr'
+import fetcher from '@/lib/fetcher'
 
 const footerItems = [
   { title: 'Zahlungsmöglichkeiten', href: '/paymentmethods' },
@@ -13,7 +18,13 @@ const footerItems = [
 ]
 
 const Footer = () => {
+  const { status } = useSession()
+
+  const { data, mutate } = useSWR('/api/auth/user/self?scopes=self', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
+
   const [viewMore, setViewMore] = useState(false)
+
+  const [loading, setLoading] = useState(false)
 
   const viewMoreOpen = () => {
     setViewMore(true)
@@ -35,6 +46,34 @@ const Footer = () => {
       }
     }, 220);
   }
+
+  let timer: NodeJS.Timeout
+  const changeTheme = async (theme: "light" | "dark" | "system") => {
+    if(getCurrentTheme() === theme) return
+    changeDarkmode(theme)
+    clearTimeout(timer)
+    timer = setTimeout(async () => {
+      setLoading(true)
+      try {
+        await axios.patch('/api/auth/user/changeTheme', { theme: theme }).then(res => res.data)
+      } catch(err) {
+        toast.error('Etwas ist schief gelaufen')
+      }
+      setLoading(false)
+    }, 5000)
+  }
+
+  let mutated = false
+  useEffect(() => {
+    if(status === 'authenticated' && mutated === false) {
+      mutate()
+      mutated = true
+    }
+    if(status === 'authenticated' && mutated === true) {
+      if(!data?.self?.theme) return
+      changeDarkmode(data.self.theme)
+    }
+  }, [status, mutate, data, mutated])
 
   return (
     <>
@@ -60,19 +99,27 @@ const Footer = () => {
             <Menu>
               {({ open }) => (
                 <>
-                  <Menu.Button>
-                    <span>
-                      {
-                        getCurrentTheme() === 'system' ? (
-                          <HiOutlineDesktopComputer />
-                        ) :
-                          getCurrentTheme() === 'dark' ? (
-                          <HiOutlineMoon />
-                          ) : (  
-                            <HiOutlineSun />
-                          )
-                      }
-                    </span>
+                  <Menu.Button disabled={loading}>
+                    {
+                      !loading ? (
+                        <span>
+                          {
+                            getCurrentTheme() === 'system' ? (
+                              <HiOutlineDesktopComputer />
+                            ) :
+                              getCurrentTheme() === 'dark' ? (
+                              <HiOutlineMoon />
+                              ) : (  
+                                <HiOutlineSun />
+                              )
+                          }
+                        </span>
+                      ) : (
+                        <span css={tw`animate-pulse`}>
+                          <HiOutlineSave />
+                        </span>
+                      )
+                    }
                   </Menu.Button>
                   <Transition
                     as={Fragment}
@@ -91,13 +138,13 @@ const Footer = () => {
                     ]} static>
                       <div css={tw`py-1 w-full`}>
                         <Menu.Item as="div">
-                          <button onClick={() => changeDarkmode('dark')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
+                          <button onClick={() => changeTheme('dark')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
                             <HiOutlineMoon />
                             <span>Dunkel</span>
                           </button>
                         </Menu.Item>
                         <Menu.Item as="div">
-                          <button onClick={() => changeDarkmode('light')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
+                          <button onClick={() => changeTheme('light')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
                             <HiOutlineSun />
                             <span>Hell</span>
                           </button>
@@ -105,7 +152,7 @@ const Footer = () => {
                       </div>
                       <div css={tw`py-1 w-full`}>
                         <Menu.Item as="div">
-                          <button onClick={() => changeDarkmode('system')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
+                          <button onClick={() => changeTheme('system')} css={[tw`flex items-center gap-2 hover:bg-gray-200 rounded-lg transition duration-200 px-2 w-full dark:hover:bg-gray-700`]}>
                             <HiOutlineDesktopComputer />
                             <span>System</span>
                           </button>

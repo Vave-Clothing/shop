@@ -52,11 +52,19 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
     await User.findByIdAndUpdate(user._id, { name: regData.name })
     user.name = regData.name
   }
+
+  let user_theme = 'light'
+  const userData = await UserData.findOne({ uid: user._id })
+  if(userData.theme) {
+    user_theme = userData.theme
+  }
+
   const userObject = {
     id: user._id,
     email: user.email,
     email_verified: user.email_verified,
     name: user.name,
+    theme: user_theme,
   }
 
   let securityObject
@@ -102,7 +110,7 @@ export default validate({ query: querySchema }, async ( req: NextApiRequest, res
   let paymentMethodObject: { id: any; name: any; exp_month: any; exp_year: any; last4: any; brand: any }[] = []
   if(scopes().paymentMethods === true) {
     const userData = await UserData.findOne({ uid: user._id })
-    if(userData) {
+    if(userData.stripeCustomerID) {
       const methods = await (await stripe.customers.listPaymentMethods(userData.stripeCustomerID, { type: "card" })).data
       const cards = methods.map((m:any) => {
         return {
