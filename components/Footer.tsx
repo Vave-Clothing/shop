@@ -1,6 +1,6 @@
 import { css, cx } from '@emotion/css'
 import { Menu, Transition } from '@headlessui/react'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState, useRef } from 'react'
 import { HiOutlineChevronDoubleDown, HiOutlineDesktopComputer, HiOutlineMoon, HiOutlineSave, HiOutlineSun } from 'react-icons/hi'
 import tw from 'twin.macro'
 import { changeDarkmode, getCurrentTheme } from '@/lib/darkmode'
@@ -21,6 +21,7 @@ const Footer = () => {
   const { status } = useSession()
 
   const { data, mutate } = useSWR('/api/auth/user/self?scopes=self', fetcher, { revalidateOnFocus: false, revalidateOnMount: false, revalidateOnReconnect: false })
+  const mutated = useRef(false)
 
   const [viewMore, setViewMore] = useState(false)
 
@@ -63,13 +64,12 @@ const Footer = () => {
     }, 5000)
   }
 
-  let mutated = false
   useEffect(() => {
-    if(status === 'authenticated' && mutated === false) {
+    if(status === 'authenticated' && mutated.current === false) {
       mutate()
-      mutated = true
+      mutated.current = true
     }
-    if(status === 'authenticated' && mutated === true) {
+    if(status === 'authenticated' && mutated.current === true) {
       if(!data?.self?.theme) return
       changeDarkmode(data.self.theme)
     }
