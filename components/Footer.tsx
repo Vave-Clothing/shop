@@ -53,6 +53,7 @@ const Footer = () => {
     if(getCurrentTheme() === theme) return
     changeDarkmode(theme)
     clearTimeout(timer)
+    if(status !== 'authenticated') return
     timer = setTimeout(async () => {
       setLoading(true)
       try {

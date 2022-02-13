@@ -87,7 +87,7 @@ const LoginHeader = ({ white, ingoreDarkmode }: loginHeaderProps) => {
         ) : (
           <span>
             <Link href="/auth/login" passHref>
-              <a href="/auth/login" css={[tw`text-black dark:text-white!`, white ? tw`xl:text-white` : tw`xl:text-black`]}>
+              <a href="/auth/login" css={[tw`text-black`, white ? tw`xl:text-white` : tw`xl:text-black`, ingoreDarkmode ? tw`` : tw`dark:text-white!`]}>
                 <HiOutlineUserCircle />
                 <span css={tw`sr-only`}>Login</span>
               </a>
