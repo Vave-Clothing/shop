@@ -9,9 +9,10 @@ interface dialogProps {
   title?: string
   description?: string
   children: React.ReactChild
+  width?: "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl"
 }
 
-const Dialog = ({ show, onClose, title, description, children }: dialogProps) => {
+const Dialog = ({ show, onClose, title, description, children, width }: dialogProps) => {
   return (
     <Transition show={show} as={Fragment}>
       <HUIDialog onClose={onClose} css={tw`fixed z-50 inset-0 overflow-y-auto text-black dark:text-gray-100`}>
@@ -43,7 +44,16 @@ const Dialog = ({ show, onClose, title, description, children }: dialogProps) =>
               leaveTo: cx(css(tw`opacity-0 scale-95`)),
             }}
           >
-            <div css={tw`relative bg-white dark:bg-gray-900 rounded-lg max-w-md mx-1 py-3 px-5 shadow-lg w-full`}>
+            <div css={[
+              tw`relative bg-white dark:bg-gray-900 rounded-lg mx-1 py-3 px-5 shadow-lg w-full`,
+              width === "5xl" ? tw`max-w-5xl` :
+              width === "4xl" ? tw`max-w-4xl` :
+              width === "3xl" ? tw`max-w-3xl` :
+              width === "2xl" ? tw`max-w-2xl` :
+              width === "xl" ? tw`max-w-xl` :
+              width === "lg" ? tw`max-w-lg` :
+              tw`max-w-md`
+            ]}>
               {
                 title &&
                 <HUIDialog.Title css={tw`text-xl font-semibold`}>{title}</HUIDialog.Title>

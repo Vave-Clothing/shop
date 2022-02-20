@@ -93,27 +93,31 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetStaticPropsTy
       <div css={tw`grid xl:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4`}>
         {
           products.map((product: any, i: number) => (
-            <div key={i} css={tw`border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative`} className="group">
+            <div key={i} css={tw`border border-gray-200 dark:border-gray-700 rounded-lg p-4 relative`}>
               <div css={tw`flex justify-center items-center`}>
-                <div css={tw`w-80 h-80 overflow-hidden group-hover:scale-105 transition duration-200 rounded relative`}>
-                  <Image src={product.img} layout="fill" objectFit="cover" objectPosition={imgHotspot(product.imgHotspot)} alt={product.title} placeholder="blur" blurDataURL={product.imgLQIP} />
-                </div>
+                <Link href={product.href} passHref>
+                  <a href={product.href} css={tw`block w-80 h-80 overflow-hidden hover:scale-105 transition duration-200 rounded relative`}>
+                    <Image src={product.img} layout="fill" objectFit="cover" objectPosition={imgHotspot(product.imgHotspot)} alt={product.title} placeholder="blur" blurDataURL={product.imgLQIP} />
+                  </a>
+                </Link>
               </div>
-              <div css={tw`mt-4 flex flex-col gap-2`}>
-                <div css={tw`flex flex-col`}>
-                  <span css={tw`text-xl font-semibold`}>
-                    {product.title}
-                  </span>
-                  <span css={tw`flex gap-0.5 text-lg items-center`}>
-                    {[...new Array(product.stars)].map((_, i) => (
-                      <HiOutlineStar fill={theme`colors.yellow.400`} color={theme`colors.yellow.400`} key={i} />
-                    ))}
-                    {[...new Array(5 - product.stars)].map((_, i) => (
-                      <HiOutlineStar color={theme`colors.yellow.400`} key={i} />
-                    ))}
-                    <span css={tw`text-gray-300 text-xs ml-1`}>({product.fBCount})</span>
-                  </span>
-                </div>
+              <div css={tw`flex flex-col gap-2`}>
+                <Link href={product.href} passHref>
+                  <a href={product.href} css={tw`flex flex-col pt-4`}>
+                    <span css={tw`text-xl font-semibold`}>
+                      {product.title}
+                    </span>
+                    <span css={tw`flex gap-0.5 text-lg items-center`}>
+                      {[...new Array(product.stars)].map((_, i) => (
+                        <HiOutlineStar fill={theme`colors.yellow.400`} color={theme`colors.yellow.400`} key={i} />
+                      ))}
+                      {[...new Array(5 - product.stars)].map((_, i) => (
+                        <HiOutlineStar color={theme`colors.yellow.400`} key={i} />
+                      ))}
+                      <span css={tw`text-gray-300 text-xs ml-1`}>({product.fBCount})</span>
+                    </span>
+                  </a>
+                </Link>
                 <div css={tw`flex flex-col`}>
                   <span css={tw`text-sm font-light`}>
                     Preis
@@ -135,11 +139,6 @@ const Shop: NextPage = ({ shopProducts, shopCollections }: InferGetStaticPropsTy
                   </span>
                 </div>
               </div>
-              <Link href={product.href} passHref>
-                <a href={product.href} css={tw`absolute top-0 left-0 bottom-0 right-0`}>
-                  <span css={tw`sr-only`}>{product.title}</span>
-                </a>
-              </Link>
             </div>
           ))
         }
