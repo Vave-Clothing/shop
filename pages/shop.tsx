@@ -7,6 +7,8 @@ import { Fragment, useState, useRef, useEffect } from 'react'
 import { RadioGroup } from '@headlessui/react'
 import client, { urlFor } from '@/lib/sanityClient'
 import Stripe from 'stripe'
+import dbConnect from '@/lib/dbConnect'
+import Product from '@/schemas/Product'
 
 const priceFormatter = new Intl.NumberFormat('de-DE', {
   minimumFractionDigits: 2,
@@ -24,6 +26,18 @@ interface imgHotspotFunction {
   width: number,
   x: number,
   y: number
+}
+
+interface sanityProduct {
+  _id: string
+  blurb: string
+  category: string
+  collection: any
+  images: any[]
+  tags: string[]
+  title: string
+  variants: any[]
+  imagesLQIP: string
 }
 
 const RadioButton = ({ title, value }: radioButtonProps) => {
@@ -154,20 +168,33 @@ export const getStaticProps: GetStaticProps = async () => {
     apiVersion: '2020-08-27',
   })
 
-  const products = await client.fetch(`
-    *[_type == "product"]{
+  await dbConnect()
+
+  const dbProducts = await Product.find()
+  const sanityIDs = dbProducts.map((p) => p.sanityID)
+
+  const sanityProducts = await client.fetch(`
+    *[_type == "product" && _id in $ids]{
       _id,
       blurb,
       category,
       collection,
       images,
-      slug,
       tags,
       title,
       variants,
       'imagesLQIP': images[].asset->metadata.lqip
     }
-  `)
+  `, { ids: sanityIDs })
+
+  const products = sanityProducts.map((p: sanityProduct) => {
+    const slug = dbProducts.find((dbp) => dbp.sanityID === p._id).slug
+    
+    return {
+      ...p,
+      slug,
+    }
+  })
 
   const formattedProducts = await Promise.all(products.map(async (p:any) => {
     const main = p.variants.find((v:any) => v.isDefault === true)
@@ -190,7 +217,7 @@ export const getStaticProps: GetStaticProps = async () => {
       defaultPrice: main.price * 100,
       stars: 5,
       fBCount: 5,
-      href: '/product/' + p.slug.current,
+      href: '/product/' + p.slug,
       inStock: emtpyStock(),
       category: p.category,
       collectionId: p.collection._ref,

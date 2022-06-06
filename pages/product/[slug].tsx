@@ -1,8 +1,8 @@
 import type { NextPage, GetStaticProps, InferGetStaticPropsType, GetStaticPaths } from 'next'
-import tw from 'twin.macro'
+import tw, { theme } from 'twin.macro'
 import Image from 'next/image'
-import { useState, useEffect, useRef } from 'react'
-import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCreditCard, HiOutlineCube, HiOutlineShoppingCart, HiOutlineX } from 'react-icons/hi'
+import React, { useState, useEffect, useRef } from 'react'
+import { HiOutlineArrowDown, HiOutlineArrowLeft, HiOutlineArrowRight, HiOutlineCheck, HiOutlineCreditCard, HiOutlineCube, HiOutlinePencil, HiOutlinePlus, HiOutlineShoppingCart, HiOutlineStar, HiOutlineX } from 'react-icons/hi'
 import client, { urlFor } from '@/lib/sanityClient'
 import capitalizeFirstLetter from '@/lib/capitalizeFirstLetter'
 import { useShoppingCart } from 'use-shopping-cart'
@@ -16,6 +16,46 @@ import { formatPrice } from '@/lib/priceFormatter'
 import FallbackPage from '@/components/FallbackPage'
 import useWindowDimensions from '@/lib/useWindowDimensions'
 import Dialog from '@/components/Dialog'
+import FormFieldWrapper from '@/components/FormFieldWrapper'
+import FormFieldTextarea from '@/components/FormFieldTextarea'
+import StarButtons from '@/components/StarButtons'
+import FormButton from '@/components/FormButton'
+import FormField from '@/components/FormField'
+import Joi from 'joi'
+import getInitials from '@/lib/getInitials'
+
+const mockFeedbackItems = [
+  {
+    userName: 'John Doe',
+    title: 'Alles super',
+    text: 'Alles super',
+    stars: 5,
+  },
+  {
+    userName: 'John Doe',
+    title: 'Alles super',
+    text: 'Alles super',
+    stars: 4,
+  },
+  {
+    userName: 'John Doe',
+    title: 'Alles super',
+    text: 'Alles super',
+    stars: 3,
+  },
+  {
+    userName: 'John Doe',
+    title: 'Alles super',
+    text: 'Alles super',
+    stars: 2,
+  },
+  {
+    userName: 'John Doe',
+    title: 'Alles super',
+    text: 'Alles super',
+    stars: 1,
+  },
+]
 
 const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { width } = useWindowDimensions()
@@ -29,6 +69,14 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
   const detailsEl = useRef<HTMLHeadingElement>(null)
 
   const [imgDialog, setImgDialog] = useState(false)
+
+  const [feedbackTitle, setFeedbackTitle] = useState('')
+  const [feedbackText, setFeedbackText] = useState('')
+  const [feedbackStars, setFeedbackStars] = useState(0)
+  const [feedbackPanel, setFeedbackPanel] = useState(false)
+  const [feedbackTitleError, setFeedbackTitleError] = useState('')
+  const [feedbackTextError, setFeedbackTextError] = useState('')
+  const [feedbackStarsError, setFeedbackStarsError] = useState('')
 
   const cart = Object.keys(cartDetails).map((key) => {
     const { id, quantity } = cartDetails[key]
@@ -110,6 +158,27 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
       top: top - Number(navBar?.offsetHeight) - 10,
       behavior: 'smooth'
     })
+  }
+
+  const titleSchema = Joi.string().required().label('Titel').messages({
+    'string.base': `"Titel" muss eine Zeichenfolge sein`,
+    'string.empty': `"Titel" darf nicht leer sein`,
+  })
+
+  const textSchema = Joi.string().required().label('Text').messages({
+    'string.base': `"Text" muss eine Zeichenfolge sein`,
+    'string.empty': `"Text" darf nicht leer sein`,
+  })
+
+  const sendFeedback = () => {
+    const titleResult = titleSchema.validate(feedbackTitle)
+    setFeedbackTitleError(titleResult.error?.details[0].message || '')
+    
+    const textResult = textSchema.validate(feedbackText)
+    setFeedbackTextError(textResult.error?.details[0].message || '')
+
+    const starsResult = feedbackStars > 0 ? '' : 'Es muss mindestens ein Stern vergeben werden'
+    setFeedbackStarsError(starsResult)
   }
 
   useEffect(() => {
@@ -372,6 +441,77 @@ const Product: NextPage = ({ product }: InferGetStaticPropsType<typeof getStatic
               </tbody>
             </table>
             <span css={tw`block mt-2 text-sm md:text-base font-light`}>Model trägt Größe { modelSize().toUpperCase() }</span>
+            <div>
+              <h2 css={tw`text-3xl font-semibold mt-6 mb-4`}>
+                Rezensionen
+              </h2>
+              {
+                feedbackPanel ? (
+                  <>
+                    <div css={tw`mt-6 mb-4 flex justify-between items-center`}>
+                      <h3 css={tw`text-2xl font-semibold`}>
+                        Rezension abgeben
+                      </h3>
+                      <button onClick={() => setFeedbackPanel(false)}>
+                        <HiOutlineX />
+                      </button>
+                    </div>
+                    <div css={tw`flex flex-col gap-2`}>
+                      <StarButtons value={feedbackStars} setValue={setFeedbackStars} />
+                      {
+                        feedbackStarsError &&
+                        <span css={tw`text-red-600 dark:text-red-400 text-xs font-light transform block`}>{feedbackStarsError}</span>
+                      }
+                      <FormFieldWrapper error={feedbackTitleError}>
+                        <FormField value={feedbackTitle} onChange={(e) => setFeedbackTitle(e.target.value)} placeholder="Titel" error={feedbackTitleError ? true : false} />
+                      </FormFieldWrapper>
+                      <FormFieldWrapper error={feedbackTextError}>
+                        <FormFieldTextarea value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} placeholder="Feedback" error={feedbackTextError ? true : false} />
+                      </FormFieldWrapper>
+                      <FormButton onClick={() => sendFeedback()}>
+                        <>
+                          <HiOutlinePencil />
+                          <span>Senden</span>
+                        </>
+                      </FormButton>
+                    </div>
+                  </>
+                ) : (
+                  <FormButton onClick={() => setFeedbackPanel(true)}>
+                    <>
+                      <HiOutlinePlus />
+                      <span>Rezension abgeben</span>
+                    </>
+                  </FormButton>
+                )
+              }
+              <div css={tw`grid grid-template-columns[auto 1fr] gap-x-6 gap-y-4 mt-4`}>
+                {
+                  mockFeedbackItems.map((item, i) => (
+                    <React.Fragment key={i}>
+                      <div css={tw`flex flex-col gap-1`}>
+                        <div css={tw`flex bg-black w-12 h-12 justify-center items-center rounded-full text-lg font-medium`}>
+                          { getInitials(item.userName) }
+                        </div>
+                        <span css={tw`text-xl font-semibold`}>{ item.userName }</span>
+                        <div css={tw`flex gap-1`}>
+                          {[...new Array(item.stars)].map((_, i) => (
+                            <HiOutlineStar fill={theme`colors.yellow.400`} color={theme`colors.yellow.400`} key={i} />
+                          ))}
+                          {[...new Array(5 - item.stars)].map((_, i) => (
+                            <HiOutlineStar color={theme`colors.yellow.400`} key={i} />
+                          ))}
+                        </div>
+                      </div>
+                      <div css={tw`flex flex-col gap-1`}>
+                        <span css={tw`font-medium text-lg`}>{ item.title }</span>
+                        <p css={tw`whitespace-pre-wrap`}>{item.text}</p>
+                      </div>
+                    </React.Fragment>
+                  ))
+                }
+              </div>
+            </div>
           </div>
         </div>
       </div>
